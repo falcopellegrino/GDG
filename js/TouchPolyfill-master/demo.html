@@ -1,0 +1,290 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Touch Test</title>
+    <link rel="Stylesheet" href="../bootstrap/css/bootstrap.css" />
+</head>
+<body>
+
+<canvas id='backgroundCanvas' width='1000' height='1000' style='z-index:2; position:absolute;'>
+</canvas>
+
+<div style='height:100px;'>
+    <div style='background-color:Purple; color:White; width:100px; height:100px; z-index:3; position: absolute; opacity: 0.5;'>
+        Div floating on top of drawing canvas
+    </div>
+</div>
+
+<div style='height:16em; overflow:hidden; border:solid 1px gray;'>
+    touches
+    <table id='touchPropertiesTable' class="table table-striped">
+        <thead id='touchPropertiesTableHead'>
+        </thead>
+        <tbody id = 'touchPropertiesTableBody'>
+            <!-- Javascript is used to fill in this table when the user touches the screen -->
+        </tbody>
+    </table>
+</div>
+
+<div style='height:16em; overflow:hidden; border:solid 1px gray'>
+    changed touches: (Red)
+    <table id='changedTouchesPropertiesTable' class="table table-striped">
+        <thead id='changedTouchesPropertiesTableHead'>
+        </thead>
+        <tbody id = 'changedTouchesPropertiesTableBody'>
+            <!-- Javascript is used to fill in this table when the user touches the screen -->
+        </tbody>
+    </table>
+</div>
+
+<div style='height:16em; overflow:hidden; border:solid 1px gray'>
+    target touches
+    <table id='targetTouchesPropertiesTable' class="table table-striped">
+        <thead id='targetTouchesPropertiesTableHead'>
+        </thead>
+        <tbody id = 'targetTouchesPropertiesTableBody'>
+            <!-- Javascript is used to fill in this table when the user touches the screen -->
+        </tbody>
+    </table>
+</div>
+
+
+<div>
+    <table id='counterTable' class='table table-striped'>
+        <thead id='counterTableHead'>
+        </thead>
+        <tbody id='counterTableBody'>
+            <!-- Javascript is used to fill in this table when the user touches the screen -->
+        </tbody>
+    </table>
+</div>
+
+</body>
+<script src="touchpolyfill.js">
+</script>
+
+<script>
+    'use strict';
+    var touchTableMethods, counterTableMethods, canvasMethods, touchEventCounters;
+
+    function touch(e) {
+        var numberOfTouches, propertyList, i;
+
+        e.preventDefault();
+
+        counterTableMethods.printData(touchEventCounters);
+
+        touchTableMethods.clearTable();
+        canvasMethods.clearCanvas();
+
+        propertyList = getPropertyList(e.touches[0] || e.changedTouches[0])
+        touchTableMethods.printHeader('touches', propertyList);
+        touchTableMethods.printHeader('changedTouches', propertyList);
+        touchTableMethods.printHeader('targetTouches', propertyList);
+
+
+        // print the properties of the Touch objects in the touches TouchList
+        numberOfTouches = e.touches.length;
+        canvasMethods.setColor('green');
+        for (i = 0; i < numberOfTouches; i++) {
+            touchTableMethods.printData('touches', e.touches[i], propertyList);
+            canvasMethods.drawCircle(e.touches[i]);
+        }
+
+        // print the properties of the Touch objects in the changedTouches TouchList
+        numberOfTouches = e.changedTouches.length;
+        canvasMethods.setColor('red');
+        for (i = 0; i < numberOfTouches; i++) {
+            touchTableMethods.printData('changedTouches', e.changedTouches[i], propertyList);
+            canvasMethods.drawCircle(e.changedTouches[i]);
+        }
+
+        // print the properties of the Touch objects in the targetTouches TouchList
+        numberOfTouches = e.targetTouches.length;
+        for (i = 0; i < numberOfTouches; i++) {
+            touchTableMethods.printData('targetTouches', e.targetTouches[i], propertyList);
+            // canvasMethods.drawCircle(e.targetTouches[i]);
+        }
+    }
+
+    function touchStart(e) {
+        touchEventCounters.start += 1;
+        touch(e);
+    }
+
+    function touchEnd(e) {
+        touchEventCounters.end += 1;
+        touch(e);
+    }
+
+    function touchMove(e) {
+        touchEventCounters.move += 1;
+        touch(e);
+    }
+
+    function touchCancel(e) {
+        toucheventcounters.cancel += 1;
+        touch(e);
+    }
+
+    // Return an array containing the names of the properties of the touch object.
+    function getPropertyList(touch) {
+        var array, x;
+        array = [];
+        for (x in touch) {
+            array.push(x);
+        }
+        return array;
+    }
+
+    touchEventCounters = {
+        start: 0,
+        end: 0,
+        move: 0,
+        cancel: 0
+    }
+
+    window.addEventListener("touchstart", touchStart, false);
+    window.addEventListener("touchend", touchEnd, false);
+    window.addEventListener("touchmove", touchMove, false);
+    window.addEventListener("touchcancel", touchCancel, false);
+
+    // Prevent the touch events from raising a context menu.
+    window.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+    //    document.ontouchstart = touch;
+    //    document.ontouchend = touch;
+    //    document.ontouchmove = touch;
+    //    document.ontouchcancel = touch;
+
+    // This creates a closure for the methods that print data about touch events in a table.
+    touchTableMethods = (function () {
+        var touchPropertiesTableHead, touchPropertiesTableBody,
+            changedTouchesPropertiesTableHead, changedTouchesPropertiesTableBody,
+            targetTouchesPropertiesTableHead, targetTouchesPropertiesTableBody;
+
+        function clearTable() {
+            touchPropertiesTableHead.innerHTML = '';
+            touchPropertiesTableBody.innerHTML = '';
+            changedTouchesPropertiesTableHead.innerHTML = '';
+            changedTouchesPropertiesTableBody.innerHTML = '';
+            targetTouchesPropertiesTableHead.innerHTML = '';
+            targetTouchesPropertiesTableBody.innerHTML = '';
+        }
+
+        function printHeader(touchListName, propertyList) {
+            var header = '<tr><th>' + propertyList.join('</th><th>') + '</th></tr>'
+
+            switch (touchListName) {
+                case 'touches':
+                    touchPropertiesTableHead.innerHTML += header;
+                    break;
+                case 'changedTouches':
+                    changedTouchesPropertiesTableHead.innerHTML += header;
+                    break;
+                case 'targetTouches':
+                    targetTouchesPropertiesTableHead.innerHTML += header;
+            }
+        }
+
+        function printData(touchListName, touch, propertyList) {
+            var i, rowHtml;
+            rowHtml = [];
+
+            for (i = 0; i < propertyList.length; i++) {
+                rowHtml.push('<td>' + touch[propertyList[i]] + '</td>');
+            }
+
+            switch (touchListName) {
+                case 'touches':
+                    touchPropertiesTableBody.innerHTML += rowHtml.join('');
+                    break;
+                case 'changedTouches':
+                    changedTouchesPropertiesTableBody.innerHTML += rowHtml.join('');
+                    break;
+                case 'targetTouches':
+                    targetTouchesPropertiesTableBody.innerHTML += rowHtml.join('');
+            }
+        }
+
+        touchPropertiesTableHead = document.getElementById('touchPropertiesTableHead');
+        touchPropertiesTableBody = document.getElementById('touchPropertiesTableBody');
+
+        changedTouchesPropertiesTableHead = document.getElementById('changedTouchesPropertiesTableHead');
+        changedTouchesPropertiesTableBody = document.getElementById('changedTouchesPropertiesTableBody');
+
+        targetTouchesPropertiesTableHead = document.getElementById('targetTouchesPropertiesTableHead');
+        targetTouchesPropertiesTableBody = document.getElementById('targetTouchesPropertiesTableBody');
+
+        return {
+            clearTable: clearTable,
+            printHeader: printHeader,
+            printData: printData
+        };
+    })();
+
+    counterTableMethods = (function () {
+        var counterTableHead, counterTableBody;
+
+        function printData(touchEventCounters) {
+            var bodyHtml;
+
+            bodyHtml = [
+                '<tr><td>touchstart</td><td>',
+                touchEventCounters.start,
+                '</td></tr><tr><td>touchend</td><td>',
+                touchEventCounters.end,
+                '</td></tr><tr><td>touchmove</td><td>',
+                touchEventCounters.move,
+                '</td></tr><tr><td>touchcancel</td><td>',
+                touchEventCounters.cancel,
+                '</td><td></tr>'
+            ].join('');
+
+            counterTableBody.innerHTML = bodyHtml;
+        }
+
+        counterTableHead = document.getElementById('counterTableHead');
+        counterTableBody = document.getElementById('counterTableBody');
+
+        return {
+            printData: printData
+        };
+    })();
+
+    // This creates a closure for the methods that print circles where the user touches the screen.
+    canvasMethods = (function () {
+        var backgroundCanvas, context, color;
+
+        backgroundCanvas = document.getElementById('backgroundCanvas');
+        context = backgroundCanvas.getContext('2d');
+
+        backgroundCanvas.width = window.innerWidth;
+        backgroundCanvas.height = window.innerHeight;
+
+        // Draw a white square over the entirety of the canvas.
+        function clearCanvas() {
+            context.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+        }
+
+        function setColor(sColor) {
+            context.fillStyle = sColor;
+        }
+
+        function drawCircle(touch) {
+            context.beginPath();
+            context.arc(touch.pageX, touch.pageY, 50, 0, 2 * Math.PI, false);
+            context.fill();
+            context.lineWidth = 5;
+            context.strokeStyle = '#000000';
+            context.stroke();
+        }
+
+        return {
+            clearCanvas: clearCanvas,
+            setColor: setColor,
+            drawCircle: drawCircle
+        };
+    })();
+</script>
+</html>
