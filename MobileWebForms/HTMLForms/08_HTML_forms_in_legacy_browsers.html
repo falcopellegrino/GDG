@@ -1,0 +1,45 @@
+<label for="myColor">
+	Pick a color
+	<input type="color" id="myColor" name="color">
+</label>
+
+
+<style>
+input[type=number] {
+	/* This can fail in some browsers */
+	background-color:red;
+}
+input.number {
+	/* This will work everywhere */
+	background-color:red;
+	}
+
+/* This can fail in some browsers because if they do not understand
+	one of the selectors, they will skip the whole rule */
+/*input[type=number],
+input.number {
+}*/
+</style>
+<input type="number" class="number">
+
+
+<style>
+input {
+	/* This rule turns off the default rendering for buttons defined with an input element */
+	border: 1px solid #CCC;
+}
+input.button {
+	 /* This does NOT restore the default rendering */
+	 border: none;
+}
+input.button {
+	/* That doesn't either! Actually there is no standard way to do it in any browser */
+	border: auto;
+}
+</style>
+<input type="button" class="button" value="click me">
+
+<!-- Clicking this button sends "<em>Do A</em>" instead of "A" in some cases -->
+<button type="submit" name="IWantTo" value="A">
+ <em>Do A</em>
+</button>
