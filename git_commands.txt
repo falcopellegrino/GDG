@@ -1,0 +1,17 @@
+cd /c/gdg
+//change directory to c:\gdg\
+
+git init
+//initialize repository
+
+rm -rf .git
+//undo repository just initialized
+
+git add -A
+//add all files in folder and subfolders
+
+git commit -m "mandatory comment"
+// commit all changes in files of folder and subfolders
+
+git clone https://my.url.com
+// clone and initialize repository from url
