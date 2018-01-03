@@ -1,0 +1,262 @@
+<script type="text/javascript">
+var materials = [
+  'Hydrogen',
+  'Helium',
+  'Lithium',
+  'Beryllium'
+];
+
+materials.map(
+    function(material) { 
+        return material.length; 
+    }
+); // [8, 6, 7, 9]
+
+materials.map(
+    (material) => {
+        return material.length;
+    }
+); // [8, 6, 7, 9]
+
+materials.map(
+    ({length}) => length
+); // [8, 6, 7, 9]
+
+
+
+
+function Person() {
+    // The Person() constructor defines `this` as an instance of itself.
+    this.age = 0;
+
+    setInterval(
+        function growUp() {
+            // In non-strict mode, the growUp() function defines `this` 
+            // as the global object, which is different from the `this`
+            // defined by the Person() constructor.
+            this.age++;
+        }
+        , 1000
+    );
+}
+
+var p = new Person();
+
+
+
+
+function PersonNoThis() {
+    var that = this;
+    that.age = 0;
+
+    setInterval(
+        function growUp() {
+            // The callback refers to the `that` variable of which
+            // the value is the expected object.
+            that.age++;
+        }
+        , 1000
+    );
+}
+
+
+
+
+function PersonArrowFunction(){
+    this.age = 0;
+
+    setInterval(
+        () => {
+            this.age++; // |this| properly refers to the person object
+        }
+        , 1000
+    );
+}
+
+var p = new Person();
+
+
+
+var f = () => { 
+    'use strict'; 
+    return this; 
+};
+
+console.log(f() === window); // or the global object
+
+
+
+
+var adder = {
+    base: 1,
+    add: function(a) {
+        var f = v => v + this.base;
+        return f(a);
+    },
+
+    addThruCall: function(a) {
+        var f = v => v + this.base;
+        var b = {
+            base: 2
+        };
+        return f.call(b, a);
+    }
+};
+
+console.log(adder.add(1));         // This would log to 2
+console.log(adder.addThruCall(1)); // This would log to 2 still
+
+
+
+
+
+
+var arguments = [1, 2, 3];
+var arr = () => arguments[0];
+
+arr(); // 1
+
+function foo(n) {
+    var f = () => arguments[0] + n; // foo's implicit arguments binding. arguments[0] is n
+    return f();
+}
+
+foo(1); // 2
+
+
+
+
+function foo(n) { 
+    var f = (...args) => args[0] + n; 
+    return f(10); 
+}
+foo(1); // 11
+
+
+
+
+
+'use strict';
+var obj = {
+    i: 10,
+    b: () => console.log(this.i, this),
+    c: function() {
+        console.log(this.i, this);
+    }
+}
+obj.b(); // prints undefined, Window {...} (or the global object)
+obj.c(); // prints 10, Object {...}
+
+
+
+
+
+'use strict';
+var obj = {
+    a: 10
+};
+Object.defineProperty(
+    obj, 
+    'b', 
+    {
+        get: () => {
+            console.log(this.a, typeof this.a, this);
+            return this.a + 10; // represents global object 'Window', therefore 'this.a' returns 'undefined'
+        }
+    }
+);
+
+
+
+// var Foo = () => {};
+// var foo = new Foo(); // TypeError: Foo is not a constructor
+
+
+
+
+var func1 = x => x * x;                  
+// concise body syntax, implied "return"
+var func2 = (x, y) => { return x + y; }; 
+// with block body, explicit "return" needed
+console.log(func1(2));
+console.log(func2(1,2));
+
+
+
+
+
+var func3 = () => { foo: 1 };               
+// Calling func() returns undefined!
+// var func = () => { foo: function() {} };   
+// SyntaxError: function statement requires a name
+var func4 = () => ({foo: 1});
+console.log(func3);
+console.log(func4());
+
+
+
+// var func = ()
+//            => 1; 
+// // SyntaxError: expected expression, got '=>'
+
+
+
+
+let callback;
+callback = callback || function() {}; // ok
+// callback = callback || () => {};      
+// SyntaxError: invalid arrow-function arguments
+callback = callback || (() => {});    // ok
+
+
+
+
+
+// An empty arrow function returns undefined
+let empty = () => {};
+(() => 'foobar')(); 
+// Returns "foobar"
+// (this is an Immediately Invoked Function Expression 
+// see 'IIFE' in glossary)
+
+var simple = a => a > 15 ? 15 : a; 
+simple(16); // 15
+simple(10); // 10
+console.log(simple(16));
+console.log(simple(10));
+
+
+let max = (a, b) => a > b ? a : b;
+
+// Easy array filtering, mapping, ...
+var arr = [5, 6, 13, 0, 1, 18, 23];
+var sum = arr.reduce((a, b) => a + b);  
+// 66
+var even = arr.filter(v => v % 2 == 0); 
+// [6, 0, 18]
+var double = arr.map(v => v * 2);       
+// [10, 12, 26, 0, 2, 36, 46]
+
+// // More concise promise chains
+// promise.then(a => {
+//   // ...
+// }).then(b => {
+//   // ...
+// });
+
+// Parameterless arrow functions that are visually easier to parse
+setTimeout(
+    () => {
+        console.log('I happen sooner');
+        setTimeout(
+            () => {
+                // deeper code
+                console.log('I happen later');
+            }
+            , 1
+        );
+    }
+    , 1
+);
+
+</script>
