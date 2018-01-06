@@ -1,0 +1,201 @@
+<script type="text/javascript">
+// let permette di dichiarare variabili limitandone la visibilità ad un blocco di codice,
+// ad un assegnazione, ad un' espressione in cui è usata.
+// Contrariamente alla parola chiave var, che invece definisce una variabile globalmente in uno script o localmente in un qualunque blocco di codice di una funzione.
+let iterable = [10, 20, 30];
+for (let value of iterable) {
+    value += 1;
+    console.log(value);
+}
+// 11
+// 21
+// 31
+
+// Constants are block-scoped, much like variables defined using the let statement. The value of a constant cannot change through re-assignment, and it can't be redeclared.
+let iterable1 = [10, 20, 30];
+for (const value of iterable1) {
+    console.log(value);
+}
+// 10
+// 20
+// 30
+
+let iterable2 = 'boo';
+for (let value of iterable2) {
+    console.log(value);
+}
+// "b"
+// "o"
+// "o"
+
+// A TypedArray object describes an array-like view of an underlying binary data buffer.
+// There is no global property named TypedArray, nor is there a directly visible TypedArray constructor.
+// Instead, there are a number of different global properties, whose values are typed array constructors for specific element types.
+let iterable3 = new Uint8Array([0x00, 0xff]);
+for (let value of iterable3) {
+    console.log(value);
+}
+// 0
+// 255
+
+// The Map object holds key-value pairs. Any value (both objects and primitive values) may be used as either a key or a value.
+let iterable4 = new Map([['a', 1], ['b', 2], ['c', 3]]);
+for (let entry of iterable4) {
+    console.log(entry);
+}
+// ['a', 1]
+// ['b', 2]
+// ['c', 3]
+for (let [key, value] of iterable4) {
+    console.log(value);
+}
+// 1
+// 2
+// 3
+
+// The Set object lets you store unique values of any type, whether primitive values or object references.
+// Set objects are collections of values. You can iterate through the elements of a set in insertion order. A value in the Set may only occur once; it is unique in the Set's collection.
+let iterable5 = new Set([1, 1, 2, 2, 3, 3]);
+for (let value of iterable5) {
+    console.log(value);
+}
+// 1
+// 2
+// 3
+
+// The arguments object is an Array-like object corresponding to the arguments passed to a function.
+(function() {
+    for (let argument of arguments) {
+        console.log(argument);
+    }
+})(1, 2, 3);
+// 1
+// 2
+// 3
+
+</script>
+
+<article>
+    <p>111</p>
+    <p>222</p>
+    <p>333</p>
+</article>
+<style>
+.read{
+    background-color: red;
+}
+</style>
+<script type="text/javascript">
+// Note: This will only work in platforms that have
+// implemented NodeList.prototype[Symbol.iterator]
+let articleParagraphs = document.querySelectorAll('article > p');
+for (let paragraph of articleParagraphs) {
+    paragraph.classList.add('read');
+}
+</script>
+
+
+<script type="text/javascript">
+// La dichiarazione function* (la parola chiave function seguito da un asterisco) definisce una funzione generatrice, la quale restituisce un oggetto di tipo Generator.
+function* foo(){
+    // The yield keyword causes generator function execution to pause and the value of the expression following the yield keyword is returned to the generator's caller.
+    // It can be thought of as a generator-based version of the return keyword.
+    // The yield keyword actually returns an IteratorResult object with two properties, value and done.
+    // The value property is the result of evaluating the yield expression, and done is a Boolean indicating whether or not the generator function has fully completed.
+    yield 11; 
+    yield 22; 
+    yield 33; 
+}; 
+for (let o of foo()) { 
+    console.log(o); 
+    break; // closes iterator, triggers return
+}
+
+
+
+function* fibonacci() { // a generator function
+    let [prev, curr] = [0, 1];
+    while (true) {
+        [prev, curr] = [curr, prev + curr];
+    yield curr;
+    }
+}
+for (let n of fibonacci()) {
+    console.log(n);
+    // truncate the sequence at 1000
+    if (n >= 1000) {
+        break;
+    }
+}
+
+
+
+var gen = (function *(){
+    yield 1;
+    yield 2;
+    yield 3;
+})();
+for (let o of gen) {
+    console.log(o);
+    break;  // Closes iterator
+}
+// The generator should not be re-used, the following does not make sense!
+for (let o of gen) {
+    console.log(o); // Never called.
+}
+
+
+
+var my_iterable = {
+    // The iterable protocol allows JavaScript objects to define or customize their iteration behavior, such as what values are looped over in a for..of construct.
+    // Some built-in types are built-in iterables with a default iteration behavior, such as Array or Map, while other types (such as Object) are not.
+    //In order to be iterable, an object must implement the @@iterator method, meaning that the object (or one of the objects up its prototype chain) must have a property with a @@iterator key
+    // which is available via constant Symbol.iterator
+    [Symbol.iterator]() {
+        return {
+            i: 0,
+            next() {
+                if (this.i < 3) {
+                    return { value: this.i++, done: false };
+                }
+                return { value: undefined, done: true };
+            }
+        };
+    }
+};
+for (var value of my_iterable) {
+    console.log(value);
+}
+// 0
+// 1
+// 2
+
+
+// Both for...in and for...of statements iterate over something. The main difference between them is in what they iterate over.
+// The for...in statement iterates over the enumerable properties of an object, in original insertion order.
+// The for...of statement iterates over data that iterable object defines to be iterated over.
+Object.prototype.objCustom = function() {}; // inheritance and the prototype chain.
+Array.prototype.arrCustom = function() {}; // inheritance and the prototype chain.
+let iterable11 = [3, 5, 7];
+    iterable11.foo = 'hello';
+for (let i in iterable11) {
+    console.log(i); // logs 0, 1, 2, "foo", "arrCustom", "objCustom"
+}
+for (let i in iterable11) {
+    if (iterable11.hasOwnProperty(i)) { // check, if the found enumerable property is object's own (not inherited)
+        console.log(i); // logs 0, 1, 2, "foo"
+    }
+}
+for (let i of iterable11) {
+  console.log(i); // logs 3, 5, 7
+}
+
+
+
+
+</script>
+
+
+
+
+

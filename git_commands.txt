@@ -1,6 +1,11 @@
 cd /c/gdg
 //change directory to c:\gdg\
 
+ls
+// list of files and folders
+dir
+// list of files and folders
+
 git init
 //initialize repository
 
