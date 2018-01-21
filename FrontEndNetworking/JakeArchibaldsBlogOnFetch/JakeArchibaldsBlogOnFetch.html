@@ -1,0 +1,631 @@
+<img />
+<script type="text/javascript">
+// That's so fetch!
+// Posted 24 March 2015 - and I've even included a meme
+// There's been some confusion around the new fetch API recently. Let's clear things up.
+
+// The first thing you'll notice about fetch is it's a massive improvement on XMLHttpRequest in terms of API design. Here's how to get some JSON using XHR:
+
+var xhr = new XMLHttpRequest();
+//xhr.open('GET', url);
+xhr.open('GET', "some.json");
+xhr.responseType = 'json';
+
+xhr.onload = function() {
+    console.log(xhr.response);
+};
+xhr.onerror = function() {
+    console.log("Booo");
+};
+
+xhr.send();
+
+// Now mop up that vomit and take a look at how fetch does the same thing:
+
+var url = "some.json";
+
+fetch(url)
+    .then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        console.log(data);
+    }).catch(function() {
+        console.log("Booo");
+    });
+
+// Mix in some ES6 arrow functions and it gets even more compact:
+
+fetch(url)
+    .then(r => r.json())
+    //.then(data => console.log(data))
+    .then(data => { console.log(1); console.log(data); console.log(2); })
+    .catch(e => console.log("Booo"))
+
+// And with ES7 async functions it can be structured like sync code, whilst still being async:
+
+// (async() => {
+//     try {
+//         var response = await fetch(url);
+//         var data = await response.json();
+//         console.log(data);
+//     }
+//     catch (e) {
+//         console.log("Booo")
+//     }
+// })();
+
+async function asyncCall(){
+    try {
+        var response = await fetch(url);
+        var data = await response.json();
+        console.log(3);
+        console.log(data);
+        console.log(4);
+    }
+    catch (e) {
+        console.log("Booo");
+    }
+}
+asyncCall();
+
+var test = "";
+(test => {console.log("some...")})();
+
+var test2 = "";
+(test2 => {
+    (async function (){
+            try {
+                console.log(5);
+                var response = await fetch(url);
+                var data = await response.json();
+                console.log(data);
+                console.log(6);
+            }
+            catch (e) {
+                console.log("Booo")
+            }
+    })();
+})();
+
+// Per farlo funzionare ho dovuto:
+// 1. Impostare come auto eseguita l'intera espressione con arrowfunction
+(async() => {
+    // 2. Impostare come auto eseguita anche la funzione async
+    (async function (){
+            try {
+                console.log(5);
+                var response = await fetch(url);
+                var data = await response.json();
+                console.log(data);
+                console.log(6);
+            }
+            catch (e) {
+                console.log("Booo")
+            }
+    })();
+})();
+
+// Unfortunately, not everyone was throwing "SHUT UP AND TAKE MY MONEY" memes at it. One particular high-profile JavaScript community member was unconvinced...
+
+// They thought we shouldn't be adding high level features to the platform, especially as we're in dire need of lower level primitives when it comes to requests and responses.
+
+// To that I say, well, actually, that's soooo fetch, and we are going to make fetch happen. Let's clear up the misconceptions…
+
+
+
+// Don't be fooled by the nice API
+// A nice, compact API can be a sign of "high level", and therefore restrictive. But that isn't the case here. XHR is so bad, a lower-level and more featureful API can be also simpler and easier to use.
+
+// XHR is now defined in terms of fetch (see the calls to fetch in XHR's .send()), meaning fetch is lower level than XHR.
+
+
+
+// Fetch isn't done yet
+// What exists in Chrome today doesn't cover the full spec, and the spec doesn't cover all of the planned features.
+// In some cases this is because they haven't been designed yet, in others it's because they're dependent on other in-progress specs. Basically, we're following this pattern:
+// https://jakearchibald.com/static/posts/thats-so-fetch/mvp.c81252635e14.png
+// Bit of a rant: it bothers me that as developers, we preach iterative development and release,
+// but when we're the customers of that approach the reaction is all too often "HOW DARE YOU PRESENT ME WITH SUCH INCOMPLETE IMPERFECTION".
+// The alternative would have been to sit on the feature for months (or years?) instead of getting large parts of it into developers' hands today.
+// Iterative release also means we've been able to get feedback from real-world usage, and that steers future iterations in terms of design and priority.
+// Anyway, let's take a look at what fetch can do that XHR cannot:
+
+
+// Request/Response primitives
+// XHR kinda smushes the request and response together, meaning they can't be used separately.
+// Fetch is different thanks to the Request and Response constructors. This is particularly useful within a ServiceWorker:
+
+// self.addEventListener('fetch', function(event) {
+//     if (event.request.url === new URL('/', location).href) {
+//         event.respondWith(
+//             new Response(
+//                 "<h1>Hello!</h1>", 
+//                 { headers: {'Content-Type': 'text/html' } }
+//             )
+//         )
+//     }
+// });
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js', {scope: '/'})
+    .then(function(reg) {
+        // registration worked
+        console.log('Registration succeeded. Scope is ' + reg.scope);
+    }).catch(function(error) {
+        // registration failed
+        console.log('Registration failed with ' + error);
+    });
+}
+fetch('not_existing.json')
+    .then(function(response){
+        return response.text();
+    })
+    .then(function(data){
+        console.log(data);
+    });
+
+// In the above, event.request is a Request. There's no response yet, and instead of letting the browser go to the network I respond with my own Response.
+// Alternatively, I could get the response from the network using fetch(event.request), or even get a response from the cache.
+
+// The Cache API is a store of Responses keyed against Requests, having separates allows you to add your own pairings.
+
+// This is in Chrome stable today from within a ServiceWorker. The fetch API is also available from pages in Chrome Beta.
+
+// Soon, request.context will be able to tell you the source of that request, so you can tell apart requests triggered by hyperlinks vs <img> etc.
+
+
+
+// 'no-cors' and opaque responses
+// If I request //google.com from this site using XHR or plain fetch it will fail. This is because it's a CORS request and the response doesn't have CORS headers.
+
+// However, with fetch, you can make a no-cors request:
+
+fetch('//google.com', { mode: 'no-cors' })
+    .then(function(response) {
+        console.log(response.type); // "opaque"
+    })
+    //.catch(e => console.log("Booo"));
+
+// This is similar to the request an <img> makes. Of course, you can't read the content of the response as it could contain private information, but it can be consumed by other APIs:
+
+// self.addEventListener('fetch', function(event) {
+//     event.respondWith(
+//         fetch('//www.google.co.uk/images/srpr/logo11w.png', {
+//             mode: 'no-cors'
+//         })
+//     )
+// })
+
+// The above is fine within a ServiceWorker, as long as the receiver is happy with a no-cors response. <img> is, <img crossorigin> isn't.
+
+// You can also store these responses in the Cache API for use later, which is great for CDN content such as scripts, CSS, and imagery, which often lack CORS headers.
+
+// For more on the origin of CORS, see Anne VK's article on same-origin policy.
+
+// This all works in Chrome stable today. In Chrome Canary, although you can use fetch() from a page, no-cors isn't enabled there yet (ticket).
+
+fetch('some.jpg', { mode: 'no-cors' })
+    .then(function(response) {
+        console.log("!!!");
+       return response.blob();
+    })
+	.then(function(imageBlob) {
+        console.log(imageBlob.size);
+        document.querySelector("img").src = URL.createObjectURL(imageBlob);
+    })
+    .catch(function(e){
+        console.log("!!!ERR");
+    });
+    
+
+
+// Streams
+// XHR lacks streaming. You can get access to .responseText while the request is in progress, but the whole response is still going to buffer into memory.
+
+// With fetch, you get access to the low-level body stream. Say I wanted to load a massive CSV and find the value in the cell after the one containing "Jake":
+
+fetch('/big-data.csv')
+    .then(function(response) {
+        var reader = response.body.getReader();
+        var partialCell = '';
+        var returnNextCell = false;
+        var returnCellAfter = "Jake";
+        var decoder = new TextDecoder();
+
+        function search() {
+            return reader.read()
+                .then(function(result) {
+                    partialCell += decoder.decode(result.value || new Uint8Array, {
+                        stream: !result.done
+                    });
+
+                    // Split what we have into CSV 'cells'
+                    var cellBoundry = /(?:,|\r\n)/;
+                    var completeCells = partialCell.split(cellBoundry);
+
+                    if (!result.done) {
+                        // Last cell is likely incomplete
+                        // Keep hold of it for next time
+                        partialCell = completeCells[completeCells.length - 1];
+                        // Remove it from our complete cells
+                        completeCells = completeCells.slice(0, -1);
+                    }
+
+                    for (var cell of completeCells) {
+                        cell = cell.trim();
+
+                        if (returnNextCell) {
+                            reader.cancel("No more reading needed.");
+                            return cell;
+                        }
+                        if (cell === returnCellAfter) {
+                            returnNextCell = true;
+                        }
+                    }
+
+                    if (result.done) {
+                        throw Error("Could not find value after " + returnCellAfter);
+                    }
+                    
+                    return search();
+                });
+        }
+
+        return search();
+    })
+    .then(function(result) {
+        console.log("Got the result! It's '" + result + "'");
+    })
+    .catch(function(err) {
+        console.log(err.message);
+    });
+
+// Here I'm reading through the CSV (yes, I know my regex is naive), but with only a chunk of content in memory at a given time. Once I find the value I'm looking for, I cancel the stream, closing the connection.
+
+// response.body is a ReadableStream as defined by the streams spec. Streaming was planned from the outset, but it's one of the bits we launched without as the spec was still in progress.
+
+// TextDecoder is part of the encoding spec. If the chunk it receives via .decode(input, {stream: true}) ends with a partial multi-byte character, it will return and flush everything but that partial.
+// The next call to decode appends onto the partial, hopefully forming a whole character.
+
+// This stuff is starting to land in Canary, here's a demo of the above, and here's a demo with a larger dataset (warning: running the demo may download many megabytes).
+
+// Streams are one of the things I'm really looking forward to having on the platform.
+// I want to be able to stream-parse some JSON, generate some HTML as a result, and stream that to the browser's parser.
+// JS-driven apps lack an easy way to get progressive-rendering from a single data source, streams can solve that.
+
+// Transform streams are coming soon, which would make the code above simpler. Ideally TextDecoder would be a transform stream, and another transform stream could chunk it into CSV rows. Something like:
+
+fetch('/big-data.csv')
+    .then(function(response) {
+        // // var csvStream = response.body
+        // //     .pipeThrough(new TextDecoder())
+        // //     //.pipeThrough(new CSVDecoder());
+        // var textDecoder = new TextDecoder("windows-1251");
+        // //var csvDecoder = new CSVDecoder();
+        
+        // var csvStream = response.body
+        //     .pipeThrough(textDecoder)
+        //     //.pipeThrough(csvDecoder);
+
+        // csvStream.read().then(function(result) {
+        //     // array of cell values for the first row
+        //     console.log("Transform streams are coming soon..."); 
+        //     console.log(result.value); 
+        // });
+
+        return response.body;
+    })
+
+
+// Transform streams also become really exciting within a ServiceWorker:
+
+// self.addEventListener('fetch', function(event) {
+//     event.respondWith(
+//         fetch('video.unknowncodec').then(function(response) {
+//             var h264Stream = response.body
+//             .pipeThrough(codecDecoder)
+//             .pipeThrough(h264Encoder);
+
+//             return new Response(h264Stream, {
+//                 headers: {'Content-type': 'video/h264'}
+//             });
+//         })
+//     );
+// });
+
+// In the above, I'm using transform streams to take a video the browser doesn't understand, decode it with JS, and encode it in a format the browser does understand.
+// It'd be amazing to see if the browser could do this in real time.
+
+
+
+// Stream readers & cloning
+// As I mentioned before, we initially shipped fetch without streams support so developers could get the other benefits sooner.
+// To make up for a lack of streams & to subsequently offer a simple way to get common data types, we added some readers:
+
+fetch(url)
+    .then(function(response) {
+        console.log("1111");
+        return response.json();
+        console.log("2222");
+    });
+
+// That, as you might expect, reads the whole stream as JSON. Here's the full list of readers:
+
+// .arrayBuffer()
+// .blob()
+// .formData()
+// .json()
+// .text()
+// They exist on Request objects as well as responses, so you can use them to read (for example) POST data within a ServiceWorker.
+
+// These are true stream readers, meaning they drain the stream:
+
+fetch(url)
+    .then(function(response) {
+        return response.json()
+            .catch(function() {
+                // This does not work:
+                return response.text();
+            })
+            .then(function(data){
+                console.log("3333:", data);
+            })
+            .catch(function() {
+                console.log("AAAA");
+            });
+    });
+
+// The call to .text() fails as the stream has already been read. You can work around this using .clone():
+
+fetch(url)
+    .then(function(response) {
+        return response.clone().json()
+            .catch(function() {
+                return response.text();
+            })
+            .then(function(data){
+                console.log("4444:", data);
+            })
+            .catch(function() {
+                console.log("BBBB");
+            });
+    });
+
+// .clone() opts you into buffering.
+// The clone gets read as JSON, but the original is still there and can be read in another format.
+// Of course, this means the raw response data needs to be kept around in memory until all copies are read or garbage collected.
+
+// Alternatively, you could look at the headers of the response:
+
+fetch(url)
+    .then(function(response) {
+        if (response.headers.get('Content-Type') === 'application/json') {
+            return response.json();
+        }
+        return response.text();
+    })
+    .then(function(data){
+        console.log("5555:", data);
+    })
+    .catch(function() {
+        console.log("CCCC");
+    });;
+
+// This is another feature fetch has over XHR, you can decide which format to read the body as after you've inspected the headers.
+
+
+
+// Other bits
+// There are more features that fetch has over XHR that I'm not going to cover in too much detail, they include:
+
+// Headers class
+// Fetch has a headers class which can be used to read/write headers, and has an ES6 iterator.
+
+// Cache control
+// The cache mode lets you specify the interaction with the cache. As in, should the cache be consulted? Should the response go into the cache if it's valid? Should the response only come from the cache?
+
+// The latter is a bit contentious as it can expose user history, so it may come with a CORS restriction before it lands in Chrome.
+
+// No-credential same-origin requests
+// XHR forces you to serve credentials with requests to the same origin, fetch doesn't. In fact, no-credentials is the default for all requests made by fetch, making it less magic than XHR.
+
+
+
+// What's missing?
+// Of course, there are some features XHR has that fetch doesn't have.
+
+// Request aborting
+// This is the big one. In Canary you can cancel the stream, but there's no way to abort a request before headers have arrived.
+
+// We're going to fix this using cancellable promises, which other specs will benefit from. Track the discussion of this over at GitHub.
+
+// Progress events
+// Progress events are a high level feature that won't arrive in fetch for now. You can create your own by looking at the Content-Length header and using a pass-through stream to monitor the bytes received.
+
+// This means you can explicitly handle responses without a Content-Length differently. And of course, even if Content-Length is there it can be a lie. With streams you can handle these lies however you want.
+
+// Synchronous requests
+// Noooope. The fetch spec documents them, but they won't be part of the API. Sync requests are awful.
+
+
+
+// Couldn't this have been built on top of XHR?
+// XHR was an ugly baby and time has not been kind to it. It's 16 now. In a few years it'll be old enough to drink, and it's enough of a pain in the arse when it's sober.
+
+// Sure, a lot of this stuff could have been hacked on top of XHR, but it would have been a hack.
+// Not only did fetch give us an opportunity to add lower-level features without the cruft of a badly designed API, it allowed us to create a better API for the simple things,
+// using modern JavaScript features like promises and iterators.
+
+// If you want to stop using XHR today, there's a fetch polyfill. This is built on top of XHR, so it can't do the stuff that XHR can't, but it does give you the benefits of a nicer API.
+
+// Let's make fetch happen!
+
+
+
+// Further reading
+// Intro to ServiceWorkers
+// ES6 iterators
+// ES7 async functions
+// Partial fetch polyfill - built on top of XHR
+// Thanks to Matt Gaunt, Mat Scales, Anne van Kesteren, Domenic Denicola, Mikeal Rogers, Ben Kelly, and Joshua Bell for disguising the fact I can't really spell, grammar, or indeed code.
+
+
+
+
+// // Copyright 2016 Google Inc.
+// //
+// // Licensed under the Apache License, Version 2.0 (the "License");
+// // you may not use this file except in compliance with the License.
+// // You may obtain a copy of the License at
+// //
+// //     http://www.apache.org/licenses/LICENSE-2.0
+// //
+// // Unless required by applicable law or agreed to in writing, software
+// // distributed under the License is distributed on an "AS IS" BASIS,
+// // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// // See the License for the specific language governing permissions and
+// // limitations under the License.
+
+// // Prollyfill for Stream support for TextEncoder and TextDecoder
+
+// (function() {
+//   'use strict';
+
+//   if (typeof self.TextEncoder !== 'function') {
+//     throw new ReferenceError('TextEncoder implementation required');
+//   }
+
+//   if (typeof self.TextDecoder !== 'function') {
+//     throw new ReferenceError('TextDecoder implementation required');
+//   }
+
+//   if ('readable' in self.TextEncoder.prototype &&
+//       'writable' in self.TextEncoder.prototype &&
+//       'readable' in self.TextDecoder.prototype &&
+//       'writable' in self.TextDecoder.prototype) {
+//     return;
+//   }
+
+//   const transform = Symbol('transform');
+
+//   function throwIfLocked(obj) {
+//     const ts = obj[transform];
+//     if (ts === undefined) {
+//       return;
+//     }
+
+//     if (ts.readable.locked) {
+//       throw new TypeError('readable is locked');
+//     }
+
+//     if (ts.writable.locked) {
+//       throw new TypeError('writable is locked');
+//     }
+//   }
+
+//   const originalEncode = self.TextEncoder.prototype.encode;
+//   const originalDecode = self.TextDecoder.prototype.decode;
+
+//   function encode(input = '') {
+//     throwIfLocked(this);
+//     return originalEncode.call(this, input);
+//   }
+
+//   self.TextEncoder.prototype.encode = encode;
+
+//   function decode(input = undefined, options = {}) {
+//     throwIfLocked(this);
+//     return originalDecode.call(this, input, options);
+//   }
+
+//   self.TextDecoder.prototype.decode = decode;
+
+//   function addReadableAndWritable(prototype, constructor) {
+//     function readable() {
+//       if (!this[transform]) {
+//         this[transform] = constructor(this);
+//       }
+//       return this[transform].readable;
+//     }
+
+//     function writable() {
+//       if (!this[transform]) {
+//         this[transform] = constructor(this);
+//       }
+//       return this[transform].writable;
+//     }
+
+//     Object.defineProperty(prototype, 'readable',
+//                           {
+//                             configurable: true,
+//                             enumerable: true,
+//                             get: readable
+//                           });
+
+//     Object.defineProperty(prototype, 'writable',
+//                           {
+//                             configurable: true,
+//                             enumerable: true,
+//                             get: writable
+//                           });
+//   }
+
+//   addReadableAndWritable(self.TextEncoder.prototype, encoder => {
+//     return new TransformStream(new TextEncodeTransformer(encoder));
+//   });
+
+//   addReadableAndWritable(self.TextDecoder.prototype, decoder => {
+//     return new TransformStream(new TextDecodeTransformer(decoder));
+//   });
+
+//   class TextEncodeTransformer {
+//     constructor(encoder) {
+//       this._encoder = encoder;
+//       this._carry = undefined;
+//     }
+
+//     transform(chunk, controller) {
+//       chunk = String(chunk);
+//       if (this._carry !== undefined) {
+//         chunk = this._carry + chunk;
+//         this._carry = undefined;
+//       }
+//       const terminalCodeUnit = chunk.charCodeAt(chunk.length - 1);
+//       if (terminalCodeUnit >= 0xD800 && terminalCodeUnit < 0xDC00) {
+//         this._carry = chunk.substring(chunk.length - 1);
+//         chunk = chunk.substring(0, chunk.length - 1);
+//       }
+//       controller.enqueue(originalEncode.call(this._encoder, chunk));
+//     }
+
+//     flush(controller) {
+//       if (this._carry !== undefined) {
+//         controller.enqueue(originalEncode.call(this._encoder, this._carry));
+//         this._carry = undefined;
+//       }
+//     }
+//   }
+
+//   class TextDecodeTransformer {
+//     constructor(decoder) {
+//       this._decoder = decoder;
+//     }
+
+//     transform(chunk, controller) {
+//       controller.enqueue(originalDecode.call(this._decoder, chunk,
+//                                              {stream: true}));
+//     }
+
+//     flush(controller) {
+//       // If {fatal: false} in options (the default), then the final call to
+//       // decode() can produce extra output (usually the unicode replacement
+//       // character 0xFFFD). When fatal is true, this call is just used for its
+//       // side-effect of throwing a TypeError exception if the input is
+//       // incomplete.
+//       var output = originalDecode.call(this._decoder);
+//       if (output !== '') {
+//         controller.enqueue(output);
+//       }
+//     }
+//   }
+// })();
+</script>

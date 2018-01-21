@@ -1,0 +1,10 @@
+From Node.js command prompt:
+
+TO USE NODE AS SERVER:
+1.
+(if not already...)
+$ npm install http-server -g
+2.
+$ cd c:\...\application_folder
+3.
+$ http-server
