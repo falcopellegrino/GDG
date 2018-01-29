@@ -190,7 +190,7 @@
             }
         });
     }
-    
+
     // Fetch the latest data.
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
@@ -299,8 +299,8 @@
    * discussion.
    */
   var initialWeatherForecast = {
-    key: '2459115',
-    label: 'New York, NY',
+    key: '721943',
+    label: 'Rome, Italy',
     created: '2016-07-22T01:00:00Z',
     channel: {
       astronomy: {
