@@ -1,6 +1,11 @@
+// importScripts('cache-polyfill-master/index.js');
+importScripts('serviceworker-cache-polyfill.js');
+
+
+
 self.addEventListener('install', function(event) {
     event.waitUntil(
-        caches.open('JakeArchibaldsBlogOnFetch13').then(function(cache) {
+        caches.open('JakeArchibaldsBlogOnFetch16').then(function(cache) {
             return cache.addAll(['/']);
         })
     );
@@ -29,5 +34,18 @@ self.addEventListener('fetch', function(event) {
         )
         //})
     }
+
+    if(event.request.url.indexOf("http://www.somedomain.it") > -1){
+        console.log(".url|" + event.request.url);
+        var resource = event.request.url.split("/")[event.request.url.split("/").length-1];
+        console.log("resource|" + resource);
+        event.respondWith(
+            // fetch('http://www.somedomain.it' + resource, {
+            fetch(resource, {
+                mode: 'no-cors'
+            })
+        )
+    }
     
 });
+
