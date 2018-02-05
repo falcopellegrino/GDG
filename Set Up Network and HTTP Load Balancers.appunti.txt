@@ -1,0 +1,179 @@
+Set Up Network and HTTP Load Balancers
+
+Network load balancer
+	L3 Network Load Balancer
+
+HTTP load balancer
+	L7 HTTP(s) Load Balancer
+
+??Google Compute Engine virtual machines
+
+??vim / emacs / nano
+
+??Cloud Shell
+
+gcloud
+	Note: gcloud is the powerful and unified command-line tool for Google Cloud Platform.
+	Full documentation is available from https://cloud.google.com/sdk/gcloud.
+	It comes pre-installed on CloudShell.
+	You will notice its support for tab-completion.
+
+??Instance Templates
+??Managed Instance Groups
+	
+??Nginx
+
+??target pool
+
+??health check
+
+
+--------------------------------------------------
+
+gcloud auth list
+	Credentialed Accounts
+		ACTIVE  ACCOUNT
+		*       google210065_student@qwiklabs.net
+		To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+gcloud config list project
+	[core]
+	project = qwiklabs-gcp-c810bbb410e355c1
+	Your active configuration is: [cloudshell-8475]
+
+gcloud config set project qwiklabs-gcp-c810bbb410e355c1
+	Updated property [core/project].
+
+gcloud config set compute/zone us-central1-a
+	Updated property [compute/zone].
+
+gcloud config set compute/region us-central1
+	Updated property [compute/region].
+
+cat << EOF > startup.sh
+#! /bin/bash
+apt-get update
+apt-get install -y nginx
+service nginx start
+sed -i -- 's/nginx/Google Cloud Platform - '"\$HOSTNAME"'/' /var/www/html/index.nginx-debian.html
+EOF
+
+gcloud compute instance-templates create nginx-template \
+		--metadata-from-file startup-script=startup.sh
+Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/global/instanceTemplates/nginx-template].
+	NAME            MACHINE_TYPE   PREEMPTIBLE  CREATION_TIMESTAMP
+	nginx-template  n1-standard-1               2018-02-04T02:46:19.072-08:00
+
+gcloud compute target-pools create nginx-pool
+	Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/regions/us-central1/targetPools/nginx-pool].
+	NAME        REGION       SESSION_AFFINITY  BACKUP  HEALTH_CHECKS
+	nginx-pool  us-central1  NONE
+
+gcloud compute instance-groups managed create nginx-group \
+		--base-instance-name nginx \
+		--size 2 \
+		--template nginx-template \
+		--target-pool nginx-pool
+	Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/zones/us-central1-a/instanceGroupManagers/nginx-group].
+	NAME         LOCATION       SCOPE  BASE_INSTANCE_NAME  SIZE  TARGET_SIZE  INSTANCE_TEMPLATE  AUTOSCALED
+	nginx-group  us-central1-a  zone   nginx               0     2            nginx-template     no
+	
+gcloud compute instances list
+	NAME        ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
+	nginx-x6z7  us-central1-a  n1-standard-1               10.128.0.3   35.224.197.248  RUNNING
+	nginx-z982  us-central1-a  n1-standard-1               10.128.0.2   35.226.245.238  RUNNING
+	
+gcloud compute firewall-rules create www-firewall --allow tcp:80
+	Creating firewall...\Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/global/firewalls/www-firewall].
+	Creating firewall...done.
+	NAME          NETWORK  DIRECTION  PRIORITY  ALLOW   DENY
+	www-firewall  default  INGRESS    1000      tcp:80
+
+http://35.226.245.238/
+
+gcloud compute forwarding-rules create nginx-lb \
+		--region us-central1 \
+		--ports=80 \
+		--target-pool nginx-pool
+	^[[A^[[A^[[ACreated [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/regions/us-central1/forwardingRules/nginx-lb].
+
+gcloud compute forwarding-rules list
+	NAME      REGION       IP_ADDRESS    IP_PROTOCOL  TARGET
+	nginx-lb  us-central1  35.194.49.25  TCP          us-central1/targetPools/nginx-pool
+
+http://35.194.49.25/
+
+gcloud compute http-health-checks create http-basic-check
+	Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/global/httpHealthChecks/http-basic-check].
+	NAME              HOST  PORT  REQUEST_PATH
+	http-basic-check        80    /
+	
+gcloud compute instance-groups managed set-named-ports nginx-group --named-ports http:80
+OR
+gcloud compute instance-groups managed 
+		set-named-ports nginx-group \
+		--named-ports http:80
+	Updated [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/zones/us-central1-a/instanceGroups/nginx-group].
+
+gcloud compute backend-services create nginx-backend --protocol HTTP --http-health-checks http-basic-check --global
+OR
+gcloud compute backend-services create nginx-backend \
+		--protocol HTTP --http-health-checks http-basic-check --global
+	Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/global/backendServices/nginx-backend].
+	NAME           BACKENDS  PROTOCOL
+	nginx-backend            HTTP
+
+gcloud compute backend-services add-backend nginx-backend --instance-group nginx-group --instance-group-zone us-central1-a --global  
+OR
+gcloud compute backend-services add-backend nginx-backend \
+		--instance-group nginx-group \
+		--instance-group-zone us-central1-a \
+		--global  
+	Updated [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/global/backendServices/nginx-backend].
+
+gcloud compute url-maps create web-map --default-service nginx-backend
+OR
+gcloud compute url-maps create web-map \
+		--default-service nginx-backend
+	Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/global/urlMaps/web-map].
+	NAME     DEFAULT_SERVICE
+	web-map  backendServices/nginx-backend
+		
+gcloud compute target-http-proxies create http-lb-proxy --url-map web-map
+OR
+gcloud compute target-http-proxies create http-lb-proxy \
+		--url-map web-map
+	Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/global/targetHttpProxies/http-lb-proxy].
+	NAME           URL_MAP
+	http-lb-proxy  web-map
+
+gcloud compute forwarding-rules create http-content-rule --global --target-http-proxy http-lb-proxy --ports 80
+OR
+gcloud compute forwarding-rules create http-content-rule \
+		--global \
+		--target-http-proxy http-lb-proxy \
+		--ports 80
+	Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-c810bbb410e355c1/global/forwardingRules/http-content-rule].
+
+gcloud compute forwarding-rules list
+	NAME               REGION       IP_ADDRESS     IP_PROTOCOL  TARGET
+	http-content-rule               35.190.36.216  TCP          http-lb-proxy
+	nginx-lb           us-central1  35.194.49.25   TCP          us-central1/targetPools/nginx-pool
+
+http://35.190.36.216/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
