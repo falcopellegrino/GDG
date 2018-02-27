@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Google Compute Engine
 Google Compute Engine offre macchine virtuali hostate negli innovativi data center di Google che permettono di accedere alla nostra rete in fibra private e globale.
 ll supporto dei flussi di lavoro e gli strumenti di Compute Engine consentono di scalare da singole istanze fino ad un cloud computing globale e basato con bilanciamento intelligente del carico di lavoro.
@@ -17,3 +18,7 @@ Password
 CEQY$!)w=[YRzs#
 
 
+=======
+??Google Compute Engine
+??RDP Connections
+>>>>>>> 04877d9185df06512fdec52d07efbbda345e262d
