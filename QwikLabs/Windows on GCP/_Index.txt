@@ -1,0 +1,9 @@
+	Compute Engine: Qwik Start - Windows
+	Deploy Microsoft SQL Server to Compute Engine
+Install and Use Cloud Tools for PowerShell
+	Build and Launch an ASP.NET Core App from Google Cloud Shell
+	Stackdriver: Qwik Start
+	Deploy Windows Server with ASP.NET Framework to Compute Engine
+	Deploy an ASP.NET Core App to App Engine
+	Deploy ASP.NET Core App to Kubernetes on Container Engine
+	Configuring and Deploying Windows SQL Server on GCP

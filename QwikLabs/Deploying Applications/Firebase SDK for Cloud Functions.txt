@@ -1,0 +1,342 @@
+Firebase SDK for Google Cloud Functions 
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform
+
+-----
+
+gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google217740_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+gcloud config list project
+	[core]
+	project = qwiklabs-gcp-4d4a598e80e96673
+	Your active configuration is: [cloudshell-12728]
+
+gcloud config set project qwiklabs-gcp-4d4a598e80e96673
+	Updated property [core/project].
+
+git clone https://github.com/firebase/friendlychat
+	Cloning into 'friendlychat'...
+	remote: Counting objects: 2855, done.
+	remote: Total 2855 (delta 0), reused 0 (delta 0), pack-reused 2855
+	Receiving objects: 100% (2855/2855), 1.41 MiB | 469.00 KiB/s, done.
+	Resolving deltas: 100% (1411/1411), done.
+
+cd friendlychat/cloud-functions-start
+
+firebase --version
+	3.17.4
+
+firebase login --no-localhost
+	? Allow Firebase to collect anonymous CLI usage and error reporting information?
+
+Yes
+	Visit this URL on any device to log in:
+	https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=190257291&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob
+
+	? Paste authorization code here: 
+
+4/AABkkxRLKRRllS0wcz0Y-yyOVkjFQVY21DwOBAC_faBZJ7dwQ2gbiJk
+	✔  Success! Logged in as google217740_student@qwiklabs.net
+
+firebase use --add
+	? Which project do you want to add? qwiklabs-gcp-4d4a598e80e96673
+	? What alias do you want to use for this project? (e.g. staging) 
+
+staging
+	Created alias staging for qwiklabs-gcp-4d4a598e80e96673.
+	Now using alias staging (qwiklabs-gcp-4d4a598e80e96673)
+
+firebase deploy --except functions
+	=== Deploying to 'qwiklabs-gcp-4d4a598e80e96673'...
+
+	i  deploying database, storage, hosting
+	i  database: checking rules syntax...
+	✔  database: rules syntax for database qwiklabs-gcp-4d4a598e80e96673 is valid
+	i  storage: checking storage.rules for compilation errors...
+	✔  storage: rules file storage.rules compiled successfully
+	i  storage: uploading rules storage.rules...
+	i  hosting: preparing ./ directory for upload...
+	✔  hosting: 12 files uploaded successfully
+	i  database: releasing rules...
+	✔  database: rules for database qwiklabs-gcp-4d4a598e80e96673 released successfully
+	✔  storage: released rules storage.rules to firebase.storage/qwiklabs-gcp-4d4a598e80e96673.appspot.com
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-4d4a598e80e96673/overview
+	Hosting URL: https://qwiklabs-gcp-4d4a598e80e96673.firebaseapp.com
+
+https://qwiklabs-gcp-4d4a598e80e96673.firebaseapp.com
+
+cd functions
+
+ls
+	index.js  package.json
+
+npm install
+	npm notice created a lockfile as package-lock.json. You should commit this file.
+	npm WARN friendlychat-codelab@ No repository field.
+	npm WARN friendlychat-codelab@ No license field.
+
+	added 98 packages in 8.795s
+
+cat index.js
+	/**
+	 * Copyright 2017 Google Inc. All Rights Reserved.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *      http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+
+	// TODO(DEVELOPER): Import the Cloud Functions for Firebase and the Firebase Admin modules here.
+
+	// TODO(DEVELOPER): Write the addWelcomeMessages Function here.
+
+	// TODO(DEVELOPER): Write the blurOffensiveImages Function here.
+
+	// TODO(DEVELOPER): Write the sendNotifications Function here.
+
+cd ..
+
+firebase deploy --only functions
+
+	=== Deploying to 'qwiklabs-gcp-4d4a598e80e96673'...
+
+	i  deploying functions
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+
+	Error: Error occurred while parsing your function triggers. Please ensure you have the latest firebase-functions SDK by running "npm i --save firebase-functions@latest" inside your functions folder.
+
+	Error: Firebase config variables are not available. Please use the latest version of the Firebase CLI to deploy this function.
+		at init (/home/google217740_student/friendlychat/cloud-functions-start/functions/node_modules/firebase-functions/lib/config.js:51:15)
+		at Object.config (/home/google217740_student/friendlychat/cloud-functions-start/functions/node_modules/firebase-functions/lib/config.js:29:9)
+		at Object.<anonymous> (/home/google217740_student/friendlychat/cloud-functions-start/functions/index.js:22:31)
+		at Module._compile (module.js:624:30)
+		at Object.Module._extensions..js (module.js:635:10)
+		at Module.load (module.js:545:32)
+		at tryModuleLoad (module.js:508:12)
+		at Function.Module._load (module.js:500:3)
+		at Module.require (module.js:568:17)
+		at require (internal/module.js:11:18)
+
+ERRORE
+NEI FILES INDEX E CONFIG (IN SOTTOCARTELLA) CON L'EDITOR VISUAL MOSTRA CHE MANCANO DEI PACCHETTI, CON MOUSE OVER TI PERMETTE DI SCARICARLI
+
+ANCORA ERRORE
+???PRIMA HA SOLO AGGIUNTO IN package.json?
+NAVITATO IN functions E RIDATO npm install
+
+ALLA FINE HO DOVUTO FARE NELLA DIRECTORY functions:
+npm i --save firebase-functions@latest  
+
+POI RISCENDI DI 1
+cd ..
+
+firebase deploy --only functions                                                                         
+	=== Deploying to 'qwiklabs-gcp-4d4a598e80e96673'...
+
+	i  deploying functions
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+	i  functions: packaged functions (8.74 KB) for uploading
+	✔  functions: functions folder uploaded successfully
+	i  functions: creating function addWelcomeMessages...
+	✔  functions[addWelcomeMessages]: Successful create operation.
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-4d4a598e80e96673/overview
+
+cd functions
+
+npm install --save @google-cloud/vision@0.12.0 @google-cloud/storage@1.5.1 child-process-promise@2.2.1
+	npm WARN deprecated node-uuid@1.4.8: Use uuid module instead
+
+	> grpc@1.9.0 install /home/google217740_student/friendlychat/cloud-functions-start/functions/node_modules/grpc
+	> node-pre-gyp install --fallback-to-build --library=static_library
+
+	[grpc] Success: "/home/google217740_student/friendlychat/cloud-functions-start/functions/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-glibc/grpc_node.node" is installed via remote
+
+	> protobufjs@6.8.4 postinstall /home/google217740_student/friendlychat/cloud-functions-start/functions/node_modules/protobufjs
+	> node scripts/postinstall
+
+	npm WARN firebase-functions@0.8.1 requires a peer of firebase-admin@~5.8.1 but none was installed.
+	npm WARN friendlychat-codelab@ No repository field.
+	npm WARN friendlychat-codelab@ No license field.
+
+	+ child-process-promise@2.2.1
+	+ @google-cloud/vision@0.12.0
+	+ @google-cloud/storage@1.5.1
+	added 333 packages in 19.157s
+
+cd ..
+
+firebase deploy --only functions
+	=== Deploying to 'qwiklabs-gcp-4d4a598e80e96673'...
+	i  deploying functions
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+	i  functions: packaged functions (29.85 KB) for uploading
+	✔  functions: functions folder uploaded successfully
+	i  functions: creating function blurOffensiveImages...
+	i  functions: updating function addWelcomeMessages...
+	✔  functions[addWelcomeMessages]: Successful update operation.
+	✔  functions[blurOffensiveImages]: Successful create operation.
+	✔  Deploy complete!
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-4d4a598e80e96673/overview
+
+https://qwiklabs-gcp-4d4a598e80e96673.firebaseapp.com
+
+firebase deploy --only functions
+	=== Deploying to 'qwiklabs-gcp-4d4a598e80e96673'...
+
+	i  deploying functions
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+	i  functions: packaged functions (30.53 KB) for uploading
+	✔  functions: functions folder uploaded successfully
+	i  functions: creating function sendNotifications...
+	i  functions: updating function addWelcomeMessages...
+	i  functions: updating function blurOffensiveImages...
+	✔  functions[sendNotifications]: Successful create operation.
+	✔  functions[blurOffensiveImages]: Successful update operation.
+	✔  functions[addWelcomeMessages]: Successful update operation.
+
+	✔  Deploy complete!
+
+Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-4d4a598e80e96673/overview
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

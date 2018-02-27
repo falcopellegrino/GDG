@@ -1,0 +1,431 @@
+ASP.NET Core is a new open-source and cross-platform framework for building modern cloud-based and internet-connected applications using the C# programming language.
+
+Kubernetes is an open source project which can run in many different environments,
+from laptops to high-availability multi-node clusters,
+from public clouds to on-premise deployments,
+from virtual machines to bare metal.
+
+???Docker
+
+Container Engine: a Google-hosted version of Kubernetes running on Compute Engine
+
+Minikube: running Kubernetes on your local machine, such as a development laptop.
+This offers a simple setup of a single node kubernetes cluster for development and testing purposes.
+
+pod
+A kubernetes pod is a group of containers, tied together for the purposes of administration and networking. It can contain a single container or multiple.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform.
+
+-----
+
+gcloud auth list
+	Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google214033_student@qwiklabs.net
+	To set the active account, run:
+	$ gcloud config set account `ACCOUNT`
+
+gcloud config list project
+	[core]
+	project = qwiklabs-gcp-530e7447c7e58dbc
+	Your active configuration is: [cloudshell-14270]
+
+sudo -s
+
+dotnet --info
+	.NET Command Line Tools (2.1.4)
+	Product Information:
+	Version:            2.1.4
+	Commit SHA-1 hash:  5e8add2190
+	Runtime Environment:
+	OS Name:     debian
+	OS Version:  9
+	OS Platform: Linux
+	RID:         linux-x64
+	Base Path:   /usr/share/dotnet/sdk/2.1.4/
+	Microsoft .NET Core Shared Framework Host
+	Version  : 2.0.5
+	Build    : fdf361624c1087ec874615382781754392e69118
+
+dotnet --version
+	2.1.4
+
+mkdir HelloWorldAspNetCore
+
+cd HelloWorldAspNetCore
+
+dotnet new mvc
+	Welcome to .NET Core!
+	---------------------
+	Learn more about .NET Core @ https://aka.ms/dotnet-docs. Use dotnet --help to see available commands or go to https://aka.ms/dotnet-cli-docs.
+	Telemetry
+	--------------
+	The .NET Core tools collect usage data in order to improve your experience. The data is anonymous and does not include command-line arguments. The data is collected by Microsoft and shared with 
+	the community.
+	You can opt out of telemetry by setting a DOTNET_CLI_TELEMETRY_OPTOUT environment variable to 1 using your favorite shell.
+	You can read more about .NET Core tools telemetry @ https://aka.ms/dotnet-cli-telemetry.
+	Getting ready...
+	Segmentation fault
+
+MANCAVA
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+dotnet new mvc
+	Welcome to .NET Core!
+	---------------------
+	Learn more about .NET Core @ https://aka.ms/dotnet-docs. Use dotnet --help to see available commands or go to https://aka.ms/dotnet-cli-docs.
+	Telemetry
+	--------------
+	The .NET Core tools collect usage data in order to improve your experience. The data is anonymous and does not include command-line arguments. The data is collected by Microsoft and shared with 
+	the community.
+	You can opt out of telemetry by setting a DOTNET_CLI_TELEMETRY_OPTOUT environment variable to 1 using your favorite shell.
+	You can read more about .NET Core tools telemetry @ https://aka.ms/dotnet-cli-telemetry.
+	Getting ready...
+	Segmentation fault
+	root@cs-6000-devshell-vm-826d91c8-dfb1-4430-b495-294aeed9ec3a:/home/google214033_student/HelloWorldAspNetCore# export DOTNET_CLI_TELEMETRY_OPTOUT=1
+	root@cs-6000-devshell-vm-826d91c8-dfb1-4430-b495-294aeed9ec3a:/home/google214033_student/HelloWorldAspNetCore# export DOTNET_CLI_TELEMETRY_OPTOUT=1
+	root@cs-6000-devshell-vm-826d91c8-dfb1-4430-b495-294aeed9ec3a:/home/google214033_student/HelloWorldAspNetCore# dotnet new mvc
+	The template "ASP.NET Core Web App (Model-View-Controller)" was created successfully.
+	This template contains technologies from parties other than Microsoft, see https://aka.ms/template-3pn for details.
+	Processing post-creation actions...
+	Running 'dotnet restore' on /home/google214033_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj...
+	Restoring packages for /home/google214033_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj...
+	Generating MSBuild file /home/google214033_student/HelloWorldAspNetCore/obj/HelloWorldAspNetCore.csproj.nuget.g.props.
+	Generating MSBuild file /home/google214033_student/HelloWorldAspNetCore/obj/HelloWorldAspNetCore.csproj.nuget.g.targets.
+	Restore completed in 14.72 sec for /home/google214033_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj.
+	Restoring packages for /home/google214033_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj...
+	Restore completed in 2.9 sec for /home/google214033_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj.
+	Restore succeeded.
+
+vi Program.cs
+
+i
+
+.UseStartup<Startup>()
+-->.UseUrls("http://*:8080") 
+.Build();
+
+ESC
+
+:wq
+
+dotnet run
+	warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+	No XML encryptor configured. Key {8fe66884-98ea-4dbc-aed9-aaba9748c581} may be persisted to storage in unencrypted form.
+	Hosting environment: Production
+	Content root path: /home/google214033_student/HelloWorldAspNetCore
+	Now listening on: http://[::]:8080
+	Application started. Press Ctrl+C to shut down.
+
+dotnet publish -c Release
+	Microsoft (R) Build Engine version 15.5.180.51428 for .NET Core
+	Copyright (C) Microsoft Corporation. All rights reserved.
+	Restore completed in 46.64 ms for /home/google214033_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj.
+	Restore completed in 22.72 ms for /home/google214033_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj.
+	HelloWorldAspNetCore -> /home/google214033_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/HelloWorldAspNetCore.dll
+	HelloWorldAspNetCore -> /home/google214033_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish/
+
+touch Dockerfile
+
+MANCAVA
+vi Dockerfile
+
+FROM gcr.io/google-appengine/aspnetcore:2.0
+ADD ./ /app                                                                                                                                                                                          
+ENV ASPNETCORE_URLS=http://*:${PORT}                                                                                                                                                                 
+WORKDIR /app                                                                                                                                                                                           
+ENTRYPOINT [ "dotnet", "HelloWorldAspNetCore.dll" ]
+
+docker build -t gcr.io/qwiklabs-gcp-a28b62f6da0da797/hello-dotnet:v1 .
+	Sending build context to Docker daemon  2.777MB
+	Step 1/5 : FROM gcr.io/google-appengine/aspnetcore:2.0
+	2.0: Pulling from google-appengine/aspnetcore
+	a21f4015913a: Pull complete
+	be94f306167d: Pull complete
+	21a01f3fd74f: Pull complete
+	Digest: sha256:e5e626b0e4fd7f850b4b24f7e627786e39df4514ebf2dbc936a62c525eb77502
+	Status: Downloaded newer image for gcr.io/google-appengine/aspnetcore:2.0
+	---> 050a433a1891
+	Step 2/5 : ADD ./ /app
+	---> b41fe15971ef
+	Removing intermediate container f816dad8a08e
+	Step 3/5 : ENV ASPNETCORE_URLS http://*:${PORT}
+	---> Running in 0e09b81491e1
+	---> 7ac52d6ee3c1
+	Removing intermediate container 0e09b81491e1
+	Step 4/5 : WORKDIR /app
+	---> 92e02b10e076
+	Removing intermediate container bd770196b46d
+	Step 5/5 : ENTRYPOINT dotnet HelloWorldAspNetCore.dll
+	---> Running in 99ee83915f96
+	---> cda37ddbcf63
+	Removing intermediate container 99ee83915f96
+	Successfully built cda37ddbcf63
+	Successfully tagged gcr.io/qwiklabs-gcp-530e7447c7e58dbc/hello-dotnet:v1
+
+docker run -d -p 8080:8080 gcr.io/qwiklabs-gcp-a28b62f6da0da797/hello-dotnet:v1
+	a3966fcee2544350a4c191c51194c325640df0d74d383e718fa200d9eac66b63
+
+docker ps
+	root@cs-6000-devshell-vm-ba7bc2a9-f713-47f3-8924-8c20fe8905f2:/home/google217246_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish# docker ps
+	CONTAINER ID        IMAGE                                                  COMMAND                  CREATED             STATUS              PORTS                    NAMES
+	dc30c3d0f8db        gcr.io/qwiklabs-gcp-a28b62f6da0da797/hello-dotnet:v1   "dotnet HelloWorld..."   33 seconds ago      Up 31 seconds       0.0.0.0:8080->8080/tcp   zealous_shaw
+
+docker stop dc30c3d0f8db
+	dc30c3d0f8db
+	
+gcloud auth login
+	You are running on a Google Compute Engine virtual machine.
+	It is recommended that you use service accounts for authentication.
+	You can run:
+	$ gcloud config set account `ACCOUNT`
+	to switch accounts if necessary.
+	Your credentials may be visible to others with access to this
+	virtual machine. Are you sure you want to authenticate with
+	your personal account?
+	Do you want to continue (Y/n)?  Y
+	Go to the following link in your browser:
+	https://accounts.google.com/o/oauth2/auth?redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&prompt=select_account&response_type=code&client_id=32555940559.apps.googleusercontent.com&scope=htt
+	ps%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fappengine.admin+https%3A%2F%2Fwww.googlea
+	pis.com%2Fauth%2Fcompute+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Faccounts.reauth&access_type=offline
+
+https://accounts.google.com/o/oauth2/auth?redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&prompt=select_account&response_type=code&client_id=32555940559.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fappengine.admin+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcompute+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Faccounts.reauth&access_type=offline
+	4/C-ueTqqAaSFZfxT8SxF2Vg8rAhtEkARarkwTA-Hxc6c
+
+4/C-ueTqqAaSFZfxT8SxF2Vg8rAhtEkARarkwTA-Hxc6c
+	WARNING: `gcloud auth login` no longer writes application default credentials.
+	If you need to use ADC, see:
+	gcloud auth application-default --help
+	You are now logged in as [google214033_student@qwiklabs.net].
+	Your current project is [None].  You can change this setting by running:
+	$ gcloud config set project PROJECT_ID
+
+gcloud config set project qwiklabs-gcp-a28b62f6da0da797
+	Updated property [core/project].
+
+gcloud docker -- push gcr.io/qwiklabs-gcp-a28b62f6da0da797/hello-dotnet:v1
+	The push refers to a repository [gcr.io/qwiklabs-gcp-530e7447c7e58dbc/hello-dotnet]
+	4d6987217107: Pushed
+	2ad957114694: Mounted from google-appengine/aspnetcore
+	2b416a1a2ba1: Mounted from google-appengine/aspnetcore
+	21df82f90a72: Mounted from google-appengine/aspnetcore
+	v1: digest: sha256:c2dff2c99d09c5c3bac91adec8bfa8e2f453989feb9d561e76e710583e7287ca size: 1164
+
+https://console.cloud.google.com/project/qwiklabs-gcp-a28b62f6da0da797/storage/browser/
+
+gcloud container clusters create hello-dotnet-cluster --num-nodes 2 --machine-type n1-standard-1 --zone europe-west1-b
+	WARNING: Starting in Kubernetes v1.10, new clusters will no longer get compute-rw and storage-ro scopes added to what is specified in --scopes (though the latter will remain included in the default --scopes). To use these scopes, add them explicitly to --scopes. To use the new behavior, set container/new_scopes_behavior property (gcloud config set container/new_scopes_behavior true).
+	Creating cluster hello-dotnet-cluster...done.
+	Created [https://container.googleapis.com/v1/projects/qwiklabs-gcp-a28b62f6da0da797/zones/europe-west1-b/clusters/hello-dotnet-cluster].
+	To inspect the contents of your cluster, go to: https://console.cloud.google.com/kubernetes/workload_/gcloud/europe-west1-b/hello-dotnet-cluster?project=qwiklabs-gcp-a28b62f6da0da797
+	kubeconfig entry generated for hello-dotnet-cluster.
+	NAME                  LOCATION        MASTER_VERSION  MASTER_IP       MACHINE_TYPE   NODE_VERSION  NUM_NODES  STATUS
+	hello-dotnet-cluster  europe-west1-b  1.7.12-gke.1    35.195.119.176  n1-standard-1  1.7.12-gke.1  2          RUNNING
+
+kubectl run hello-dotnet --image=gcr.io/qwiklabs-gcp-a28b62f6da0da797/hello-dotnet:v1 --port=8080
+	deployment "hello-dotnet" created
+
+kubectl get deployments
+	NAME           DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+	hello-dotnet   1         1         1            0           11s
+
+kubectl get pods
+	NAME                          READY     STATUS    RESTARTS   AGE
+	hello-dotnet-88988590-jtfjc   1/1       Running   0          46s
+
+kubectl get pods
+kubectl cluster-info
+kubectl config view
+kubectl get events
+kubectl logs <pod-name>
+
+kubectl cluster-info
+	Kubernetes master is running at https://35.195.33.16
+	GLBCDefaultBackend is running at https://35.195.33.16/api/v1/namespaces/kube-system/services/default-http-backend/proxy
+	Heapster is running at https://35.195.33.16/api/v1/namespaces/kube-system/services/heapster/proxy
+	KubeDNS is running at https://35.195.33.16/api/v1/namespaces/kube-system/services/kube-dns/proxy
+	kubernetes-dashboard is running at https://35.195.33.16/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy
+	To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+kubectl config view
+	Kubernetes master is running at https://35.195.33.16
+	GLBCDefaultBackend is running at https://35.195.33.16/api/v1/namespaces/kube-system/services/default-http-backend/proxy
+	Heapster is running at https://35.195.33.16/api/v1/namespaces/kube-system/services/heapster/proxy
+	KubeDNS is running at https://35.195.33.16/api/v1/namespaces/kube-system/services/kube-dns/proxy
+	kubernetes-dashboard is running at https://35.195.33.16/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy
+	To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+	root@cs-6000-devshell-vm-826d91c8-dfb1-4430-b495-294aeed9ec3a:/home/google214033_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish# kubectl config view
+	apiVersion: v1
+	clusters:
+	- cluster:
+		certificate-authority-data: REDACTED
+		server: https://35.195.33.16
+	  name: gke_qwiklabs-gcp-530e7447c7e58dbc_europe-west1-b_hello-dotnet-cluster
+	contexts:
+	- context:
+		cluster: gke_qwiklabs-gcp-530e7447c7e58dbc_europe-west1-b_hello-dotnet-cluster
+		user: gke_qwiklabs-gcp-530e7447c7e58dbc_europe-west1-b_hello-dotnet-cluster
+	  name: gke_qwiklabs-gcp-530e7447c7e58dbc_europe-west1-b_hello-dotnet-cluster
+	current-context: gke_qwiklabs-gcp-530e7447c7e58dbc_europe-west1-b_hello-dotnet-cluster
+	kind: Config
+	preferences: {}
+	users:
+	- name: gke_qwiklabs-gcp-530e7447c7e58dbc_europe-west1-b_hello-dotnet-cluster
+	  user:
+		auth-provider:
+		  config:
+			access-token: ya29.GltaBcgjA4rJILKQFVDxUOFnV0H0QbmzVs1c2YuqN5rc8z09MdyKbCm-S22vORX38OGR2eCxkOw4RO468Yjq2UH-hfjl53_lYO7v2hVDh8KY_5KMzENU-sYBT2VA
+			cmd-args: config config-helper --format=json
+			cmd-path: /google/google-cloud-sdk/bin/gcloud
+			expiry: 2018-02-07T20:11:28Z
+			expiry-key: '{.credential.token_expiry}'
+			token-key: '{.credential.access_token}'
+		  name: gcp
+
+kubectl get events
+	LAST SEEN   FIRST SEEN   COUNT     NAME                                                                   KIND         SUBOBJECT                       TYPE      REASON                    SOURCE                                                            MESSAGE
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3.1511214cf45736d3   Node                                         Normal    Starting                  kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3      Starting kubelet.
+	4m          4m           2         gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3.1511214cf639b5cc   Node                                         Normal    NodeHasSufficientDisk     kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3      Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3 status is now: NodeHasSufficientDisk
+	4m          4m           2         gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3.1511214cf63e18a5   Node                                         Normal    NodeHasSufficientMemory   kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3      Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3 status is now: NodeHasSufficientMemory
+	4m          4m           2         gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3.1511214cf6418a75   Node                                         Normal    NodeHasNoDiskPressure     kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3      Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3 status is now: NodeHasNoDiskPressure
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3.1511214cf72622cd   Node                                         Normal    NodeAllocatableEnforced   kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3      Updated Node Allocatable limit across pods
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3.1511214e0b8b649f   Node                                         Normal    RegisteredNode            controllermanager                                                 Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3 event: Registered Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3 in NodeController
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3.1511214f17fb4785   Node                                         Normal    Starting                  kube-proxy, gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3   Starting kube-proxy.
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3.15112151ba3a3b9b   Node                                         Normal    NodeReady                 kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3      Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-3fw3 status is now: NodeReady
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt.1511214d009c7cef   Node                                         Normal    Starting                  kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      Starting kubelet.
+	4m          4m           2         gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt.1511214d020da803   Node                                         Normal    NodeHasSufficientDisk     kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt status is now: NodeHasSufficientDisk
+	4m          4m           2         gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt.1511214d020e083a   Node                                         Normal    NodeHasSufficientMemory   kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt status is now: NodeHasSufficientMemory
+	4m          4m           2         gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt.1511214d020e4434   Node                                         Normal    NodeHasNoDiskPressure     kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt status is now: NodeHasNoDiskPressure
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt.1511214d02f23139   Node                                         Normal    NodeAllocatableEnforced   kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      Updated Node Allocatable limit across pods
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt.1511214e0b8c6f51   Node                                         Normal    RegisteredNode            controllermanager                                                 Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt event: Registered Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt inNodeController
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt.1511214f2133ba57   Node                                         Normal    Starting                  kube-proxy, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt   Starting kube-proxy.
+	4m          4m           1         gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt.15112151c69aa6b9   Node                                         Normal    NodeReady                 kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      Node gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt status is now: NodeReady
+	2m          2m           1         hello-dotnet-1721006066-sk4m3.151121662426902f                         Pod                                          Normal    Scheduled                 default-scheduler                                                 Successfully assigned hello-dotnet-1721006066-sk4m3 to gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt
+	2m          2m           1         hello-dotnet-1721006066-sk4m3.151121662df6913d                         Pod                                          Normal    SuccessfulMountVolume     kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      MountVolume.SetUp succeeded for volume "default-token-7hhwg"
+	2m          2m           1         hello-dotnet-1721006066-sk4m3.15112166424ad07f                         Pod          spec.containers{hello-dotnet}   Normal    Pulling                   kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      pulling image "gcr.io/qwiklabs-gcp-530e7447c7e58dbc/hello-dotnet:v1"
+	2m          2m           1         hello-dotnet-1721006066-sk4m3.1511216a581c79e1                         Pod          spec.containers{hello-dotnet}   Normal    Pulled                    kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      Successfully pulled image "gcr.io/qwiklabs-gcp-530e7447c7e58dbc/hello-dotnet:v1"
+	2m          2m           1         hello-dotnet-1721006066-sk4m3.1511216a5b41e922                         Pod          spec.containers{hello-dotnet}   Normal    Created                   kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      Created container
+	2m          2m           1         hello-dotnet-1721006066-sk4m3.1511216a62438232                         Pod          spec.containers{hello-dotnet}   Normal    Started                   kubelet, gke-hello-dotnet-cluster-default-pool-d68cb1f6-whlt      Started container
+	2m          2m           1         hello-dotnet-1721006066.15112166235fe626                               ReplicaSet                                   Normal    SuccessfulCreate          replicaset-controller                                             Created pod: hello-dotnet-1721006066-sk4m3
+	2m          2m           1         hello-dotnet.1511216622b645b8                                          Deployment                                   Normal    ScalingReplicaSet         deployment-controller                                             Scaled up replica set hello-dotnet-1721006066 to 1
+
+kubectl logs <pod-name>
+kubectl logs hello-dotnet-88988590-jtfjc
+	warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+	No XML encryptor configured. Key {50cbec8f-0087-4e22-8816-6f67a49e453b} may be persisted to storage in unencrypted form.
+	Hosting environment: Production
+	Content root path: /app
+	Now listening on: http://[::]:8080
+	Application started. Press Ctrl+C to shut down.
+
+kubectl expose deployment hello-dotnet --type="LoadBalancer" --port=8080
+	adBalancer" --port=8080
+	service "hello-dotnet" exposed
+
+kubectl get services
+NAME           TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)          AGE
+hello-dotnet   LoadBalancer   10.31.249.213   35.190.202.171   8080:31916/TCP   1m
+kubernetes     ClusterIP      10.31.240.1     <none>           443/TCP          5m
+
+http://35.190.202.171:8080
+
+kubectl scale deployment hello-dotnet --replicas=4
+	deployment "hello-dotnet" scaled
+
+kubectl get deployment
+	NAME           DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+	hello-dotnet   4         4         4            3           4m
+
+kubectl get pods
+	NAME                          READY     STATUS    RESTARTS   AGE
+	hello-dotnet-88988590-1fb5j   1/1       Running   0          27s
+	hello-dotnet-88988590-3kpwm   1/1       Running   0          27s
+	hello-dotnet-88988590-jtfjc   1/1       Running   0          4m
+	hello-dotnet-88988590-l48gk   1/1       Running   0          27s
+
+DEVI NAVIGARE ALLA ROOT DEL PROGETTO /home/google217246_student/HelloWorldAspNetCore/
+	
+dotnet publish -c Release
+	Microsoft (R) Build Engine version 15.5.180.51428 for .NET Core
+	Copyright (C) Microsoft Corporation. All rights reserved.
+	Restore completed in 43.02 ms for /home/google217246_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj.
+	Restore completed in 22.19 ms for /home/google217246_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj.
+	HelloWorldAspNetCore -> /home/google217246_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/HelloWorldAspNetCore.dll
+	HelloWorldAspNetCore -> /home/google217246_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish/
+
+docker build -t gcr.io/qwiklabs-gcp-a28b62f6da0da797/hello-dotnet:v2 .
+	Sending build context to Docker daemon  2.776MB
+	Step 1/5 : FROM gcr.io/google-appengine/aspnetcore:2.0
+	 ---> 050a433a1891
+	Step 2/5 : ADD ./ /app
+	 ---> Using cache
+	 ---> 3220a7ffb5e1
+	Step 3/5 : ENV ASPNETCORE_URLS http://*:${PORT}
+	 ---> Using cache
+	 ---> bf43496052e5
+	Step 4/5 : WORKDIR /app
+	 ---> Using cache
+	 ---> 681d5884bfd9
+	Step 5/5 : ENTRYPOINT dotnet HelloWorldAspNetCore.dll
+	 ---> Using cache
+	 ---> 5ee511d4228d
+	Successfully built 5ee511d4228d
+	Successfully tagged gcr.io/qwiklabs-gcp-a28b62f6da0da797/hello-dotnet:v2
+
+gcloud docker -- push gcr.io/qwiklabs-gcp-a28b62f6da0da797/hello-dotnet:v2
+	The push refers to a repository [gcr.io/qwiklabs-gcp-530e7447c7e58dbc/hello-dotnet]
+	4d6987217107: Layer already exists
+	2ad957114694: Layer already exists
+	2b416a1a2ba1: Layer already exists
+	21df82f90a72: Layer already exists
+	v2: digest: sha256:c2dff2c99d09c5c3bac91adec8bfa8e2f453989feb9d561e76e710583e7287ca size: 1164
+
+- image: gcr.io/PROJECT_ID/hello-dotnet:v1 # Update this line
+- image: gcr.io/PROJECT_ID/hello-dotnet:v2 # Update this line
+	
+ESC
+:wq
+
+kubectl get deployments
+	NAME           DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+	hello-dotnet   4         4         4            4           11m
+
+gcloud container clusters get-credentials hello-dotnet-cluster --zone europe-west1-b --project qwiklabs-gcp-a28b62f6da0da797
+	Fetching cluster endpoint and auth data.
+	kubeconfig entry generated for hello-dotnet-cluster.
+
+kubectl proxy --port 8081
+
+kubectl delete service,deployment hello-dotnet
+	service "hello-dotnet" deleted
+	deployment "hello-dotnet" deleted
+
+gcloud container clusters delete hello-dotnet-cluster --zone=europe-west1-b
+	The following clusters will be deleted.
+	 - [hello-dotnet-cluster] in [europe-west1-b]
+	Do you want to continue (Y/n)?  y
+	Deleting cluster hello-dotnet-cluster...done.
+	Deleted [https://container.googleapis.com/v1/projects/qwiklabs-gcp-a28b62f6da0da797/zones/europe-west1-b/clusters/hello-dotnet-cluster].
+
+gsutil ls
+	gs://artifacts.qwiklabs-gcp-a28b62f6da0da797.appspot.com/
+
+gsutil rm -r gs://artifacts.qwiklabs-gcp-a28b62f6da0da797.appspot.com/
+	Removing gs://artifacts.qwiklabs-gcp-a28b62f6da0da797.appspot.com/containers/images/sha256:21a01f3fd74fcbadb859d46973b9337793620282244373fe4dcbebaff7c146ec#1518282136910492...
+	Removing gs://artifacts.qwiklabs-gcp-a28b62f6da0da797.appspot.com/containers/images/sha256:30e9f3410a5df6bf60d9eab7ae9ea0c9c2ad20052f8a07a11dcb37ac5d799ce3#1518282137281852...
+	Removing gs://artifacts.qwiklabs-gcp-a28b62f6da0da797.appspot.com/containers/images/sha256:5ee511d4228dfcfb97d72bf14293fa3c400f6df6ad287e5d4487d2e8208ad3bb#1518282142683142...
+	Removing gs://artifacts.qwiklabs-gcp-a28b62f6da0da797.appspot.com/containers/images/sha256:a21f4015913a12cddd687f0c0d9d908d66097da0a4085f85370c1a875d1051a2#1518282136186268...
+	/ [4 objects]
+	==> NOTE: You are performing a sequence of gsutil operations that may
+	run significantly faster if you instead use gsutil -m -o ... Please
+	see the -m section under "gsutil help options" for further information
+	about when gsutil -m can be advantageous.
+	Removing gs://artifacts.qwiklabs-gcp-a28b62f6da0da797.appspot.com/containers/images/sha256:be94f306167d221ead4d7de4601d8ea39ba3abe0df47969e09dd64364ec296f3#1518282136604071...
+	/ [5 objects]
+	Operation completed over 5 objects.
+	Removing gs://artifacts.qwiklabs-gcp-a28b62f6da0da797.appspot.com/...
+
+
+
+

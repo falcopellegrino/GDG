@@ -1,0 +1,508 @@
+Google BigQuery is an enterprise data warehouse that solves this problem by enabling super-fast SQL queries using the processing power of Google's infrastructure.
+Simply move your data into BigQuery and let us handle the hard work.
+You can control access to both the project and your data based on your business needs, such as giving others the ability to view or query your data.
+You can access BigQuery by using a Web UI or a command-line tool, or by making calls to the BigQuery REST API using a variety of client libraries such as Java, .NET, or Python.
+There are also a variety of third-party tools that you can use to interact with BigQuery, such as visualizing the data or loading the data.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform.
+
+-----
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google218966_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-804cd79fa7d71c5e
+	Your active configuration is: [cloudshell-25566]
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ gcloud config set project qwiklabs-gcp-804cd79fa7d71c5e
+	Updated property [core/project].
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq show publicdata:samples.shakespeare
+	Welcome to BigQuery! This script will walk you through the
+	process of initializing your .bigqueryrc configuration file.
+	First, we need to set up your credentials if they do not
+	already exist.
+	Credential creation complete. Now we will select a default project.
+	List of projects:
+	  #             projectId                     friendlyName
+	 --- ------------------------------- -------------------------------
+	  1   qwiklabs-resources              Qwiklabs Resources
+	  2   qwiklabs-gcp-804cd79fa7d71c5e   qwiklabs-gcp-804cd79fa7d71c5e
+	Found multiple projects. Please enter a selection for
+	which should be the default, or leave blank to not
+	set a default.
+	Enter a selection (1 - 2): 2
+	BigQuery configuration complete! Type "bq" to get started.
+	Table publicdata:samples.shakespeare
+	   Last modified                  Schema                 Total Rows   Total Bytes   Expiration   Time Partitioning   Labels   kmsKeyName
+	 ----------------- ------------------------------------ ------------ ------------- ------------ ------------------- -------- ------------
+	  26 Aug 23:43:49   |- word: string (required)           164656       6432064
+						|- word_count: integer (required)
+						|- corpus: string (required)
+						|- corpus_date: integer (required)
+
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq help query
+	Python script for interacting with BigQuery.
+
+
+	USAGE: bq.py [--global_flags] <command> [--command_flags] [args]
+
+
+	query      Execute a query.
+
+			   Query should be specifed on command line, or passed on stdin.
+
+			   Examples:
+			   bq query 'select count(*) from publicdata:samples.shakespeare'
+			   echo 'select count(*) from publicdata:samples.shakespeare' | bq query
+
+			   Usage:
+			   query [<sql_query>]
+
+			   Flags for query:
+
+	/google/google-cloud-sdk/platform/bq/bq.py:
+	  --[no]allow_large_results: Enables larger destination table sizes for legacy SQL queries.
+	  --[no]append_table: When a destination table is specified, whether or not to append.
+		(default: 'false')
+	  --[no]batch: Whether to run the query in batch mode.
+		(default: 'false')
+	  --destination_kms_key: Cloud KMS key for encryption of the destination table data.
+	  --destination_schema: Schema for the destination table. Either a filename or a comma-separated list of fields in the form name[:type].
+		(default: '')
+	  --destination_table: Name of destination table for query results.
+		(default: '')
+	  --[no]dry_run: Whether the query should be validated without executing.
+	  --external_table_definition: Specifies a table name and either an inline table definition or a path to a file containing a JSON table definition to use in the query. The format is
+		"table_name::path_to_file_with_json_def" or "table_name::schema@format=uri".For example, "--external_table_definition=Example::/tmp/example_table_def.txt" will define a table named "Example"
+		using the URIs and schema encoded in example_table_def.txt.;
+		repeat this option to specify a list of values
+	  --[no]flatten_results: Whether to flatten nested and repeated fields in the result schema for legacy SQL queries. If not set, the default behavior is to flatten.
+	  --label: A label to set on a query job. The format is "key:value";
+		repeat this option to specify a list of values
+	  -n,--max_rows: How many rows to return in the result.
+		(default: '100')
+		(an integer)
+	  --maximum_billing_tier: The upper limit of billing tier for the query.
+		(an integer)
+	  --maximum_bytes_billed: The upper limit of bytes billed for the query.
+		(an integer)
+	  --min_completion_ratio: [Experimental] The minimum fraction of data that must be scanned before a query returns. If not set, the default server value (1.0) will be used.
+		(a number in the range [0, 1.0])
+	  --parameter: Either a file containing a JSON list of query parameters, or a query parameter in the form "name:type:value". An empty name produces a positional parameter. The type may be
+		ommitted to assume STRING: name::value or ::value. The value "NULL" produces a null value.;
+		repeat this option to specify a list of values
+	  --[no]replace: If true, erase existing contents before loading new data.
+		(default: 'false')
+	  --[no]require_cache: Whether to only run the query if it is already cached.
+	  --[no]rpc: If true, use rpc-style query API instead of jobs.insert().
+		(default: 'false')
+	  --schema_update_option: Can be specified when append to a table, or replace a table partition. When specified, the schema of the destination table will be updated with the schema of the new
+		data. One or more of the following options can be specified:
+		ALLOW_FIELD_ADDITION: allow new fields to be added
+		ALLOW_FIELD_RELAXATION: allow relaxing required fields to nullable;
+		repeat this option to specify a list of values
+	  -s,--start_row: First row to return in the result.
+		(default: '0')
+		(an integer)
+	  --time_partitioning_expiration: Enables time based partitioning on the table and set the number of seconds for which to keep the storage for a partition. The storage will have an expiration
+		time of its creation time plus this value. A negative number means no expiration.
+		(an integer)
+	  --time_partitioning_field: Enables time based partitioning on the table and the table will be partitioned based on the value of this field. If time based partitioning is enabled without this
+		value, the table will be partitioned based on the loading time.
+	  --time_partitioning_type: Enables time based partitioning on the table and set the type. The only type accepted is DAY, which will generate one partition per day.
+	  --udf_resource: The URI or local filesystem path of a code file to load and evaluate immediately as a User-Defined Function resource.;
+		repeat this option to specify a list of values
+	  --[no]use_cache: Whether to use the query cache to avoid rerunning cached queries.
+	  --[no]use_legacy_sql: Whether to use Legacy SQL for the query. If not set, the default value is true.
+
+	gflags:
+	  --flagfile: Insert flag definitions from the given file into the command line.
+		(default: '')
+	  --undefok: comma-separated list of flag names that it is okay to specify on the command line even if the program does not define a flag with that name. IMPORTANT: flags in this list that have
+		arguments MUST use the --flag=value format.
+		(default: '')
+
+
+	Run 'bq.py --help' to get help for global flags.
+	Run 'bq.py help' to see the list of available commands.
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq query "SELECT word, corpus, COUNT(word) FROM publicdata:samples.shakespeare WHERE word CONTAINS 'huzzah' GROUP BY word, corpus"
+	Waiting on bqjob_r14cebe2696867338_000001618b4e934f_1 ... (1s) Current status: DONE 
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq query "SELECT word, corpus, COUNT(word) FROM publicdata:samples.shakespeare WHERE word CONTAINS 'raisin' GROUP BY word, corpus"
+	Waiting on bqjob_r397bd784beac8a56_000001618b4f09a5_1 ... (0s) Current status: DONE   
+	+---------------+----------------------+-----+
+	|     word      |        corpus        | f0_ |
+	+---------------+----------------------+-----+
+	| dispraisingly | othello              |   1 |
+	| praising      | sonnets              |   1 |
+	| Praising      | sonnets              |   1 |
+	| raising       | tempest              |   1 |
+	| dispraising   | cymbeline            |   1 |
+	| dispraising   | 1kinghenryiv         |   1 |
+	| raising       | coriolanus           |   1 |
+	| Praising      | asyoulikeit          |   1 |
+	| raisins       | winterstale          |   1 |
+	| raising       | 1kinghenryiv         |   1 |
+	| dispraising   | 1kinghenryiv         |   1 |
+	| praising      | juliuscaesar         |   1 |
+	| raising       | comedyoferrors       |   1 |
+	| praising      | merchantofvenice     |   1 |
+	| praising      | antonyandcleopatra   |   1 |
+	| praising      | troilusandcressida   |   1 |
+	| praising      | muchadoaboutnothing  |   1 |
+	| Praising      | muchadoaboutnothing  |   1 |
+	| Praising      | allswellthatendswell |   1 |
+	| raising       | allswellthatendswell |   1 |
+	| praising      | twogentlemenofverona |   1 |
+	+---------------+----------------------+-----+
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq ls
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq ls publicdata:
+	  datasetId
+	 -----------
+	  samples
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq mk babynames
+	Dataset 'qwiklabs-gcp-804cd79fa7d71c5e:babynames' successfully created.
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq ls
+	  datasetId
+	 -----------
+	  babynames
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ wget http://www.ssa.gov/OACT/babynames/names.zip
+	--2018-02-12 19:41:07--  http://www.ssa.gov/OACT/babynames/names.zip
+	Resolving www.ssa.gov (www.ssa.gov)... 137.200.4.16, 2001:1930:d07::aaaa
+	Connecting to www.ssa.gov (www.ssa.gov)|137.200.4.16|:80... connected.
+	HTTP request sent, awaiting response... 302 Found
+	Location: https://www.ssa.gov/OACT/babynames/names.zip [following]
+	--2018-02-12 19:41:08--  https://www.ssa.gov/OACT/babynames/names.zip
+	Connecting to www.ssa.gov (www.ssa.gov)|137.200.4.16|:443... connected.
+	HTTP request sent, awaiting response... 200 OK
+	Length: 8207194 (7.8M) [application/zip]
+	Saving to: ‘names.zip’
+
+	names.zip                                        100%[========================================================================================================>]   7.83M   695KB/s    in 12s
+
+	2018-02-12 19:41:20 (678 KB/s) - ‘names.zip’ saved [8207194/8207194]
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ ls
+	names.zip  README-cloudshell.txt
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ unzip names.zip
+	Archive:  names.zip
+	  inflating: yob1884.txt
+	  inflating: yob1885.txt
+	  inflating: yob1886.txt
+	  inflating: yob1887.txt
+	  inflating: yob1888.txt
+	  inflating: yob1889.txt
+	  inflating: yob1890.txt
+	  inflating: yob1891.txt
+	  inflating: yob1892.txt
+	  inflating: yob1893.txt
+	  inflating: yob1894.txt
+	  inflating: yob1895.txt
+	  inflating: yob1896.txt
+	  inflating: yob1897.txt
+	  inflating: yob1898.txt
+	  inflating: yob1899.txt
+	  inflating: yob1900.txt
+	  inflating: yob1901.txt
+	  inflating: yob1902.txt
+	  inflating: yob1903.txt
+	  inflating: yob1904.txt
+	  inflating: yob1905.txt
+	  inflating: yob1906.txt
+	  inflating: yob1907.txt
+	  inflating: yob1908.txt
+	  inflating: yob1909.txt
+	  inflating: yob1910.txt
+	  inflating: yob1911.txt
+	  inflating: yob1912.txt
+	  inflating: yob1913.txt
+	  inflating: yob1914.txt
+	  inflating: yob1915.txt
+	  inflating: yob1916.txt
+	  inflating: yob1917.txt
+	  inflating: yob1918.txt
+	  inflating: yob1919.txt
+	  inflating: yob1920.txt
+	  inflating: yob1921.txt
+	  inflating: yob1922.txt
+	  inflating: yob1923.txt
+	  inflating: yob1924.txt
+	  inflating: yob1925.txt
+	  inflating: yob1926.txt
+	  inflating: yob1927.txt
+	  inflating: yob1928.txt
+	  inflating: yob1929.txt
+	  inflating: yob1930.txt
+	  inflating: yob1931.txt
+	  inflating: yob1932.txt
+	  inflating: yob1933.txt
+	  inflating: yob1934.txt
+	  inflating: yob1935.txt
+	  inflating: yob1936.txt
+	  inflating: yob1937.txt
+	  inflating: yob1938.txt
+	  inflating: yob1939.txt
+	  inflating: yob1940.txt
+	  inflating: yob1941.txt
+	  inflating: yob1942.txt
+	  inflating: yob1943.txt
+	  inflating: yob1944.txt
+	  inflating: yob1945.txt
+	  inflating: yob1946.txt
+	  inflating: yob1947.txt
+	  inflating: yob1948.txt
+	  inflating: yob1949.txt
+	  inflating: yob1950.txt
+	  inflating: yob1951.txt
+	  inflating: yob1952.txt
+	  inflating: yob1953.txt
+	  inflating: yob1954.txt
+	  inflating: yob1955.txt
+	  inflating: yob1956.txt
+	  inflating: yob1957.txt
+	  inflating: yob1958.txt
+	  inflating: yob1959.txt
+	  inflating: yob1960.txt
+	  inflating: yob1961.txt
+	  inflating: yob1962.txt
+	  inflating: yob1963.txt
+	  inflating: yob1964.txt
+	  inflating: yob1965.txt
+	  inflating: yob1966.txt
+	  inflating: yob1967.txt
+	  inflating: yob1968.txt
+	  inflating: yob1969.txt
+	  inflating: yob1970.txt
+	  inflating: yob1971.txt
+	  inflating: yob1972.txt
+	  inflating: yob1973.txt
+	  inflating: yob1974.txt
+	  inflating: yob1975.txt
+	  inflating: yob1976.txt
+	  inflating: yob1977.txt
+	  inflating: yob1978.txt
+	  inflating: yob1979.txt
+	  inflating: yob1980.txt
+	  inflating: yob1981.txt
+	  inflating: yob1982.txt
+	  inflating: yob1983.txt
+	  inflating: yob1984.txt
+	  inflating: yob1985.txt
+	  inflating: yob1986.txt
+	  inflating: yob1987.txt
+	  inflating: yob1988.txt
+	  inflating: yob1989.txt
+	  inflating: yob1990.txt
+	  inflating: yob1991.txt
+	  inflating: yob1992.txt
+	  inflating: yob1993.txt
+	  inflating: yob1994.txt
+	  inflating: yob1995.txt
+	  inflating: yob1996.txt
+	  inflating: yob1997.txt
+	  inflating: yob1998.txt
+	  inflating: yob1999.txt
+	  inflating: yob2000.txt
+	  inflating: yob2001.txt
+	  inflating: yob2002.txt
+	  inflating: yob2003.txt
+	  inflating: yob2004.txt
+	  inflating: yob2005.txt
+	  inflating: yob2006.txt
+	  inflating: yob2007.txt
+	  inflating: yob2008.txt
+	  inflating: yob2009.txt
+	  inflating: yob2010.txt
+	  inflating: yob2011.txt
+	  inflating: yob2012.txt
+	  inflating: yob2013.txt
+	  inflating: yob2014.txt
+	  inflating: yob2015.txt
+	  inflating: yob2016.txt
+	  inflating: yob1880.txt
+	  inflating: yob1881.txt
+	  inflating: yob1882.txt
+	  inflating: yob1883.txt
+	  inflating: NationalReadMe.pdf
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ ls
+	names.zip              yob1887.txt  yob1897.txt  yob1907.txt  yob1917.txt  yob1927.txt  yob1937.txt  yob1947.txt  yob1957.txt  yob1967.txt  yob1977.txt  yob1987.txt  yob1997.txt  yob2007.txt
+	NationalReadMe.pdf     yob1888.txt  yob1898.txt  yob1908.txt  yob1918.txt  yob1928.txt  yob1938.txt  yob1948.txt  yob1958.txt  yob1968.txt  yob1978.txt  yob1988.txt  yob1998.txt  yob2008.txt
+	README-cloudshell.txt  yob1889.txt  yob1899.txt  yob1909.txt  yob1919.txt  yob1929.txt  yob1939.txt  yob1949.txt  yob1959.txt  yob1969.txt  yob1979.txt  yob1989.txt  yob1999.txt  yob2009.txt
+	yob1880.txt            yob1890.txt  yob1900.txt  yob1910.txt  yob1920.txt  yob1930.txt  yob1940.txt  yob1950.txt  yob1960.txt  yob1970.txt  yob1980.txt  yob1990.txt  yob2000.txt  yob2010.txt
+	yob1881.txt            yob1891.txt  yob1901.txt  yob1911.txt  yob1921.txt  yob1931.txt  yob1941.txt  yob1951.txt  yob1961.txt  yob1971.txt  yob1981.txt  yob1991.txt  yob2001.txt  yob2011.txt
+	yob1882.txt            yob1892.txt  yob1902.txt  yob1912.txt  yob1922.txt  yob1932.txt  yob1942.txt  yob1952.txt  yob1962.txt  yob1972.txt  yob1982.txt  yob1992.txt  yob2002.txt  yob2012.txt
+	yob1883.txt            yob1893.txt  yob1903.txt  yob1913.txt  yob1923.txt  yob1933.txt  yob1943.txt  yob1953.txt  yob1963.txt  yob1973.txt  yob1983.txt  yob1993.txt  yob2003.txt  yob2013.txt
+	yob1884.txt            yob1894.txt  yob1904.txt  yob1914.txt  yob1924.txt  yob1934.txt  yob1944.txt  yob1954.txt  yob1964.txt  yob1974.txt  yob1984.txt  yob1994.txt  yob2004.txt  yob2014.txt
+	yob1885.txt            yob1895.txt  yob1905.txt  yob1915.txt  yob1925.txt  yob1935.txt  yob1945.txt  yob1955.txt  yob1965.txt  yob1975.txt  yob1985.txt  yob1995.txt  yob2005.txt  yob2015.txt
+	yob1886.txt            yob1896.txt  yob1906.txt  yob1916.txt  yob1926.txt  yob1936.txt  yob1946.txt  yob1956.txt  yob1966.txt  yob1976.txt  yob1986.txt  yob1996.txt  yob2006.txt  yob2016.txt
+
+-->
+datasetID: babynames
+tableID: names2010
+source: yob2010.txt
+schema: name:string,gender:string,count:integer
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq load babynames.names2010 yob2010.txt name:string,gender:string,count:integer
+	Upload complete.
+	Waiting on bqjob_r5b15118a05b4a0f1_000001618b54eb68_1 ... (4s) Current status: DONE  
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq ls babynames
+	   tableId    Type    Labels   Time Partitioning
+	 ----------- ------- -------- -------------------
+	  names2010   TABLE
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq show babynames.names2010
+	Table qwiklabs-gcp-804cd79fa7d71c5e:babynames.names2010
+	   Last modified         Schema         Total Rows   Total Bytes   Expiration   Time Partitioning   Labels   kmsKeyName
+	 ----------------- ------------------- ------------ ------------- ------------ ------------------- -------- ------------
+	  12 Feb 19:44:23   |- name: string     34063        654290
+						|- gender: string
+						|- count: integer
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq query "SELECT name,count FROM babynames.names2010 WHERE gender = 'F' ORDER BY count DESC LIMIT 5"
+	Waiting on bqjob_r43a5379841be46fa_000001618b568b1b_1 ... (0s) Current status: DONE
+	+----------+-------+
+	|   name   | count |
+	+----------+-------+
+	| Isabella | 22898 |
+	| Sophia   | 20634 |
+	| Emma     | 17333 |
+	| Olivia   | 17019 |
+	| Ava      | 15424 |
+	+----------+-------+
+
+google218966_student@qwiklabs-gcp-804cd79fa7d71c5e:~$ bq query "SELECT name,count FROM babynames.names2010 WHERE gender = 'M' ORDER BY count ASC LIMIT 5"
+	Waiting on bqjob_r319e730a936dc011_000001618b5728d5_1 ... (0s) Current status: DONE   
+	+---------+-------+
+	|  name   | count |
+	+---------+-------+
+	| Coven   |     5 |
+	| Aivan   |     5 |
+	| Brahim  |     5 |
+	| Deantae |     5 |
+	| Coletin |     5 |
+	+---------+-------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

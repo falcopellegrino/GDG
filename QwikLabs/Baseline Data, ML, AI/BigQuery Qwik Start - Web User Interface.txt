@@ -1,0 +1,217 @@
+
+
+-----
+
+google218041_student@qwiklabs-gcp-c2540edfb20ec091:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google218041_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+	
+google218041_student@qwiklabs-gcp-c2540edfb20ec091:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-c2540edfb20ec091
+	Your active configuration is: [cloudshell-1406]
+
+google218041_student@qwiklabs-gcp-c2540edfb20ec091:~$ gcloud config set project qwiklabs-gcp-c2540edfb20ec091
+	Updated property [core/project].
+
+#standardSQL
+SELECT
+ weight_pounds, state, year, gestation_weeks
+FROM
+ `bigquery-public-data.samples.natality`
+ORDER BY weight_pounds DESC LIMIT 10;
+
+google218041_student@qwiklabs-gcp-c2540edfb20ec091:~$ wget http://www.ssa.gov/OACT/babynames/names.zip
+	--2018-02-11 22:38:46--  http://www.ssa.gov/OACT/babynames/names.zip
+	Resolving www.ssa.gov (www.ssa.gov)... 137.200.39.19, 2001:1930:e03::aaaa
+	Connecting to www.ssa.gov (www.ssa.gov)|137.200.39.19|:80... connected.
+	HTTP request sent, awaiting response... 302 Found
+	Location: https://www.ssa.gov/OACT/babynames/names.zip [following]
+	--2018-02-11 22:38:46--  https://www.ssa.gov/OACT/babynames/names.zip
+	Connecting to www.ssa.gov (www.ssa.gov)|137.200.39.19|:443... connected.
+	HTTP request sent, awaiting response... 200 OK
+	Length: 8207194 (7.8M) [application/zip]
+	Saving to: ‘names.zip’
+
+	names.zip                                        100%[========================================================================================================>]   7.83M   740KB/s    in 11s
+
+	2018-02-11 22:38:57 (731 KB/s) - ‘names.zip’ saved [8207194/8207194]
+
+unzip names.zio
+	...
+
+fp77-bucket
+
+gsutil cp yob2014.txt gs://fp77-bucket
+
+google218041_student@qwiklabs-gcp-c2540edfb20ec091:~$ gsutil cp yob2014.txt gs://fp77-bucket
+	Copying file://yob2014.txt [Content-Type=text/plain]...
+	- [1 files][417.6 KiB/417.6 KiB]
+	Operation completed over 1 objects/417.6 KiB.
+
+#standardSQL
+SELECT
+ name, count
+FROM
+ `babynames.names_2014`
+WHERE
+ gender = 'M'
+ORDER BY count DESC LIMIT 5;
+
+#standardSQL
+UPDATE
+`babynames.names_2014`
+SET
+ name = 'test'
+WHERE
+ gender = 'M'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

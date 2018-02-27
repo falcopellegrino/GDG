@@ -1,0 +1,99 @@
+Cloud Spanner: Qwik Start
+
+Cloud Spanner is a fully managed, mission-critical, relational database service that offers transactional consistency at global scale, schemas, SQL (ANSI 2011 with extensions),
+and automatic, synchronous replication for high availability.
+
+Cloud Spanner offers:
+ - Strong consistency, including strongly consistent secondary indexes.
+ - SQL support, with ALTER statements for schema changes.
+ - Managed instances with high availability through transparent, synchronous, built-in data replication.
+ - Cloud Spanner offers regional and multi-region instance configurations.
+
+What it's good for
+Cloud Spanner is ideal for relational, structured, and semi-structured data that requires high availability, strong consistency, and transactional reads and writes.
+
+Other storage options
+Here are some common scenarios where you should probably consider an alternative to Cloud Spanner:
+ - If you do not want a strongly consistent and horizontally scaling relational database.
+	Consider other storage offerings listed at Storage Options in Google Cloud Platform and Data Lifecycle on Google Cloud Platform.
+ - If you need an open source database.
+
+-----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

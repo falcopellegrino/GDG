@@ -1,0 +1,120 @@
+Google Cloud Dataprep is an intelligent data service for visually exploring, cleaning, and preparing data for analysis.
+Cloud Dataprep is serverless and works at any scale.
+There is no infrastructure to deploy or manage.
+Easy data preparation with clicks and no code!
+
+-----
+
+bucket-qwiklabs-gcp-213501c7a37f7e03
+
+rename col: column24 to: 'Candidate_Name'
+rename col: column2 to: 'Candidate_ID'
+rename col: column8 to: 'Party_Affiliation'
+rename col: sum_column16 to: 'Total_Contribution_Sum'
+rename col: average_column16 to: 'Average_Contribution_Sum'
+rename col: countif to: 'Number_of_Contributions'
+set col: Average_Contribution_Sum value: round($col)
+ERRORE:
+rename column24 to: 'Candidate_Name'
+rename column2 to: 'Candidate_ID'
+rename column8 to: 'Party_Affiliation'
+rename sum_column16 to: 'Total_Contribution_Sum'
+rename average_column16 to: 'Average_Contribution_Sum'
+rename countif to: 'Number_of_Contributions'
+set col: Average_Contribution_Sum value: round($col)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,249 @@
+You can view your Cloud Functions with their execution times, execution counts, and memory usage in the GCP Console.
+These metrics are also available in Stackdriver Monitoring, where you can set up custom alerting on these metrics.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform. 
+
+-----
+
+google228815_student@qwiklabs-gcp-194ac7056ce46460:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google228815_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google228815_student@qwiklabs-gcp-194ac7056ce46460:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-194ac7056ce46460
+	Your active configuration is: [cloudshell-5616]
+
+google228815_student@qwiklabs-gcp-194ac7056ce46460:~$ gcloud config set project qwiklabs-gcp-194ac7056ce46460
+	Updated property [core/project].
+
+google228815_student@instance-1:~$ curl -sSO https://repo.stackdriver.com/stack-install.sh
+
+google228815_student@instance-1:~$ sudo bash stack-install.sh --write-gcm
+	Installing agents for Debian or Ubuntu.
+	OK
+	W: GPG error: http://repo.stackdriver.com/apt stretch InRelease: The following signatures were invalid: B10FDCDCEC088467D0069F423C6E15887B190BD2
+	W: The repository 'http://repo.stackdriver.com/apt stretch InRelease' is not signed.
+	Reading package lists...
+	Building dependency tree...
+	Reading state information...
+	The following additional packages will be installed:
+	  libltdl7 libyajl2 python-netifaces python-psutil stackdriver-extractor
+	Suggested packages:
+	  python-psutil-doc libmariadbclient18 libpq5 libhiredis0.13 default-jre
+	The following NEW packages will be installed:
+	  libltdl7 libyajl2 python-netifaces python-psutil stackdriver-agent stackdriver-extractor
+	0 upgraded, 6 newly installed, 0 to remove and 3 not upgraded.
+	Need to get 2,140 kB of archives.
+	After this operation, 9,314 kB of additional disk space will be used.
+	WARNING: The following packages cannot be authenticated!
+	  stackdriver-agent stackdriver-extractor
+	Authentication warning overridden.
+	Get:1 http://deb.debian.org/debian stretch/main amd64 libltdl7 amd64 2.4.6-2 [389 kB]
+	Get:2 http://deb.debian.org/debian stretch/main amd64 libyajl2 amd64 2.1.0-2+b3 [23.2 kB]
+	Get:3 http://deb.debian.org/debian stretch/main amd64 python-netifaces amd64 0.10.4-0.1+b2 [16.9 kB]
+	Get:4 http://deb.debian.org/debian stretch/main amd64 python-psutil amd64 5.0.1-1 [127 kB]
+	Get:5 http://repo.stackdriver.com/apt stretch/main amd64 stackdriver-agent amd64 5.5.2-379.sdl.stretch [1,568 kB]
+	Get:6 http://repo.stackdriver.com/apt stretch/main amd64 stackdriver-extractor all 94-1.stretch [15.6 kB]
+	Fetched 2,140 kB in 0s (13.2 MB/s)
+	Preconfiguring packages ...
+	Selecting previously unselected package libltdl7:amd64.
+	(Reading database ... 31435 files and directories currently installed.)
+	Preparing to unpack .../libltdl7_2.4.6-2_amd64.deb ...
+	Unpacking libltdl7:amd64 (2.4.6-2) ...
+	Selecting previously unselected package libyajl2:amd64.
+	Preparing to unpack .../libyajl2_2.1.0-2+b3_amd64.deb ...
+	Unpacking libyajl2:amd64 (2.1.0-2+b3) ...
+	Selecting previously unselected package stackdriver-agent.
+	Preparing to unpack .../stackdriver-agent_5.5.2-379.sdl.stretch_amd64.deb ...
+	Unpacking stackdriver-agent (5.5.2-379.sdl.stretch) ...
+	Selecting previously unselected package python-netifaces.
+	Preparing to unpack .../python-netifaces_0.10.4-0.1+b2_amd64.deb ...
+	Unpacking python-netifaces (0.10.4-0.1+b2) ...
+	Selecting previously unselected package python-psutil.
+	Preparing to unpack .../python-psutil_5.0.1-1_amd64.deb ...
+	Unpacking python-psutil (5.0.1-1) ...
+	Setting up libltdl7:amd64 (2.4.6-2) ...
+	Setting up libyajl2:amd64 (2.1.0-2+b3) ...
+	Setting up stackdriver-agent (5.5.2-379.sdl.stretch) ...
+	Selecting previously unselected package stackdriver-extractor.
+	(Reading database ... 31855 files and directories currently installed.)
+	Preparing to unpack .../stackdriver-extractor_94-1.stretch_all.deb ...
+	Unpacking stackdriver-extractor (94-1.stretch) ...
+	Setting up python-netifaces (0.10.4-0.1+b2) ...
+	Processing triggers for libc-bin (2.24-11+deb9u1) ...
+	Setting up python-psutil (5.0.1-1) ...
+	Processing triggers for systemd (232-25+deb9u1) ...
+	Setting up stackdriver-extractor (94-1.stretch) ...
+	Processing triggers for systemd (232-25+deb9u1) ...
+	Checking platform...
+	Using Cloud Monitoring API
+	Restarting services
+	[ ok ] Restarting stackdriver-agent (via systemctl): stackdriver-agent.service.
+
+google228815_student@instance-1:~$ curl -sSO https://dl.google.com/cloudagents/install-logging-agent.sh
+
+google228815_student@instance-1:~$ sudo bash install-logging-agent.sh
+	==============================================================================
+	Starting installation of google-fluentd
+	==============================================================================
+
+	Installing agents for Debian or Ubuntu.
+	OK
+	Selecting previously unselected package google-fluentd.
+	(Reading database ... 31871 files and directories currently installed.)
+	Preparing to unpack .../google-fluentd_1.5.27-1_amd64.deb ...
+	Unpacking google-fluentd (1.5.27-1) ...
+	Selecting previously unselected package google-fluentd-catch-all-config.
+	Preparing to unpack .../google-fluentd-catch-all-config_0.6_all.deb ...
+	Unpacking google-fluentd-catch-all-config (0.6) ...
+	Setting up google-fluentd (1.5.27-1) ...
+	Adding system user `google-fluentd' (UID 108) ...
+	Adding new group `google-fluentd' (GID 112) ...
+	Adding new user `google-fluentd' (UID 108) with group `google-fluentd' ...
+	Not creating home directory `/home/google-fluentd'.
+	Installing default conffile /etc/google-fluentd/google-fluentd.conf ...
+	Setting up google-fluentd-catch-all-config (0.6) ...
+
+	==============================================================================
+	Installation of google-fluentd complete.
+
+	Logs from this machine should be visible in the log viewer at:
+	  https://console.cloud.google.com/logs/viewer?project=qwiklabs-gcp-194ac7056ce46460&resource=gce_instance/instance_id/486625706728925348
+
+	A test message has been sent to syslog to help verify proper operation.
+
+	Please consult the documentation for troubleshooting advice:
+	  https://cloud.google.com/logging/docs/agent
+
+	You can monitor the logging agent's logfile at:
+	  /var/log/google-fluentd/google-fluentd.log
+	==============================================================================
+
+google228815_student@qwiklabs-gcp-194ac7056ce46460:~$ wget 'https://github.com/tsenart/vegeta/releases/download/v6.3.0/vegeta-v6.3.0-linux-386.tar.gz'
+	--2018-02-19 19:30:20--  https://github.com/tsenart/vegeta/releases/download/v6.3.0/vegeta-v6.3.0-linux-386.tar.gz
+	Resolving github.com (github.com)... 192.30.253.113, 192.30.253.112
+	Connecting to github.com (github.com)|192.30.253.113|:443... connected.
+	HTTP request sent, awaiting response... 302 Found
+	Location: https://github-production-release-asset-2e65be.s3.amazonaws.com/12080551/be57efd8-0cb3-11e7-8425-c10aba054478?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20180219%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180219T183020Z&X-Amz-Expires=300&X-Amz-Signature=50db1381a83303eaf93101cd359cf24c19745b6d1574a97cc294cc1e47802769&X-Amz-SignedHeaders=host&actor_id=0&response-content-disposition=attachment%3B%20filename%3Dvegeta-v6.3.0-linux-386.tar.gz&response-content-type=application%2Foctet-stream [following]
+	--2018-02-19 19:30:20--  https://github-production-release-asset-2e65be.s3.amazonaws.com/12080551/be57efd8-0cb3-11e7-8425-c10aba054478?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20180219%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180219T183020Z&X-Amz-Expires=300&X-Amz-Signature=50db1381a83303eaf93101cd359cf24c19745b6d1574a97cc294cc1e47802769&X-Amz-SignedHeaders=host&actor_id=0&response-content-disposition=attachment%3B%20filename%3Dvegeta-v6.3.0-linux-386.tar.gz&response-content-type=application%2Foctet-stream
+	Resolving github-production-release-asset-2e65be.s3.amazonaws.com (github-production-release-asset-2e65be.s3.amazonaws.com)... 52.216.131.131
+	Connecting to github-production-release-asset-2e65be.s3.amazonaws.com (github-production-release-asset-2e65be.s3.amazonaws.com)|52.216.131.131|:443... connected.
+	HTTP request sent, awaiting response... 200 OK
+	Length: 2467808 (2.4M) [application/octet-stream]
+	Saving to: ‘vegeta-v6.3.0-linux-386.tar.gz’
+
+	vegeta-v6.3.0-linux-386.tar.gz                   100%[========================================================================================================>]   2.35M  1.07MB/s    in 2.2s
+
+	2018-02-19 19:30:23 (1.07 MB/s) - ‘vegeta-v6.3.0-linux-386.tar.gz’ saved [2467808/2467808]
+	
+google228815_student@qwiklabs-gcp-194ac7056ce46460:~$ tar xvzf vegeta-v6.3.0-linux-386.tar.gz
+	vegeta
+
+
+
+
+
+
+
+
+
+
+
+
+"Install the Stackdriver Agents - Run the commands shown on screen in the SSH window of your instance." --> There is no instance, and no instructions on how to create it, I know hot to do it thanks to the others labs...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

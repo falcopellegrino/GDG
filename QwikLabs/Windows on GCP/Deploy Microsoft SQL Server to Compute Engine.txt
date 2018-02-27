@@ -1,0 +1,19 @@
+Google Compute Engine
+Google Compute Engine offre macchine virtuali hostate negli innovativi data center di Google che permettono di accedere alla nostra rete in fibra private e globale.
+ll supporto dei flussi di lavoro e gli strumenti di Compute Engine consentono di scalare da singole istanze fino ad un cloud computing globale e basato con bilanciamento intelligente del carico di lavoro.
+Le VM di Compute Engine si avviano velocemente, sono dotate di archiviazione su disco permanente e offrono prestazioni costanti.
+I nostri server virtuali sono disponibili in molte configurazioni, incluse dimensioni predefinite o l'opzione per creare tipi di macchine personalizzati in base alle esigenze specifiche.
+Prezzi flessibili e sconti automatici per l'utilizzo sostenuto rendono Compute Engine il leader indiscusso del rapporto prezzo/prestazioni.
+
+RDP Connections
+Remote Desktop Protocol (RDP) is a proprietary protocol developed by Microsoft, which provides a user with a graphical interface to connect to another computer over a network connection.
+The user employs RDP client software for this purpose, while the other computer must run RDP server software.
+
+-----
+
+SqlServer User
+google211918_student
+Password
+CEQY$!)w=[YRzs#
+
+

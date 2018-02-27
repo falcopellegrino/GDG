@@ -1,0 +1,216 @@
+Hello Node Kubernetes
+
+gcloud 
+gcloud auth list - lists credentialed accounts
+gcloud config list - view Cloud SDK properties
+Google Cloud Shell is a shell environment for managing resources hosted on Google Cloud Platform.
+vi / nano / emacs
+curl / wget
+Google Container Registry
+Container Engine cluster. A cluster consists of a Kubernetes master API server hosted by Google and a set of worker nodes. The worker nodes are Compute Engine virtual machines.
+kubectl 
+POD - A Kubernetes pod is a group of containers tied together for administration and networking purposes. It can contain single or multiple containers.
+
+
+--------------------------------------------------
+
+gcloud auth list
+	google209965_student@qwiklabs.net
+
+gcloud config list project
+	[core]
+	project = qwiklabs-gcp-0f5a9ec9461d06ad
+	Your active configuration is: [cloudshell-28132]
+
+vi server.js
+i
+
+var http = require('http');
+var handleRequest = function(request, response) {
+  response.writeHead(200);
+  response.end("Hello World!");
+}
+var www = http.createServer(handleRequest);
+www.listen(8080);
+
+ESC
+:wq
+
+node server.js
+
+vi Dockerfile
+i
+
+FROM node:6.9.2
+EXPOSE 8080
+COPY server.js .
+CMD node server.js
+
+ESC
+:wq
+
+docker build -t gcr.io/qwiklabs-gcp-0f5a9ec9461d06ad/hello-node:v1 .
+
+docker run -d -p 8080:8080 gcr.io/qwiklabs-gcp-0f5a9ec9461d06ad/hello-node:v1
+	e72a3dd420f58b3d52f2e52645cd9d43bff5c9fa94c2936d7b84cdc73d854d66
+
+docker ps
+	CONTAINER ID        IMAGE                                                COMMAND                  CREATED             STATUS              PORTS                    NAMES
+	e72a3dd420f5        gcr.io/qwiklabs-gcp-0f5a9ec9461d06ad/hello-node:v1   "/bin/sh -c 'node ..."   2 minutes ago       Up 2 minutes        0.0.0.0:8080->8080/tcp   naughty_stonebraker
+
+docker stop e72a3dd420f5
+	e72a3dd420f5
+
+gcloud docker -- push gcr.io/qwiklabs-gcp-0f5a9ec9461d06ad/hello-node:v1
+
+gcloud config set project qwiklabs-gcp-0f5a9ec9461d06ad
+
+gcloud container clusters create hello-world \
+			--num-nodes 2 \
+			--machine-type n1-standard-1 \
+			--zone us-central1-f
+	WARNING: Starting in Kubernetes v1.10, new clusters will no longer get compute-rw and storage-ro scopes added to what is specified in --scopes (though the latter will remain included in the defa
+	ult --scopes). To use these scopes, add them explicitly to --scopes. To use the new behavior, set container/new_scopes_behavior property (gcloud config set container/new_scopes_behavior true).
+	Creating cluster hello-world...done.
+	Created [https://container.googleapis.com/v1/projects/qwiklabs-gcp-0f5a9ec9461d06ad/zones/us-central1-f/clusters/hello-world].
+	To inspect the contents of your cluster, go to: https://console.cloud.google.com/kubernetes/workload_/gcloud/us-central1-f/hello-world?project=qwiklabs-gcp-0f5a9ec9461d06ad
+	kubeconfig entry generated for hello-world.
+	NAME         LOCATION       MASTER_VERSION  MASTER_IP      MACHINE_TYPE   NODE_VERSION  NUM_NODES  STATUS
+	hello-world  us-central1-f  1.7.12-gke.0    35.225.105.29  n1-standard-1  1.7.12-gke.0  2          RUNNING
+
+kubectl run hello-node \
+			--image=gcr.io/qwiklabs-gcp-0f5a9ec9461d06ad/hello-node:v1 \
+			--port=8080
+	deployment "hello-node" created
+
+kubectl get deployments
+	NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+	hello-node   1         1         1            1           1m
+
+kubectl get pods
+	NAME                          READY     STATUS    RESTARTS   AGE
+	hello-node-2189225176-qkm17   1/1       Running   0          2m
+
+kubectl cluster-info
+	Kubernetes master is running at https://35.225.105.29
+	GLBCDefaultBackend is running at https://35.225.105.29/api/v1/namespaces/kube-system/services/default-http-backend/proxy
+	Heapster is running at https://35.225.105.29/api/v1/namespaces/kube-system/services/heapster/proxy
+	KubeDNS is running at https://35.225.105.29/api/v1/namespaces/kube-system/services/kube-dns/proxy
+	kubernetes-dashboard is running at https://35.225.105.29/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy
+	To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+	google209965_student@qwiklabs-gcp-0f5a9ec9461d06ad:~$
+
+kubectl config view
+	apiVersion: v1
+	clusters:
+	- cluster:
+		certificate-authority-data: REDACTED
+		server: https://35.225.105.29
+	  name: gke_qwiklabs-gcp-0f5a9ec9461d06ad_us-central1-f_hello-world
+	contexts:
+	- context:
+		cluster: gke_qwiklabs-gcp-0f5a9ec9461d06ad_us-central1-f_hello-world
+		user: gke_qwiklabs-gcp-0f5a9ec9461d06ad_us-central1-f_hello-world
+	  name: gke_qwiklabs-gcp-0f5a9ec9461d06ad_us-central1-f_hello-world
+	users:
+	current-context: gke_qwiklabs-gcp-0f5a9ec9461d06ad_us-central1-f_hello-world
+	kind: Config
+	preferences: {}
+	users:
+	- name: gke_qwiklabs-gcp-0f5a9ec9461d06ad_us-central1-f_hello-world
+	  user:
+		auth-provider:
+		  config:
+			access-token: ya29.GqMBVwUOdZOkL1HHFQVcx9XDwBrS1AsdYUWdDdj5_AjMp1XyP5jUDWAjknx5j2kh38SmEgvDgNk7xSWj7AOh5Z2LTuWzJBteDi4YLk1UtwAdm0KTpExT3xad_1nbQ83W5Lgq_M-m_Sm5ILTKlbPj7Oscmm2zPbKru9IyrjM
+
+kubectl get events
+	LAST SEEN   FIRST SEEN   COUNT     NAME                                                          KIND         SUBOBJECT                     TYPE      REASON                    SOURCE            
+										   MESSAGE
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-1nzc.151015401a88c240   Node                                       Normal    Starting                  kubelet, gke-hello-world-default-pool-2954e2f1-1nzc      Starting kubelet.
+	7m          7m           2         gke-hello-world-default-pool-2954e2f1-1nzc.151015401b727363   Node                                       Normal    NodeHasSufficientDisk     kubelet, gke-hello-world-default-pool-2954e2f1-1nzc      Node gke-hello-world-default-pool-2954e2f1-1nzc status is now: NodeHasSufficientDisk
+	7m          7m           2         gke-hello-world-default-pool-2954e2f1-1nzc.151015401b75625f   Node                                       Normal    NodeHasSufficientMemory   kubelet, gke-hello-world-default-pool-2954e2f1-1nzc      Node gke-hello-world-default-pool-2954e2f1-1nzc status is now: NodeHasSufficientMemory
+	7m          7m           2         gke-hello-world-default-pool-2954e2f1-1nzc.151015401b784a03   Node                                       Normal    NodeHasNoDiskPressure     kubelet, gke-hello-world-default-pool-2954e2f1-1nzc      Node gke-hello-world-default-pool-2954e2f1-1nzc status is now: NodeHasNoDiskPressure
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-1nzc.151015401c20beb1   Node                                       Normal    NodeAllocatableEnforced   kubelet, gke-hello-world-default-pool-2954e2f1-1nzc      Updated Node Allocatable limit across pods
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-1nzc.15101541fe4e744d   Node                                       Normal    Starting                  kube-proxy, gke-hello-world-default-pool-2954e2f1-1nzc   Starting kube-proxy.
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-1nzc.15101543a721b72d   Node                                       Normal    RegisteredNode            controllermanager                                        Node gke-hello-world-default-pool-2954e2f1-1nzc event: Registered Node gke-hello-world-default-pool-2954e2f1-1nzc in NodeController
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-1nzc.151015474692ccf5   Node                                       Normal    NodeReady                 kubelet, gke-hello-world-default-pool-2954e2f1-1nzc      Node gke-hello-world-default-pool-2954e2f1-1nzc status is now: NodeReady
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-qhmm.1510154005967ddb   Node                                       Normal    Starting                  kubelet, gke-hello-world-default-pool-2954e2f1-qhmm      Starting kubelet.
+	7m          7m           2         gke-hello-world-default-pool-2954e2f1-qhmm.1510154006d428ee   Node                                       Normal    NodeHasSufficientDisk     kubelet, gke-hello-world-default-pool-2954e2f1-qhmm      Node gke-hello-world-default-pool-2954e2f1-qhmm status is now: NodeHasSufficientDisk
+	7m          7m           2         gke-hello-world-default-pool-2954e2f1-qhmm.1510154006d71f82   Node                                       Normal    NodeHasSufficientMemory   kubelet, gke-hello-world-default-pool-2954e2f1-qhmm      Node gke-hello-world-default-pool-2954e2f1-qhmm status is now: NodeHasSufficientMemory
+	7m          7m           2         gke-hello-world-default-pool-2954e2f1-qhmm.1510154006d9c304   Node                                       Normal    NodeHasNoDiskPressure     kubelet, gke-hello-world-default-pool-2954e2f1-qhmm      Node gke-hello-world-default-pool-2954e2f1-qhmm status is now: NodeHasNoDiskPressure
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-qhmm.15101540077d0e79   Node                                       Normal    NodeAllocatableEnforced   kubelet, gke-hello-world-default-pool-2954e2f1-qhmm      Updated Node Allocatable limit across pods
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-qhmm.15101541f0687597   Node                                       Normal    Starting                  kube-proxy, gke-hello-world-default-pool-2954e2f1-qhmm   Starting kube-proxy.
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-qhmm.15101543a720d921   Node                                       Normal    RegisteredNode            controllermanager                                        Node gke-hello-world-default-pool-2954e2f1-qhmm event: Registered Node gke-hello-world-default-pool-2954e2f1-qhmm in NodeController
+	7m          7m           1         gke-hello-world-default-pool-2954e2f1-qhmm.151015471d6caee8   Node                                       Normal    NodeReady                 kubelet, gke-hello-world-default-pool-2954e2f1-qhmm      Node gke-hello-world-default-pool-2954e2f1-qhmm status is now: NodeReady
+	4m          4m           1         hello-node-2189225176-qkm17.15101573a1dff0fe                  Pod                                        Normal    Scheduled                 default-scheduler                                        Successfully assigned hello-node-2189225176-qkm17 to gke-hello-world-default-pool-2954e2f1-1nzc
+	4m          4m           1         hello-node-2189225176-qkm17.15101573b4dcd471                  Pod                                        Normal    SuccessfulMountVolume     kubelet, gke-hello
+	-world-default-pool-2954e2f1-1nzc      MountVolume.SetUp succeeded for volume "default-token-n012n"
+	4m          4m           1         hello-node-2189225176-qkm17.15101573c2a1f02a                  Pod          spec.containers{hello-node}   Normal    Pulling                   kubelet, gke-hello
+	-world-default-pool-2954e2f1-1nzc      pulling image "gcr.io/qwiklabs-gcp-0f5a9ec9461d06ad/hello-node:v1"
+	3m          3m           1         hello-node-2189225176-qkm17.15101579ff2b76ee                  Pod          spec.containers{hello-node}   Normal    Pulled                    kubelet, gke-hello
+	-world-default-pool-2954e2f1-1nzc      Successfully pulled image "gcr.io/qwiklabs-gcp-0f5a9ec9461d06ad/hello-node:v1"
+	3m          3m           1         hello-node-2189225176-qkm17.1510157a00df683e                  Pod          spec.containers{hello-node}   Normal    Created                   kubelet, gke-hello
+	-world-default-pool-2954e2f1-1nzc      Created container
+	3m          3m           1         hello-node-2189225176-qkm17.1510157a0643337d                  Pod          spec.containers{hello-node}   Normal    Started                   kubelet, gke-hello
+	-world-default-pool-2954e2f1-1nzc      Started container
+	4m          4m           1         hello-node-2189225176.15101573a16634f3                        ReplicaSet                                 Normal    SuccessfulCreate          replicaset-control
+	ler                                    Created pod: hello-node-2189225176-qkm17
+	4m          4m           1         hello-node.151015739ff1aeab                                   Deployment                                 Normal    ScalingReplicaSet         deployment-control
+	ler                                    Scaled up replica set hello-node-2189225176 to 1
+
+kubectl logs <pod-name>
+kubectl logs hello-node-2189225176-qkm17
+
+kubectl expose deployment hello-node --type="LoadBalancer"
+	service "hello-node" exposed
+
+kubectl get services
+	NAME         TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)          AGE
+	hello-node   LoadBalancer   10.3.252.179   35.224.42.96   8080:32404/TCP   1m
+	kubernetes   ClusterIP      10.3.240.1     <none>         443/TCP          12m
+	
+kubectl scale deployment hello-node --replicas=4
+	deployment "hello-node" scaled
+
+kubectl get deployment
+	NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+	hello-node   4         4         4            3           9m
+
+kubectl get pods
+	NAME                          READY     STATUS    RESTARTS   AGE
+	hello-node-2189225176-101j3   1/1       Running   0          57s
+	hello-node-2189225176-9ck0s   1/1       Running   0          57s
+	hello-node-2189225176-nzdfn   1/1       Running   0          57s
+	hello-node-2189225176-qkm17   1/1       Running   0          10m
+
+vi server.js
+i
+
+var http = require('http');
+var handleRequest = function(request, response) {
+  response.writeHead(200);
+  response.end("Hello Kubernetes World!");
+}
+var www = http.createServer(handleRequest);
+www.listen(8080);
+
+ESC
+:wq
+
+docker build -t gcr.io/qwiklabs-gcp-0f5a9ec9461d06ad/hello-node:v2 . 
+gcloud docker -- push gcr.io/qwiklabs-gcp-0f5a9ec9461d06ad/hello-node:v2
+
+kubectl edit deployment hello-node
+	- image: gcr.io/PROJECT_ID/hello-node:v1 ## Update this line ##
+
+ESC
+:wq
+	deployment "hello-node" edited
+
+kubectl get deployments
+	NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+	hello-node   4         5         4            3           22m
+
+gcloud config set project qwiklabs-gcp-0f5a9ec9461d06ad
+gcloud container clusters get-credentials hello-world \
+    --zone us-central1-f --project qwiklabs-gcp-0f5a9ec9461d06ad

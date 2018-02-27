@@ -1,0 +1,142 @@
+<script type="text/javascript">
+function multiply(a, b) {
+    b = (typeof b !== 'undefined') ?  b : 1;
+    return a * b;
+}
+
+console.log(multiply(5, 2)); // 10
+console.log(multiply(5, 1)); // 5
+console.log(multiply(5));    // 5
+
+
+
+function multiply1(a, b = 1) {
+    return a * b;
+}
+console.log(multiply1(5, 2)); // 10
+console.log(multiply1(5, 1)); // 5
+console.log(multiply1(5));    // 5
+
+
+
+function test(num = 1) {
+    console.log(typeof num);
+}
+test();          // 'number' (num is set to 1)
+test(undefined); // 'number' (num is set to 1 too)
+// test with other falsy values:
+test('');        // 'string' (num is set to '')
+test(null);      // 'object' (num is set to null)
+
+
+
+
+function append(value, array = []) {
+    array.push(value);
+    console.log(array.length);
+    return array;
+}
+append(1); //[1]
+append(2); //[2], not [1, 2]
+
+
+
+function callSomething(thing = something()) {
+    return thing;
+}
+function something() {
+    return 'sth';
+}
+console.log(callSomething());  //sth
+console.log(callSomething());  //sth
+
+
+
+function singularAutoPlural(
+    singular, 
+    plural = singular + 's', 
+    rallyingCry = plural + ' ATTACK!!!'
+) {
+    return [singular, plural, rallyingCry]; 
+}
+//["Gecko","Geckos", "Geckos ATTACK!!!"]
+console.log(singularAutoPlural('Gecko'));
+//["Fox","Foxes", "Foxes ATTACK!!!"]
+console.log(singularAutoPlural('Fox', 'Foxes'));
+//["Deer", "Deer", "Deer ... change."]
+console.log(singularAutoPlural('Deer', 'Deer', 'Deer peaceably and respectfully \
+   petition the government for positive change.'));
+
+
+
+
+
+function go() {
+    return ':P';
+}
+function withDefaults(
+    a, 
+    b = 5, 
+    c = b, 
+    d = go(), 
+    e = this, 
+    f = arguments, 
+    g = this.value
+) {
+    return [a, b, c, d, e, f, g];
+}
+function withoutDefaults(a, b, c, d, e, f, g) {
+    switch (arguments.length) {
+        case 0:
+            a;
+        case 1:
+            b = 5;
+        case 2:
+            c = b;
+        case 3:
+            d = go();
+        case 4:
+            e = this;
+        case 5:
+            f = arguments;
+        case 6:
+            g = this.value;
+        default:
+    }
+    return [a, b, c, d, e, f, g];
+}
+console.log(withDefaults.call({value: '=^_^='}));
+// [undefined, 5, 5, ":P", {value:"=^_^="}, arguments, "=^_^="]
+console.log(withoutDefaults.call({value: '=^_^='}));
+// [undefined, 5, 5, ":P", {value:"=^_^="}, arguments, "=^_^="]
+
+
+
+// // Doesn't work! Throws ReferenceError.
+// function f(a = go()) {
+//     function go() { return ':P'; }
+// }
+// f();
+
+
+
+
+function f2(x = 1, y) { 
+  return [x, y]; 
+}
+console.log(f2()); // [1, undefined]
+console.log(f2(2)); // [2, undefined]
+
+
+
+function f3(
+    [x, y] = [1, 2], 
+    {z: z} = {z: 3}
+) { 
+    return x + y + z; 
+}
+console.log(f3()); // 6
+
+
+
+</script>

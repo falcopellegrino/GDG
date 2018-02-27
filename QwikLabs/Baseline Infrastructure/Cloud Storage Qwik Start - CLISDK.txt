@@ -1,0 +1,155 @@
+Google Cloud Storage allows world-wide storage and retrieval of any amount of data at any time.
+You can use Google Cloud Storage for a range of scenarios including serving website content, storing data for archival and disaster recovery,
+	or distributing large data objects to users via direct download.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform. 
+
+-----
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google240352_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-96a1911f36e78bd5
+	Your active configuration is: [cloudshell-26429]
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gcloud config set project qwiklabs-gcp-96a1911f36e78bd5
+	Updated property [core/project].
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil mb gs://fpcloudstoragebucket
+	Creating gs://fpcloudstoragebucket/...
+	ServiceException: 409 Bucket fpcloudstoragebucket already exists.
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil mb gs://fpcloudstoragebucket2
+	Creating gs://fpcloudstoragebucket2/...
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ wget --output-document ada.jpg https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portra
+it.jpg
+	--2018-02-25 11:22:37--  https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg
+	Resolving upload.wikimedia.org (upload.wikimedia.org)... 91.198.174.208, 2620:0:862:ed1a::2:b
+	Connecting to upload.wikimedia.org (upload.wikimedia.org)|91.198.174.208|:443... connected.
+	HTTP request sent, awaiting response... 200 OK
+	Length: 306768 (300K) [image/jpeg]
+	Saving to: ‘ada.jpg’
+	ada.jpg                                          100%[========================================================================================================>] 299.58K  --.-KB/s    in 0.02s
+	2018-02-25 11:22:37 (14.1 MB/s) - ‘ada.jpg’ saved [306768/306768]
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil cp ada.jpg gs://fpcloudstoragebucket2/
+	Copying file://ada.jpg [Content-Type=image/jpeg]...
+	- [1 files][299.6 KiB/299.6 KiB]
+	Operation completed over 1 objects/299.6 KiB.
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ rm ada.jpg
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil cp gs://fpcloudstoragebucket2/ada.jpg .
+	Copying gs://fpcloudstoragebucket2/ada.jpg...
+	/ [1 files][299.6 KiB/299.6 KiB]
+	Operation completed over 1 objects/299.6 KiB.
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil cp gs://fpcloudstoragebucket2/ada.jpg gs://fpcloudstoragebucket2/folder1/
+	Copying gs://fpcloudstoragebucket2/ada.jpg [Content-Type=image/jpeg]...
+	- [1 files][299.6 KiB/299.6 KiB]
+	Operation completed over 1 objects/299.6 KiB.
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil ls gs://fpcloudstoragebucket2/
+	gs://fpcloudstoragebucket2/ada.jpg
+	gs://fpcloudstoragebucket2/folder1/
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil ls -l gs://fpcloudstoragebucket2/ada.jpg
+		306768  2018-02-25T10:23:59Z  gs://fpcloudstoragebucket2/ada.jpg
+	TOTAL: 1 objects, 306768 bytes (299.58 KiB)
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil acl ch -u AllUsers:R gs://fpcloudstoragebucket2/ada.jpg
+	Updated ACL on gs://fpcloudstoragebucket2/ada.jpg
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil acl ch -d AllUsers gs://fpcloudstoragebucket2/ada.jpg
+	Updated ACL on gs://fpcloudstoragebucket2/ada.jpg
+
+google240352_student@qwiklabs-gcp-96a1911f36e78bd5:~$ gsutil rm gs://fpcloudstoragebucket2/ada.jpg
+	Removing gs://fpcloudstoragebucket2/ada.jpg...
+	/ [1 objects]
+	Operation completed over 1 objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

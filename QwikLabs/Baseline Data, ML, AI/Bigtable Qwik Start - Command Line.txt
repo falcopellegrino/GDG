@@ -1,0 +1,136 @@
+Cloud Bigtable is Google's NoSQL Big Data database service.
+It's the same database that powers many core Google services, including Search, Analytics, Maps, and Gmail.
+In this lab you'll use Bigtable with the cbt command line.
+
+Cloud Bigtable stores data in tables, which contain rows.
+Each row is identified by a row key.
+Data in a row is organized into column families, or groups of columns.
+A column qualifier identifies a single column within a column family.
+A cell is the intersection of a row and a column.
+Each cell can contain multiple versions of a value.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform. 
+
+-----
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google220560_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-547360a1b5ebcdee
+	
+	Your active configuration is: [cloudshell-10787]
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ gcloud config set project qwiklabs-gcp-547360a1b5ebcdee
+	Updated property [core/project].
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ gcloud components update
+	All components are up to date.
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ gcloud components install cbt
+	All components are up to date.
+
+echo project = [PROJECT_ID] > ~/.cbtrc
+echo project = qwiklabs-gcp-547360a1b5ebcdee > ~/.cbtrc
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ echo project = qwiklabs-gcp-547360a1b5ebcdee > ~/.cbtrc
+
+echo instance = quickstart-instance >> ~/.cbtrc
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ echo instance = quickstart-instance >> ~/.cbtrc
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ cbt createtable my-table
+	2018/02/13 19:36:17 -creds flag unset, will use gcloud credential
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ cbt ls
+	2018/02/13 19:36:32 -creds flag unset, will use gcloud credential
+	my-table
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ cbt createfamily my-table cf1
+	2018/02/13 19:37:04 -creds flag unset, will use gcloud credential
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ cbt ls my-table
+	2018/02/13 19:37:28 -creds flag unset, will use gcloud credential
+	Family Name     GC Policy
+	-----------     ---------
+	cf1             <default>
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ cbt set my-table r1 cf1:c1=test-value
+	2018/02/13 19:38:15 -creds flag unset, will use gcloud credential
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ cbt read my-table
+	2018/02/13 19:38:33 -creds flag unset, will use gcloud credential
+	----------------------------------------
+	r1
+	  cf1:c1                                   @ 2018/02/13-19:38:16.954000
+		"test-value"
+
+google220560_student@qwiklabs-gcp-547360a1b5ebcdee:~$ cbt deletetable my-table
+	2018/02/13 19:38:56 -creds flag unset, will use gcloud credential
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,243 @@
+This lab will show you how to set up a Compute Engine managed instance group that autoscales based on the value of a custom Stackdriver Monitoring metric.
+You will create an autoscaling application to monitor a metric and then scale a managed instance group based on the metric.
+
+The autoscaling application uses a Node.js script installed on Compute Engine instances.
+The script reports a numeric value to a Stackdriver metric.
+In response to the value of the metric, the application autoscales the Compute Engine instance group up or down as needed.
+
+The Node.js script is used to seed a custom metric with values that the instance group can respond to.
+In a production environment, you would base autoscaling on a metric that is relevant to your use case.
+
+The application includes the following components:
+ - Compute Engine instance template — A template used to create each instance in the instance group.
+ - Cloud Storage. A bucket used to host the startup script and other script files.
+ - Compute Engine startup script — A startup script that installs the necessary code components on each instance.
+	The startup script is installed and started automatically when an instance starts.
+	When the startup script runs, it in turn installs and starts code on the instance that writes values to the Stackdriver custom metric.
+ - Compute Engine instance group — An instance group that autoscales based on the Stackdriver monitoring metric values.
+ - Compute Engine instances — A variable number of Compute Engine instances.
+ - Custom Stackdriver Monitoring metric — A custom monitoring metric used as the input value for Compute Engine instance group autoscaling.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform
+
+-----
+
+google235990_student@qwiklabs-gcp-f0b1d67822efd62d:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google235990_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google235990_student@qwiklabs-gcp-f0b1d67822efd62d:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-f0b1d67822efd62d
+	Your active configuration is: [cloudshell-10876]
+
+google235990_student@qwiklabs-gcp-f0b1d67822efd62d:~$ gcloud config set project qwiklabs-gcp-f0b1d67822efd62d
+	Updated property [core/project].
+
+-----
+
+google235990_student@builtin-igm-23dx:~$ curl -sSO https://repo.stackdriver.com/stack-install.sh
+
+google235990_student@builtin-igm-23dx:~$ sudo bash stack-install.sh --write-gcm
+	Installing agents for Debian or Ubuntu.
+	OK
+	W: GPG error: http://repo.stackdriver.com/apt stretch InRelease: The following signatures were invalid: B10FDCDCEC088467D0069F423C6E15887B190BD2
+	W: The repository 'http://repo.stackdriver.com/apt stretch InRelease' is not signed.
+	Reading package lists...
+	Building dependency tree...
+	Reading state information...
+	The following additional packages will be installed:
+	  libltdl7 libyajl2 python-netifaces python-psutil stackdriver-extractor
+	Suggested packages:
+	  python-psutil-doc libmariadbclient18 libpq5 libhiredis0.13 default-jre
+	The following NEW packages will be installed:
+	  libltdl7 libyajl2 python-netifaces python-psutil stackdriver-agent stackdriver-extractor
+	0 upgraded, 6 newly installed, 0 to remove and 12 not upgraded.
+	Need to get 2,140 kB of archives.
+	After this operation, 9,314 kB of additional disk space will be used.
+	WARNING: The following packages cannot be authenticated!
+	  stackdriver-agent stackdriver-extractor
+	Authentication warning overridden.
+	Get:1 http://deb.debian.org/debian stretch/main amd64 libltdl7 amd64 2.4.6-2 [389 kB]
+	Get:2 http://repo.stackdriver.com/apt stretch/main amd64 stackdriver-agent amd64 5.5.2-379.sdl.stretch [1,568 kB]
+	Get:3 http://deb.debian.org/debian stretch/main amd64 libyajl2 amd64 2.1.0-2+b3 [23.2 kB]
+	Get:4 http://deb.debian.org/debian stretch/main amd64 python-netifaces amd64 0.10.4-0.1+b2 [16.9 kB]
+	Get:5 http://deb.debian.org/debian stretch/main amd64 python-psutil amd64 5.0.1-1 [127 kB]
+	Get:6 http://repo.stackdriver.com/apt stretch/main amd64 stackdriver-extractor all 94-1.stretch [15.6 kB]
+	Fetched 2,140 kB in 0s (16.7 MB/s)
+	Preconfiguring packages ...
+	Selecting previously unselected package libltdl7:amd64.
+	(Reading database ... 60930 files and directories currently installed.)
+	Preparing to unpack .../libltdl7_2.4.6-2_amd64.deb ...
+	Unpacking libltdl7:amd64 (2.4.6-2) ...
+	Selecting previously unselected package libyajl2:amd64.
+	Preparing to unpack .../libyajl2_2.1.0-2+b3_amd64.deb ...
+	Unpacking libyajl2:amd64 (2.1.0-2+b3) ...
+	Selecting previously unselected package stackdriver-agent.
+	Preparing to unpack .../stackdriver-agent_5.5.2-379.sdl.stretch_amd64.deb ...
+	Unpacking stackdriver-agent (5.5.2-379.sdl.stretch) ...
+	Selecting previously unselected package python-netifaces.
+	Preparing to unpack .../python-netifaces_0.10.4-0.1+b2_amd64.deb ...
+	Unpacking python-netifaces (0.10.4-0.1+b2) ...
+	Selecting previously unselected package python-psutil.
+	Preparing to unpack .../python-psutil_5.0.1-1_amd64.deb ...
+	Unpacking python-psutil (5.0.1-1) ...
+	Setting up libltdl7:amd64 (2.4.6-2) ...
+	Setting up libyajl2:amd64 (2.1.0-2+b3) ...
+	Setting up stackdriver-agent (5.5.2-379.sdl.stretch) ...
+	Selecting previously unselected package stackdriver-extractor.
+	(Reading database ... 61349 files and directories currently installed.)
+	Preparing to unpack .../stackdriver-extractor_94-1.stretch_all.deb ...
+	Unpacking stackdriver-extractor (94-1.stretch) ...
+	Setting up python-netifaces (0.10.4-0.1+b2) ...
+	Processing triggers for libc-bin (2.24-11+deb9u1) ...
+	Setting up python-psutil (5.0.1-1) ...
+	Processing triggers for systemd (232-25+deb9u1) ...
+	Setting up stackdriver-extractor (94-1.stretch) ...
+	Processing triggers for systemd (232-25+deb9u1) ...
+	Checking platform...
+	Using Cloud Monitoring API
+	Restarting services
+	[ ok ] Restarting stackdriver-agent (via systemctl): stackdriver-agent.service.
+
+google235990_student@builtin-igm-23dx:~$ curl -sSO https://dl.google.com/cloudagents/install-logging-agent.sh
+
+google235990_student@builtin-igm-23dx:~$ sudo bash install-logging-agent.sh
+	==============================================================================
+	Starting installation of google-fluentd
+	==============================================================================
+
+	Installing agents for Debian or Ubuntu.
+	OK
+
+	==============================================================================
+	Installation of google-fluentd complete.
+
+	Logs from this machine should be visible in the log viewer at:
+	  https://console.cloud.google.com/logs/viewer?project=qwiklabs-gcp-f0b1d67822efd62d&resource=gce_instance/instance_id/4181093481680053036
+
+	A test message has been sent to syslog to help verify proper operation.
+
+	Please consult the documentation for troubleshooting advice:
+	  https://cloud.google.com/logging/docs/agent
+
+	You can monitor the logging agent's logfile at:
+	  /var/log/google-fluentd/google-fluentd.log
+	==============================================================================
+
+-----
+
+bucket_qwiklabs-gcp-f0b1d67822efd62d
+
+gsutil cp -r gs://spls/gsp087/* gs://bucket_qwiklabs-gcp-f0b1d67822efd62d
+
+google235990_student@qwiklabs-gcp-f0b1d67822efd62d:~$ gsutil cp -r gs://spls/gsp087/* gs://bucket_qwiklabs-gcp-f0b1d67822efd62d
+	Copying gs://spls/gsp087/CONTRIBUTING [Content-Type=application/octet-stream]...
+	Copying gs://spls/gsp087/LICENSE [Content-Type=application/octet-stream]...
+	Copying gs://spls/gsp087/README.md [Content-Type=application/octet-stream]...
+	| [3 files][ 13.0 KiB/ 13.0 KiB]
+	==> NOTE: You are performing a sequence of gsutil operations that may
+	run significantly faster if you instead use gsutil -m -o ... Please
+	see the -m section under "gsutil help options" for further information
+	about when gsutil -m can be advantageous.
+	Copying gs://spls/gsp087/config.json [Content-Type=application/json]...
+	Copying gs://spls/gsp087/package.json [Content-Type=application/json]...
+	Copying gs://spls/gsp087/startup.sh [Content-Type=text/x-sh]...
+	Copying gs://spls/gsp087/writeToCustomMetric.js [Content-Type=application/javascript]...
+	Copying gs://spls/gsp087/writeToCustomMetric.sh [Content-Type=text/x-sh]...
+	/ [8 files][ 21.5 KiB/ 21.5 KiB]
+	Operation completed over 8 objects/21.5 KiB.
+	google235990_student@qwiklabs-gcp-f0b1d67822efd62d:~$
+	Copying gs://spls/gsp087/startup.sh [Content-Type=text/x-sh]...
+	Copying gs://spls/gsp087/writeToCustomMetric.js [Content-Type=application/javascript]...
+	Copying gs://spls/gsp087/writeToCustomMetric.sh [Content-Type=text/x-sh]...
+	/ [8 files][ 21.5 KiB/ 21.5 KiB]
+	Operation completed over 8 objects/21.5 KiB.
+
+gs://bucket_qwiklabs-gcp-f0b1d67822efd62d/startup.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

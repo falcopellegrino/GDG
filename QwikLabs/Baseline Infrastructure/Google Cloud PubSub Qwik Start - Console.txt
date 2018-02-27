@@ -1,0 +1,132 @@
+Google Cloud Pub/Sub: Qwik Start - Console
+
+Google Cloud Pub/Sub is a messaging service for exchanging event data among applications and services.
+A producer of data publishes a messages to a Cloud Pub/Sub topic.
+A consumer creates a subscription to that topic.
+Subscribers either pull messages from a subscription or are configured as webhooks for push subscriptions.
+Every subscriber must acknowledge each message within a configurable window of time.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform
+
+-----
+
+google242796_student@qwiklabs-gcp-3ae938d9b8fce3df:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google242796_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google242796_student@qwiklabs-gcp-3ae938d9b8fce3df:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-3ae938d9b8fce3df
+	Your active configuration is: [cloudshell-15378]
+
+google242796_student@qwiklabs-gcp-3ae938d9b8fce3df:~$ gcloud config set project qwiklabs-gcp-3ae938d9b8fce3df
+	Updated property [core/project].
+
+google242796_student@qwiklabs-gcp-3ae938d9b8fce3df:~$ gcloud beta pubsub subscriptions pull --auto-ack MySub
+	┌─────────────┬────────────────┬────────────┐
+	│     DATA    │   MESSAGE_ID   │ ATTRIBUTES │
+	├─────────────┼────────────────┼────────────┤
+	│ Hello World │ 44596773144432 │            │
+	└─────────────┴────────────────┴────────────┘
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

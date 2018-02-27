@@ -1,0 +1,200 @@
+Google Cloud Natural Language API lets you extract information about people, places, events, (and more) mentioned in text documents, news articles, or blog posts.
+You can use it to understand sentiment about your product on social media, or parse intent from customer conversations happening in a call center or a messaging app.
+You can even upload text documents for analysis.
+
+Cloud Natural Language API features
+ - Syntax Analysis: Extract tokens and sentences, identify parts of speech (PoS) and create dependency parse trees for each sentence.
+ - Entity Recognition: Identify entities and label by types such as person, organization, location, events, products and media.
+ - Sentiment Analysis: Understand the overall sentiment expressed in a block of text.
+ - Content Classification: Classify documents in predefined 700+ categories.
+ - Multi-Language: Enables you to easily analyze text in multiple languages including English, Spanish, Japanese, Chinese (Simplified and Traditional), French, German, Italian, Korean and Portuguese.
+ - Integrated REST API: Access via REST API. Text can be uploaded in the request or integrated with Google Cloud Storage.
+ - In this lab, you'll ask the Cloud Natural LanguageAPI to extract entities (like people, places, and events) from a snippet of text.
+
+The Natural Language API method you'll use is analyzeEntities.
+With this method, the API can extract entities (like people, places, and events) from text. 
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform
+
+-----
+
+google224825_student@qwiklabs-gcp-a20a015e614d1341:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google224825_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google224825_student@qwiklabs-gcp-a20a015e614d1341:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-a20a015e614d1341
+	Your active configuration is: [cloudshell-22660]
+
+google224825_student@qwiklabs-gcp-a20a015e614d1341:~$ gcloud config set project qwiklabs-gcp-a20a015e614d1341
+	Updated property [core/project].
+
+API KEY: "AIzaSyDs7vT7afMHN11d0b3e7TFWA3gz4utbicI"
+
+export API_KEY=AIzaSyDs7vT7afMHN11d0b3e7TFWA3gz4utbicI
+google224825_student@qwiklabs-gcp-a20a015e614d1341:~$ export API_KEY=AIzaSyDs7vT7afMHN11d0b3e7TFWA3gz4utbicI
+
+vi request.json
+google224825_student@qwiklabs-gcp-a20a015e614d1341:~$ vi request.json
+
+i
+
+{
+  "document":{
+    "type":"PLAIN_TEXT",
+    "content":"Michelangelo Caravaggio, Italian painter, is known for 'The Calling of Saint Matthew'"
+  },
+  "encodingType":"UTF8"
+}
+
+ESC
+:wq
+
+curl "https://language.googleapis.com/v1/documents:analyzeEntities?key=${API_KEY}" -s -X POST -H "Content-Type: application/json" --data-binary @request.json
+google224825_student@qwiklabs-gcp-a20a015e614d1341:~$ curl "https://language.googleapis.com/v1/documents:analyzeEntities?key=${API_KEY}" -s -X POST -H "Content-Type: application/json" --data-binary @request.json
+{
+  "entities": [
+    {
+      "name": "Michelangelo Caravaggio",
+      "type": "PERSON",
+      "metadata": {
+        "mid": "/m/020bg",
+        "wikipedia_url": "https://en.wikipedia.org/wiki/Caravaggio"
+      },
+      "salience": 0.82800984,
+      "mentions": [
+        {
+          "text": {
+            "content": "Michelangelo Caravaggio",
+            "beginOffset": 0
+          },
+          "type": "PROPER"
+        },
+        {
+          "text": {
+            "content": "painter",
+            "beginOffset": 33
+          },
+          "type": "COMMON"
+        }
+      ]
+    },
+    {
+      "name": "Italian",
+      "type": "LOCATION",
+      "metadata": {},
+      "salience": 0.14117765,
+      "mentions": [
+        {
+          "text": {
+            "content": "Italian",
+            "beginOffset": 25
+          },
+          "type": "PROPER"
+        }
+      ]
+    },
+    {
+      "name": "The Calling of Saint Matthew",
+      "type": "EVENT",
+      "metadata": {
+        "mid": "/m/085_p7",
+        "wikipedia_url": "https://en.wikipedia.org/wiki/The_Calling_of_St_Matthew_(Caravaggio)"
+      },
+      "salience": 0.03081248,
+      "mentions": [
+        {
+          "text": {
+            "content": "The Calling of Saint Matthew",
+            "beginOffset": 56
+          },
+          "type": "PROPER"
+        }
+      ]
+    }
+  ],
+  "language": "en"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

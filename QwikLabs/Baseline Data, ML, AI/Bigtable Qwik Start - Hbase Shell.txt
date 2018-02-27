@@ -1,0 +1,153 @@
+Cloud Bigtable is Google's NoSQL Big Data database service.
+It's the same database that powers many core Google services, including Search, Analytics, Maps, and Gmail.
+In this lab you'll learn how to use the HBase shell to connect to a Cloud Bigtable instance, and read and write data in a table.
+
+Cloud Bigtable stores data in tables, which contain rows.
+Each row is identified by a row key.
+Data in a row is organized into column families, or groups of columns.
+A column qualifier identifies a single column within a column family.
+A cell is the intersection of a row and a column.
+Each cell can contain multiple versions of a value.
+
+-----
+
+google220586_student@qwiklabs-gcp-7f61f0fee259b605:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google220586_student@qwiklabs.net
+
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google220586_student@qwiklabs-gcp-7f61f0fee259b605:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-7f61f0fee259b605
+
+	Your active configuration is: [cloudshell-14740]
+
+google220586_student@qwiklabs-gcp-7f61f0fee259b605:~$ gcloud config set project qwiklabs-gcp-7f61f0fee259b605
+	Updated property [core/project].
+
+google220586_student@qwiklabs-gcp-7f61f0fee259b605:~$ git clone https://github.com/GoogleCloudPlatform/cloud-bigtable-examples.git
+	Cloning into 'cloud-bigtable-examples'...
+	remote: Counting objects: 4925, done.
+	remote: Total 4925 (delta 0), reused 0 (delta 0), pack-reused 4925
+	Receiving objects: 100% (4925/4925), 1.22 MiB | 921.00 KiB/s, done.
+	Resolving deltas: 100% (2054/2054), done.
+
+google220586_student@qwiklabs-gcp-7f61f0fee259b605:~$ cd cloud-bigtable-examples/quickstart
+ERRORE IN LAB SEGNALATO DA IGNORARE
+	...
+
+hbase(main):001:0> create 'my-table', 'cf1'
+	0 row(s) in 2.0310 seconds
+	=> Hbase::Table - my-table
+
+hbase(main):002:0> list
+	TABLE
+	my-table
+	1 row(s) in 0.3430 seconds
+	=> ["my-table"]
+
+hbase(main):003:0> put 'my-table', 'r1', 'cf1:c1', 'test-value'
+	0 row(s) in 3.5170 seconds
+
+hbase(main):004:0> scan 'my-table'
+	ROW                                               COLUMN+CELL
+	 r1                                               column=cf1:c1, timestamp=1518547863507, value=test-value
+	1 row(s) in 3.0270 seconds
+
+hbase(main):005:0> disable 'my-table'
+	0 row(s) in 1.2000 seconds
+
+
+hbase(main):006:0> drop 'my-table'
+	0 row(s) in 1.4700 seconds
+
+hbase(main):010:0> exit
+	[INFO] ------------------------------------------------------------------------
+	[INFO] BUILD SUCCESS
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Total time: 04:22 min
+	[INFO] Finished at: 2018-02-13T19:52:41+01:00
+	[INFO] Final Memory: 37M/88M
+	[INFO] ------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

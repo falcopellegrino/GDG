@@ -1,0 +1,27 @@
+cd /c/gdg
+//change directory to c:\gdg\
+
+ls
+// list of files and folders
+dir
+// list of files and folders
+
+git init
+//initialize repository
+
+rm -rf .git
+//undo repository just initialized
+
+git add -A
+//add all files in folder and subfolders
+
+git commit -m "mandatory comment"
+// commit all changes in files of folder and subfolders
+
+git clone https://my.url.com
+// clone and initialize repository from url
+
+RE-CONNECT ON NEW DEVICE
+git init
+git remote add origin https://github.com/falcopellegrino/GDG.git
+git remote set-url origin https://github.com/falcopellegrino/GDG.git

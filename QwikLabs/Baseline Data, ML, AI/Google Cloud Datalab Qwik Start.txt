@@ -1,0 +1,224 @@
+Cloud Datalab is an interactive data analysis and machine learning environment designed for Google Cloud Platform.
+ou can use it to explore, analyze, transform, and visualize your data interactively and to build machine learning models from your data.
+
+Cloud Datalab uses notebooks instead of the text files containing code.
+Notebooks bring together code, documentation written as markdown, and the results of code execution—whether as text, image, or HTML/JavaScript.
+Like a code editor or IDE, notebooks help you write code: they allow you to execute code in an interactive and iterative manner, rendering the results alongside the code.
+Further, when you share a notebook with team members, you can include code, markdown-formatted documentation, and results that include interactive charts,
+to provide them with context that goes beyond what Python or SQL code files alone can provide.
+
+-----
+
+google225484_student@qwiklabs-gcp-842cff5eb1e397a8:~$ datalab create my-datalab
+	Please specify a zone from one of:
+	 [1] us-east1-b
+	 [2] us-east1-c
+	 [3] us-east1-d
+	 [4] us-east4-c
+	 [5] us-east4-b
+	 [6] us-east4-a
+	 [7] us-central1-c
+	 [8] us-central1-a
+	 [9] us-central1-f
+	 [10] us-central1-b
+	 [11] us-west1-b
+	 [12] us-west1-c
+	 [13] us-west1-a
+	 [14] europe-west4-b
+	 [15] europe-west4-c
+	 [16] europe-west1-b
+	 [17] europe-west1-d
+	 [18] europe-west1-c
+	 [19] europe-west3-b
+	 [20] europe-west3-c
+	 [21] europe-west3-a
+	 [22] europe-west2-c
+	 [23] europe-west2-b
+	 [24] europe-west2-a
+	 [25] asia-east1-b
+	 [26] asia-east1-a
+	 [27] asia-east1-c
+	 [28] asia-southeast1-b
+	 [29] asia-southeast1-a
+	 [30] asia-northeast1-b
+	 [31] asia-northeast1-c
+	 [32] asia-northeast1-a
+	 [33] asia-south1-c
+	 [34] asia-south1-b
+	 [35] asia-south1-a
+	 [36] australia-southeast1-b
+	 [37] australia-southeast1-c
+	 [38] australia-southeast1-a
+	 [39] southamerica-east1-b
+	 [40] southamerica-east1-c
+	 [41] southamerica-east1-a
+	 [42] northamerica-northeast1-a
+	 [43] northamerica-northeast1-b
+	 [44] northamerica-northeast1-c
+	Your selected zone:
+	
+13
+	Creating the network datalab-network
+	Creating the firewall rule datalab-network-allow-ssh
+	Creating the disk my-datalab-pd
+	Creating the repository datalab-notebooks
+	Creating the instance my-datalab
+	Created [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-842cff5eb1e397a8/zones/us-west1-a/instances/my-datalab].
+	Connecting to my-datalab.
+	This will create an SSH tunnel and may prompt you to create an rsa key pair. To manage these keys, see https://cloud.google.com/compute/docs/instances/adding-removing-ssh-keys
+	Waiting for Datalab to be reachable at http://localhost:8081/
+	This tool needs to create the directory
+	[/home/google225484_student/.ssh] before being able to generate SSH
+	keys.
+
+	Do you want to continue (Y/n)? 
+
+y
+	Generating public/private rsa key pair.
+	Enter passphrase (empty for no passphrase):
+	
+	Enter same passphrase again:
+	
+	Your identification has been saved in /home/google225484_student/.ssh/google_compute_engine.
+	Your public key has been saved in /home/google225484_student/.ssh/google_compute_engine.pub.
+	The key fingerprint is:
+	SHA256:E0irTnDvE2UrGnxaGmUnFbxt9pV4n9FOmh1nOxHB1q8 google225484_student@cs-6000-devshell-vm-925b7a3d-51cb-4662-9f3c-d018ac351a21
+	The key's randomart image is:
+	+---[RSA 2048]----+
+	|      ..o.    ..o|
+	|     . +.      +.|
+	|  . . * =o   ...+|
+	|   + = =.o+ . ++*|
+	|    * * So . o XB|
+	|   o X o .  . E++|
+	|    = o         .|
+	|       .         |
+	|                 |
+	+----[SHA256]-----+
+	Updating project ssh metadata.../Updated [https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-842cff5eb1e397a8].
+	Updating project ssh metadata...done.
+	Waiting for SSH key to propagate.
+
+	The connection to Datalab is now open and will remain until this command is killed.
+	Click on the *Web Preview* (square button at top-right), select *Change port > Port 8081*, and start using Datalab.
+
+
+
+
+Connected, host fingerprint: ssh-rsa 2048 DE:BF:CC:81:2B:00:3C:48:ED:7F:F2:46:B4:AB:32:72:1A:90:41:6A:60:36:7C:89:B
+B:DE:BC:48:34:6E:CF:7E
+google225484_student@my-datalab ~ $ sudo docker ps
+CONTAINER ID        IMAGE                                       COMMAND                  CREATED             STATUS
+              PORTS                      NAMES
+7111e6d95482        gcr.io/google_containers/fluentd-gcp:1.18   "/bin/sh -c '/usr/..."   9 minutes ago       Up 9 m
+inutes                                   logger
+fdc1f30f1e30        gcr.io/cloud-datalab/datalab:latest         "/datalab/run.sh"        10 minutes ago      Up 10 
+minutes       127.0.0.1:8080->8080/tcp   datalab
+google225484_student@my-datalab ~ $ docker exec -it fdc1f30f1e30 bash
+root@fdc1f30f1e30:/# cd /content/datalab/notebooks
+root@fdc1f30f1e30:~/datalab/notebooks# git log
+commit 3bd2b338adee75c85171e452ee273cc92a325610
+Author: google225484_student@qwiklabs.net <google225484_student@qwiklabs.net>
+Date:   Sat Feb 17 08:34:08 2018 +0000
+    New Notebook Commit
+commit 01808af5d9adb00d5d2c57d0aa91ec9c2bdf710f
+Author: Datalab <nobody>
+Date:   Sat Feb 17 08:25:41 2018 +0000
+    Set up initial notebook repo.
+root@fdc1f30f1e30:~/datalab/notebooks# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

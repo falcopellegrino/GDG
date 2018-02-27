@@ -1,0 +1,273 @@
+Container Registry: Qwik Start
+
+Google Container Registry is a private container image registry that runs on Google Cloud Platform's reliable, fast, and secure infrastructure.
+
+You can access Container Registry through secure HTTPS endpoints, which allow you to push, pull, and manage images from any system, VM instance, or your own hardware.
+Additionally, you can use the Docker credential helper command-line tool to configure Docker to authenticate directly with Container Registry.
+
+While Docker provides a central registry for storing public images, you might not want your images to be accessible to the world.
+To control access to your images, you must store your images in a private registry.
+
+This hands-on lab demonstrates how to build a Docker image containing a basic Python web app, and push it to Google Container Registry.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform
+
+At minimum, a Docker image consists of three files:
+ - a Dockerfile,
+ - a requirements.txt file,
+ - and your code.
+Dockerfile defines your image's environment, and requirements.txt defines your image's dependencies.
+
+-----
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google241877_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-5497a7c9b329ed5f
+	Your active configuration is: [cloudshell-12450]
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~$ gcloud config set project qwiklabs-gcp-5497a7c9b329ed5f
+	Updated property [core/project].
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~$ mkdir dimage
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~$ cd dimage
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ nano Dockerfile
+
+# Import Python runtime and set up working directory
+FROM python:2.7-slim
+WORKDIR /app
+ADD . /app
+
+# Install any necessary dependencies
+RUN pip install -r requirements.txt
+
+# Open port 8080 for serving the webpage
+EXPOSE 8080
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
+
+CTRL+X
+Y
+ENTER
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ nano requirements.txt
+
+Flask
+
+CTRL+X
+Y
+ENTER
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ nano app.py
+
+from flask import Flask
+import os
+import socket
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    html = "<h3>Hello, World!</h3>"
+    return html
+
+if __name__ == "__main__":
+  app.run(host='0.0.0.0', port=8080)
+
+CTRL+X
+Y
+ENTER
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ sudo pip install flask
+	Collecting flask
+	  Downloading Flask-0.12.2-py2.py3-none-any.whl (83kB)
+		100% |████████████████████████████████| 92kB 3.7MB/s
+	Collecting itsdangerous>=0.21 (from flask)
+	  Downloading itsdangerous-0.24.tar.gz (46kB)
+		100% |████████████████████████████████| 51kB 5.8MB/s
+	Collecting click>=2.0 (from flask)
+	  Downloading click-6.7-py2.py3-none-any.whl (71kB)
+		100% |████████████████████████████████| 71kB 4.5MB/s
+	Requirement already satisfied: Werkzeug>=0.7 in /usr/local/lib/python2.7/dist-packages (from flask)
+	Collecting Jinja2>=2.4 (from flask)
+	  Downloading Jinja2-2.10-py2.py3-none-any.whl (126kB)
+		100% |████████████████████████████████| 133kB 3.7MB/s
+	Collecting MarkupSafe>=0.23 (from Jinja2>=2.4->flask)
+	  Downloading MarkupSafe-1.0.tar.gz
+	Building wheels for collected packages: itsdangerous, MarkupSafe
+	  Running setup.py bdist_wheel for itsdangerous ... done
+	  Stored in directory: /root/.cache/pip/wheels/fc/a8/66/24d655233c757e178d45dea2de22a04c6d92766abfb741129a
+	  Running setup.py bdist_wheel for MarkupSafe ... done
+	  Stored in directory: /root/.cache/pip/wheels/88/a7/30/e39a54a87bcbe25308fa3ca64e8ddc75d9b3e5afa21ee32d57
+	Successfully built itsdangerous MarkupSafe
+	Installing collected packages: itsdangerous, click, MarkupSafe, Jinja2, flask
+	Successfully installed Jinja2-2.10 MarkupSafe-1.0 click-6.7 flask-0.12.2 itsdangerous-0.24
+  
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ python app.py
+	* Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
+
+https://8080-dot-3572304-dot-devshell.appspot.com/?authuser=0#
+
+CTRL+C
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ docker build -t quickstart-image .
+	Sending build context to Docker daemon  4.096kB
+	Step 1/6 : FROM python:2.7-slim
+	2.7-slim: Pulling from library/python
+	d2ca7eff5948: Pull complete
+	cef69dd0e5b9: Pull complete
+	50e1d7e4f3c6: Pull complete
+	861e9de5333f: Pull complete
+	Digest: sha256:e9baca9b405d3bbba71d4c3c4ce8a461e4937413b8b910cb1801dfac0a2423aa
+	Status: Downloaded newer image for python:2.7-slim
+	 ---> 52ad41c7aea4
+	Step 2/6 : WORKDIR /app
+	 ---> 8de90e8a11bc
+	Removing intermediate container ccfa8d578907
+	Step 3/6 : ADD . /app
+	 ---> d1c24e242bda
+	Removing intermediate container ab51eee9db3a
+	Step 4/6 : RUN pip install -r requirements.txt
+	 ---> Running in acdef2cb009a
+	Collecting Flask (from -r requirements.txt (line 1))
+	  Downloading Flask-0.12.2-py2.py3-none-any.whl (83kB)
+	Collecting itsdangerous>=0.21 (from Flask->-r requirements.txt (line 1))
+	  Downloading itsdangerous-0.24.tar.gz (46kB)
+	Collecting Jinja2>=2.4 (from Flask->-r requirements.txt (line 1))
+	  Downloading Jinja2-2.10-py2.py3-none-any.whl (126kB)
+	Collecting Werkzeug>=0.7 (from Flask->-r requirements.txt (line 1))
+	  Downloading Werkzeug-0.14.1-py2.py3-none-any.whl (322kB)
+	Collecting click>=2.0 (from Flask->-r requirements.txt (line 1))
+	  Downloading click-6.7-py2.py3-none-any.whl (71kB)
+	Collecting MarkupSafe>=0.23 (from Jinja2>=2.4->Flask->-r requirements.txt (line 1))
+	  Downloading MarkupSafe-1.0.tar.gz
+	Building wheels for collected packages: itsdangerous, MarkupSafe
+	  Running setup.py bdist_wheel for itsdangerous: started
+	  Running setup.py bdist_wheel for itsdangerous: finished with status 'done'
+	  Stored in directory: /root/.cache/pip/wheels/fc/a8/66/24d655233c757e178d45dea2de22a04c6d92766abfb741129a
+	  Running setup.py bdist_wheel for MarkupSafe: started
+	  Running setup.py bdist_wheel for MarkupSafe: finished with status 'done'
+	  Stored in directory: /root/.cache/pip/wheels/88/a7/30/e39a54a87bcbe25308fa3ca64e8ddc75d9b3e5afa21ee32d57
+	Successfully built itsdangerous MarkupSafe
+	Installing collected packages: itsdangerous, MarkupSafe, Jinja2, Werkzeug, click, Flask
+	Successfully installed Flask-0.12.2 Jinja2-2.10 MarkupSafe-1.0 Werkzeug-0.14.1 click-6.7 itsdangerous-0.24
+	 ---> e8a2a73f78ef
+	Removing intermediate container acdef2cb009a
+	Step 5/6 : EXPOSE 8080
+	 ---> Running in f2e1f8343a7d
+	 ---> 1b0f4fbfdaed
+	Removing intermediate container f2e1f8343a7d
+	Step 6/6 : CMD python app.py
+	 ---> Running in 882d10bb154a
+	 ---> 90fa46e9dc1b
+	Removing intermediate container 882d10bb154a
+	Successfully built 90fa46e9dc1b
+	Successfully tagged quickstart-image:latest
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ docker tag quickstart-image gcr.io/qwiklabs-gcp-5497a7c9b329ed5f/quickstart-image
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ gcloud docker -- push gcr.io/qwiklabs-gcp-5497a7c9b329ed5f/quickstart-image
+	The push refers to a repository [gcr.io/qwiklabs-gcp-5497a7c9b329ed5f/quickstart-image]
+	61a212747acd: Pushed
+	0c77795cc110: Pushed
+	64af5c9c0101: Pushed
+	03cd3fb86dd2: Pushed
+	630d02da980e: Pushed
+	b2f046b20847: Pushed
+	cf051be4e149: Layer already exists
+	latest: digest: sha256:fd25fd40890789ebd62723babe6d3ce7e4550feb933762883ec0dd2bc3be5d0a size: 1787
+
+http://gcr.io/qwiklabs-gcp-5497a7c9b329ed5f/quickstart-image
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ gcloud docker -- pull gcr.io/qwiklabs-gcp-5497a7c9b329ed5f/quickstart-image
+	Using default tag: latest
+	latest: Pulling from qwiklabs-gcp-5497a7c9b329ed5f/quickstart-image
+	Digest: sha256:fd25fd40890789ebd62723babe6d3ce7e4550feb933762883ec0dd2bc3be5d0a
+	Status: Image is up to date for gcr.io/qwiklabs-gcp-5497a7c9b329ed5f/quickstart-image:latest
+
+google241877_student@qwiklabs-gcp-5497a7c9b329ed5f:~/dimage$ gcloud container images list
+	NAME
+	gcr.io/qwiklabs-gcp-5497a7c9b329ed5f/quickstart-image
+	Only listing images in gcr.io/qwiklabs-gcp-5497a7c9b329ed5f. Use --repository to list images in other repositories.
+
+docker run -p 8080:8080 gcr.io/qwiklabs-gcp-5497a7c9b329ed5f/quickstart-image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

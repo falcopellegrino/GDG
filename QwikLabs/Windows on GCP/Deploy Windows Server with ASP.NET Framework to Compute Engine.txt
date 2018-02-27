@@ -1,0 +1,14 @@
+Google Compute Engine lets you create and run virtual machines on Google infrastructure, running different operating systems, including Windows Server!
+
+???Google Compute Engine
+
+Google Cloud Launcher
+Google Cloud Launcher lets you quickly deploy functional software packages that run on Google Cloud Platform.
+Even if you are unfamiliar with services like Compute Engine, you can easily spin up a familiar software package
+without having to manually configure the software, virtual machine instances, storage, or network settings.
+
+-----
+
+google213123_student
+Y*I3O8%:nW3&Tz;
+

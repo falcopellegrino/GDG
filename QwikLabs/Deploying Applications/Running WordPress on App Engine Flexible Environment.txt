@@ -1,0 +1,333 @@
+???WordPress
+
+???App Engine Flexible Environment
+
+???Cloud SQL instance
+
+???Cloud Storage bucket
+
+???WordPress project for App Engine Flexible Environment
+
+???Google Cloud Console
+
+-----
+
+gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google217685_student@qwiklabs.net
+
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+gcloud config list project
+		[core]
+		project = qwiklabs-gcp-2eefeb7b37049c21
+
+	Your active configuration is: [cloudshell-31621]
+
+gcloud config set project qwiklabs-gcp-2eefeb7b37049c21
+	Updated property [core/project].
+
+	
+Create a MySQL Second Generation instance --> INSTANCE ID
+wp
+Create a MySQL Second Generation instance --> ROOT PASSWORD
+vpyiNNGguiq5eeLf
+
+New user account
+wp/vpyiNNGguiq5eeLf
+
+wp-fp-999
+
+mkdir -p ${HOME}/bin
+
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+
+php -r "if (hash_file('SHA384', 'composer-setup.php') === rtrim(file_get_contents('https://composer.github.io/installer.sig'))) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+
+php composer-setup.php --filename=composer --install-dir=${HOME}/bin
+	All settings correct for using Composer
+	Downloading...
+
+	Composer (version 1.6.3) successfully installed to: /home/google217685_student/bin/composer
+	Use it: php /home/google217685_student/bin/composer
+
+export PATH=${HOME}/bin:${PATH}
+
+composer
+	php composer-setup.php --filename=composer --install-dir=${HOME}/bin
+	All settings correct for using Composer
+	Downloading...
+
+	Composer (version 1.6.3) successfully installed to: /home/google217685_student/bin/composer
+	Use it: php /home/google217685_student/bin/composer
+
+	google217685_student@qwiklabs-gcp-2eefeb7b37049c21:~$ export PATH=${HOME}/bin:${PATH}
+	google217685_student@qwiklabs-gcp-2eefeb7b37049c21:~$ composer
+	   ______
+	  / ____/___  ____ ___  ____  ____  ________  _____
+	 / /   / __ \/ __ `__ \/ __ \/ __ \/ ___/ _ \/ ___/
+	/ /___/ /_/ / / / / / / /_/ / /_/ (__  )  __/ /
+	\____/\____/_/ /_/ /_/ .___/\____/____/\___/_/
+						/_/
+	Composer version 1.6.3 2018-01-31 16:28:17
+
+	Usage:
+	  command [options] [arguments]
+
+	Options:
+	  -h, --help                     Display this help message
+	  -q, --quiet                    Do not output any message
+	  -V, --version                  Display this application version
+		  --ansi                     Force ANSI output
+		  --no-ansi                  Disable ANSI output
+	  -n, --no-interaction           Do not ask any interactive question
+		  --profile                  Display timing and memory usage information
+		  --no-plugins               Whether to disable plugins.
+	  -d, --working-dir=WORKING-DIR  If specified, use the given directory as working directory.
+	  -v|vv|vvv, --verbose           Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+
+	Available commands:
+	  about                Shows the short information about Composer.
+	  archive              Creates an archive of this composer package.
+	  browse               Opens the package's repository URL or homepage in your browser.
+	  check-platform-reqs  Check that platform requirements are satisfied.
+	  clear-cache          Clears composer's internal package cache.
+	  clearcache           Clears composer's internal package cache.
+	  config               Sets config options.
+	  create-project       Creates new project from a package into given directory.
+	  depends              Shows which packages cause the given package to be installed.
+	  diagnose             Diagnoses the system to identify common errors.
+	  dump-autoload        Dumps the autoloader.
+	  dumpautoload         Dumps the autoloader.
+	  exec                 Executes a vendored binary/script.
+	  global               Allows running commands in the global composer dir ($COMPOSER_HOME).
+	  help                 Displays help for a command
+	  home                 Opens the package's repository URL or homepage in your browser.
+	  info                 Shows information about packages.
+	  init                 Creates a basic composer.json file in current directory.
+	  install              Installs the project dependencies from the composer.lock file if present, or falls back on the composer.json.
+	  licenses             Shows information about licenses of dependencies.
+	  list                 Lists commands
+	  outdated             Shows a list of installed packages that have updates available, including their latest version.
+	  prohibits            Shows which packages prevent the given package from being installed.
+	  remove               Removes a package from the require or require-dev.
+	  require              Adds required packages to your composer.json and installs them.
+	  run-script           Runs the scripts defined in composer.json.
+	  search               Searches for packages.
+	  self-update          Updates composer.phar to the latest version.
+	  selfupdate           Updates composer.phar to the latest version.
+	  show                 Shows information about packages.
+	  status               Shows a list of locally modified packages.
+	  suggests             Shows package suggestions.
+	  update               Upgrades your dependencies to the latest version according to composer.json, and updates the composer.lock file.
+	  upgrade              Upgrades your dependencies to the latest version according to composer.json, and updates the composer.lock file.
+	  validate             Validates a composer.json and composer.lock.
+	  why                  Shows which packages cause the given package to be installed.
+	  why-not              Shows which packages prevent the given package from being installed.
+
+git clone https://github.com/GoogleCloudPlatform/php-docs-samples.git
+	Cloning into 'php-docs-samples'...
+	remote: Counting objects: 7459, done.
+	remote: Compressing objects: 100% (68/68), done.
+	remote: Total 7459 (delta 54), reused 73 (delta 35), pack-reused 7350
+	Receiving objects: 100% (7459/7459), 6.95 MiB | 12.55 MiB/s, done.
+	Resolving deltas: 100% (4567/4567), done.
+
+!!!NON FUNZIONA, MANCA PACCHETTO ZIP, INSTALLATI COSI VARI PACCHETTI COSI':
+sudo apt-get update
+sudo apt-get install mcrypt php7.0-mcrypt
+sudo apt-get install mcrypt php7.0-intl
+sudo apt-get install mcrypt php7.0-zip
+
+php wordpress-helper.php help setup
+	Usage:
+	  setup [options]
+
+	Options:
+	  -e, --env[=ENV]                              App Engine environment to use; f: Flexible Environment, s: Standard Environment.
+	  -d, --dir[=DIR]                              Directory for the new project [default: "my-wordpress-project"]
+		  --sql_gen[=SQL_GEN]                      Cloud SQL generation to use; 2: Second Generation, 1: First Generation [default: 2]
+	  -p, --project_id[=PROJECT_ID]                Google Cloud project id [default: ""]
+		  --db_region[=DB_REGION]                  Cloud SQL region [default: ""]
+		  --db_instance[=DB_INSTANCE]              Cloud SQL instance id [default: ""]
+		  --db_name[=DB_NAME]                      Cloud SQL database name [default: ""]
+		  --db_user[=DB_USER]                      Cloud SQL database username [default: ""]
+		  --db_password[=DB_PASSWORD]              Cloud SQL database password [default: ""]
+		  --local_db_user[=LOCAL_DB_USER]          Local SQL database username [default: ""]
+		  --local_db_password[=LOCAL_DB_PASSWORD]  Local SQL database password [default: ""]
+		  --wordpress_url[=WORDPRESS_URL]          URL of the WordPress archive [default: "https://wordpress.org/latest.tar.gz"]
+	  -h, --help                                   Display this help message
+	  -q, --quiet                                  Do not output any message
+	  -V, --version                                Display this application version
+		  --ansi                                   Force ANSI output
+		  --no-ansi                                Disable ANSI output
+	  -n, --no-interaction                         Do not ask any interactive question
+	  -v|vv|vvv, --verbose                         Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+
+	Help:
+	  Setup WordPress on GCP
+
+php wordpress-helper.php setup -d ${HOME}/my-wordpress-project --wordpress_url=https://wordpress.org/latest.zip
+
+$ php wordpress-helper.php setup -d ${HOME}/my-wordpress-project
+
+We will use the directory: /home/xxxx/my-wordpress-project. If the
+directory exists, we will override the contents.
+Do you want to continue? (Y/n) <Hit Enter>
+
+A directory /home/xxxx/my-wordpress-project was created.
+
+Please select the App Engine Environment (defaults to Flexible Environment)
+  [0] Flexible Environment
+  [1] Standard Environment
+ > <Hit Enter>
+
+Creating a new project for: Flexible Environment
+
+Please select the region of your Cloud SQL instance (defaults to us-central1)
+  [0] us-central1
+  [1] us-east1
+  [2] europe-west1
+  [3] asia-east1
+ > <Hit Enter (choose the number if you choose the other region)>
+
+Using a db_region: us-central1
+Downloading the WordPress archive...
+Downloaded the WordPress archive.
+Downloading the Batcache plugin...
+Downloaded Batcache plugin.
+Downloading the Memcached plugin...
+Downloaded Memcached plugin.
+Copying drop-ins...
+
+Please enter project_id (mandatory input):
+<Type your project id and hit enter - you can find your GCP project ID on your Qwiklabs page>
+Please enter db_instance (defaults to 'wp'): <Hit Enter>
+Please enter db_name (defaults to 'wp'): <Hit Enter>
+Please enter db_user (defaults to 'wp'): <Hit Enter>
+
+Please enter db_password (mandatory input):
+<Type your password for the database user>
+--> OCCHIO QUI' NON SI VEDE QUELLO CHE DIGITI
+--> IO AVEVO SBAGLIATO, SONO DOVUTO ANDARE IN EDIT SUL wp.config
+--> OCCHIO LA PASSWORD STA DUE VOLTE
+
+Do you want to use the same db user and password for local run? (Y/n)
+<Hit Enter>
+
+...
+...
+
+Your WordPress project is ready at /home/xxxx/my-wordpress-project
+
+cd ${HOME}/my-wordpress-project
+
+gcloud app deploy
+	You are creating an app for project [qwiklabs-gcp-2eefeb7b37049c21].
+	WARNING: Creating an App Engine application for a project is irreversible and the region
+	cannot be changed. More information about regions is at
+	<https://cloud.google.com/appengine/docs/locations>.
+
+	Please choose the region where you want your App Engine application
+	located:
+
+	 [1] us-east1      (supports standard and flexible)
+	 [2] us-east4      (supports standard and flexible)
+	 [3] asia-northeast1 (supports standard and flexible)
+	 [4] asia-south1   (supports standard and flexible)
+	 [5] australia-southeast1 (supports standard and flexible)
+	 [6] southamerica-east1 (supports standard and flexible)
+	 [7] northamerica-northeast1 (supports standard and flexible)
+	 [8] europe-west3  (supports standard and flexible)
+	 [9] europe-west   (supports standard and flexible)
+	 [10] us-central    (supports standard and flexible)
+	 [11] europe-west2  (supports standard and flexible)
+	 [12] cancel
+	Please enter your numeric choice:  
+
+10
+
+https://YOUR-PROJECT-ID.appspot.com/
+https://qwiklabs-gcp-2eefeb7b37049c21.appspot.com/
+
+Site Title	fp
+Username	fp
+Password	vpyiNNGguiq5eeLf
+Your Email 	franco.pellegrino@aruba.it
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

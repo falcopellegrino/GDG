@@ -1,0 +1,365 @@
+-----
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google239364_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-d7afc370c8a846b7
+	Your active configuration is: [cloudshell-30076]
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ gcloud config set project qwiklabs-gcp-d7afc370c8a846b7
+	Updated property [core/project].
+
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ region=us-central1
+
+LA SEGUENTE DOVREBBE ESSERE ERRATA:
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ zone=${region}-us-central1-a
+DOVREBBE ESSERE
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ zone=us-central1-a
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ project_id=qwiklabs-gcp-d7afc370c8a846b7
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ service_account=cluster-service-account@${project_id}.iam.gserviceaccount.com
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ gcloud config set compute/zone ${zone}
+	Updated property [compute/zone].
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ gcloud config set project ${project_id}
+	Updated property [core/project].
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ gcloud iam service-accounts create cluster-service-account --display-name "cluster-service-account"
+	Created service account [cluster-service-account].
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ gcloud projects add-iam-policy-binding ${project_id} --member serviceAccount:${service_account} --role roles/logging.logWriter
+	bindings:
+	- members:
+	  - serviceAccount:service-751027435316@gae-api-prod.google.com.iam.gserviceaccount.com
+	  role: roles/appengineflex.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com
+	  role: roles/bigquerydatatransfer.serviceAgent
+	- members:
+	  - serviceAccount:751027435316@cloudbuild.gserviceaccount.com
+	  role: roles/cloudbuild.builds.builder
+	- members:
+	  - serviceAccount:service-751027435316@gcf-admin-robot.iam.gserviceaccount.com
+	  role: roles/cloudfunctions.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@gcp-sa-cloudiot.iam.gserviceaccount.com
+	  role: roles/cloudiot.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@container-engine-robot.iam.gserviceaccount.com
+	  role: roles/container.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@dataproc-accounts.iam.gserviceaccount.com
+	  role: roles/dataproc.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@dlp-api.iam.gserviceaccount.com
+	  role: roles/dlp.serviceAgent
+	- members:
+	  - serviceAccount:751027435316-compute@developer.gserviceaccount.com
+	  - serviceAccount:751027435316@cloudservices.gserviceaccount.com
+	  - serviceAccount:qwiklabs-gcp-d7afc370c8a846b7@appspot.gserviceaccount.com
+	  - serviceAccount:qwiklabs-gcp-d7afc370c8a846b7@qwiklabs-gcp-d7afc370c8a846b7.iam.gserviceaccount.com
+	  - serviceAccount:service-751027435316@containerregistry.iam.gserviceaccount.com
+	  - user:google239364_student@qwiklabs.net
+	  role: roles/editor
+	- members:
+	  - serviceAccount:service-751027435316@firebase-rules.iam.gserviceaccount.com
+	  role: roles/firebaserules.system
+	- members:
+	  - serviceAccount:cluster-service-account@qwiklabs-gcp-d7afc370c8a846b7.iam.gserviceaccount.com
+	  role: roles/logging.logWriter
+	- members:
+	  - serviceAccount:service-751027435316@cloud-ml.google.com.iam.gserviceaccount.com
+	  role: roles/ml.serviceAgent
+	- members:
+	  - serviceAccount:936076353769-dcb7hgk8cpl26aetfq99c7min7o6qfrr@developer.gserviceaccount.com
+	  - user:google239364_student@qwiklabs.net
+	  role: roles/owner
+	- members:
+	  - serviceAccount:service-751027435316@sourcerepo-service-accounts.iam.gserviceaccount.com
+	  role: roles/sourcerepo.serviceAgent
+	etag: BwVl-b_9tC4=
+	version: 1
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ gcloud projects add-iam-policy-binding ${project_id} --member serviceAccount:${service_account} --role roles/monitoring.metricWriter
+	bindings:
+	- members:
+	  - serviceAccount:service-751027435316@gae-api-prod.google.com.iam.gserviceaccount.com
+	  role: roles/appengineflex.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com
+	  role: roles/bigquerydatatransfer.serviceAgent
+	- members:
+	  - serviceAccount:751027435316@cloudbuild.gserviceaccount.com
+	  role: roles/cloudbuild.builds.builder
+	- members:
+	  - serviceAccount:service-751027435316@gcf-admin-robot.iam.gserviceaccount.com
+	  role: roles/cloudfunctions.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@gcp-sa-cloudiot.iam.gserviceaccount.com
+	  role: roles/cloudiot.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@container-engine-robot.iam.gserviceaccount.com
+	  role: roles/container.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@dataproc-accounts.iam.gserviceaccount.com
+	  role: roles/dataproc.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@dlp-api.iam.gserviceaccount.com
+	  role: roles/dlp.serviceAgent
+	- members:
+	  - serviceAccount:751027435316-compute@developer.gserviceaccount.com
+	  - serviceAccount:751027435316@cloudservices.gserviceaccount.com
+	  - serviceAccount:qwiklabs-gcp-d7afc370c8a846b7@appspot.gserviceaccount.com
+	  - serviceAccount:qwiklabs-gcp-d7afc370c8a846b7@qwiklabs-gcp-d7afc370c8a846b7.iam.gserviceaccount.com
+	  - serviceAccount:service-751027435316@containerregistry.iam.gserviceaccount.com
+	  - user:google239364_student@qwiklabs.net
+	  role: roles/editor
+	- members:
+	  - serviceAccount:service-751027435316@firebase-rules.iam.gserviceaccount.com
+	  role: roles/firebaserules.system
+	- members:
+	  - serviceAccount:cluster-service-account@qwiklabs-gcp-d7afc370c8a846b7.iam.gserviceaccount.com
+	  role: roles/logging.logWriter
+	- members:
+	  - serviceAccount:service-751027435316@cloud-ml.google.com.iam.gserviceaccount.com
+	  role: roles/ml.serviceAgent
+	- members:
+	  - serviceAccount:cluster-service-account@qwiklabs-gcp-d7afc370c8a846b7.iam.gserviceaccount.com
+	  role: roles/monitoring.metricWriter
+	- members:
+	  - serviceAccount:936076353769-dcb7hgk8cpl26aetfq99c7min7o6qfrr@developer.gserviceaccount.com
+	  - user:google239364_student@qwiklabs.net
+	  role: roles/owner
+	- members:
+	  - serviceAccount:service-751027435316@sourcerepo-service-accounts.iam.gserviceaccount.com
+	  role: roles/sourcerepo.serviceAgent
+	etag: BwVl-cJxfmA=
+	version: 1
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ gcloud projects add-iam-policy-binding ${project_id} --member serviceAccount:${service_account} --role roles/container.admin
+	bindings:
+	- members:
+	  - serviceAccount:service-751027435316@gae-api-prod.google.com.iam.gserviceaccount.com
+	  role: roles/appengineflex.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com
+	  role: roles/bigquerydatatransfer.serviceAgent
+	- members:
+	  - serviceAccount:751027435316@cloudbuild.gserviceaccount.com
+	  role: roles/cloudbuild.builds.builder
+	- members:
+	  - serviceAccount:service-751027435316@gcf-admin-robot.iam.gserviceaccount.com
+	  role: roles/cloudfunctions.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@gcp-sa-cloudiot.iam.gserviceaccount.com
+	  role: roles/cloudiot.serviceAgent
+	- members:
+	  - serviceAccount:cluster-service-account@qwiklabs-gcp-d7afc370c8a846b7.iam.gserviceaccount.com
+	  role: roles/container.admin
+	- members:
+	  - serviceAccount:service-751027435316@container-engine-robot.iam.gserviceaccount.com
+	  role: roles/container.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@dataproc-accounts.iam.gserviceaccount.com
+	  role: roles/dataproc.serviceAgent
+	- members:
+	  - serviceAccount:service-751027435316@dlp-api.iam.gserviceaccount.com
+	  role: roles/dlp.serviceAgent
+	- members:
+	  - serviceAccount:751027435316-compute@developer.gserviceaccount.com
+	  - serviceAccount:751027435316@cloudservices.gserviceaccount.com
+	  - serviceAccount:qwiklabs-gcp-d7afc370c8a846b7@appspot.gserviceaccount.com
+	  - serviceAccount:qwiklabs-gcp-d7afc370c8a846b7@qwiklabs-gcp-d7afc370c8a846b7.iam.gserviceaccount.com
+	  - serviceAccount:service-751027435316@containerregistry.iam.gserviceaccount.com
+	  - user:google239364_student@qwiklabs.net
+	  role: roles/editor
+	- members:
+	  - serviceAccount:service-751027435316@firebase-rules.iam.gserviceaccount.com
+	  role: roles/firebaserules.system
+	- members:
+	  - serviceAccount:cluster-service-account@qwiklabs-gcp-d7afc370c8a846b7.iam.gserviceaccount.com
+	  role: roles/logging.logWriter
+	- members:
+	  - serviceAccount:service-751027435316@cloud-ml.google.com.iam.gserviceaccount.com
+	  role: roles/ml.serviceAgent
+	- members:
+	  - serviceAccount:cluster-service-account@qwiklabs-gcp-d7afc370c8a846b7.iam.gserviceaccount.com
+	  role: roles/monitoring.metricWriter
+	- members:
+	  - serviceAccount:936076353769-dcb7hgk8cpl26aetfq99c7min7o6qfrr@developer.gserviceaccount.com
+	  - user:google239364_student@qwiklabs.net
+	  role: roles/owner
+	- members:
+	  - serviceAccount:service-751027435316@sourcerepo-service-accounts.iam.gserviceaccount.com
+	  role: roles/sourcerepo.serviceAgent
+	etag: BwVl-cT1olk=
+	version: 1
+
+git clone https://github.com/GoogleCloudPlatform/container-engine-customize-fluentd
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ git clone https://github.com/GoogleCloudPlatform/container-engine-customize-fluentd
+	Cloning into 'container-engine-customize-fluentd'...
+	remote: Counting objects: 24, done.
+	remote: Total 24 (delta 0), reused 0 (delta 0), pack-reused 24
+	Unpacking objects: 100% (24/24), done.
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~$ cd container-engine-customize-fluentd
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ echo "$zone"
+	us-central1-us-central1-a
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ zone=us-central1-a
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ echo "$zone"                                                                                             
+	us-central1-a
+	
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ gcloud config set compute/zone ${zone}
+	Updated property [compute/zone].
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ gcloud container clusters create gke-with-custom-fluentd --service-account ${service_account} --zone ${zone} --no-enable-cloud-logging --tags=gke-cluster-with-customized-fluentd
+	Creating cluster gke-with-custom-fluentd...done.
+	Created [https://container.googleapis.com/v1/projects/qwiklabs-gcp-d7afc370c8a846b7/zones/us-central1-a/clusters/gke-with-custom-fluentd].
+	To inspect the contents of your cluster, go to: https://console.cloud.google.com/kubernetes/workload_/gcloud/us-central1-a/gke-with-custom-fluentd?project=qwiklabs-gcp-d7afc370c8a846b7
+	kubeconfig entry generated for gke-with-custom-fluentd.
+	NAME                     LOCATION       MASTER_VERSION  MASTER_IP       MACHINE_TYPE   NODE_VERSION  NUM_NODES  STATUS
+	gke-with-custom-fluentd  us-central1-a  1.8.7-gke.1     104.197.139.24  n1-standard-1  1.8.7-gke.1   3          RUNNING
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ kubectl apply -f kubernetes/test-logger.yaml
+	deployment "test-logger" created
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ kubectl get pods
+	NAME                           READY     STATUS              RESTARTS   AGE
+	test-logger-7c86df7748-lbr98   0/1       ContainerCreating   0          6s
+	test-logger-7c86df7748-qtrh7   0/1       ContainerCreating   0          6s
+	test-logger-7c86df7748-xcxl2   0/1       ContainerCreating   0          6s
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ kubectl get pods
+	NAME                           READY     STATUS    RESTARTS   AGE
+	test-logger-7c86df7748-lbr98   1/1       Running   0          45s
+	test-logger-7c86df7748-qtrh7   1/1       Running   0          45s
+	test-logger-7c86df7748-xcxl2   1/1       Running   0          45s
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ kubectl apply -f kubernetes/fluentd-configmap.yaml
+	configmap "fluentd-gcp-config" created
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ kubectl apply -f kubernetes/fluentd-daemonset.yaml
+	daemonset "fluentd-gcp-v2.0" created
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ kubectl get pods --namespace=kube-system
+	NAME                                                             READY     STATUS    RESTARTS   AGE
+	fluentd-gcp-v2.0-kx2f7                                           2/2       Running   0          17s
+	fluentd-gcp-v2.0-mffr8                                           2/2       Running   0          17s
+	fluentd-gcp-v2.0-xvtkp                                           2/2       Running   0          17s
+	heapster-v1.4.3-dd5dc6f79-wbzvb                                  3/3       Running   0          5m
+	kube-dns-778977457c-cbwv2                                        3/3       Running   0          6m
+	kube-dns-778977457c-gr2sd                                        3/3       Running   0          6m
+	kube-dns-autoscaler-7db47cb9b7-5x7ms                             1/1       Running   0          6m
+	kube-proxy-gke-gke-with-custom-flue-default-pool-ab0a7cb6-3x39   1/1       Running   0          6m
+	kube-proxy-gke-gke-with-custom-flue-default-pool-ab0a7cb6-6c1g   1/1       Running   0          6m
+	kube-proxy-gke-gke-with-custom-flue-default-pool-ab0a7cb6-716h   1/1       Running   0          6m
+	kubernetes-dashboard-768854d6dc-z5hg2                            1/1       Running   2          6m
+	l7-default-backend-6497bcdb4d-klx4n                              1/1       Running   0          6m
+
+nano -w kubernetes/fluentd-configmap.yaml
+
+...
+
+CTRL+X
+
+Y
+
+Enter 
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ kubectl apply -f kubernetes/fluentd-configmap.yaml
+	configmap "fluentd-gcp-config-filtered" created
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ kubectl apply -f kubernetes/fluentd-daemonset-filtered.yaml
+	daemonset "fluentd-gcp-v2.0" configured
+
+google239364_student@qwiklabs-gcp-d7afc370c8a846b7:~/container-engine-customize-fluentd$ kubectl rollout status ds/fluentd-gcp-v2.0 --namespace=kube-system
+	Waiting for rollout to finish: 0 out of 3 new pods have been updated...
+	Waiting for rollout to finish: 0 out of 3 new pods have been updated...
+	Waiting for rollout to finish: 1 out of 3 new pods have been updated...
+	Waiting for rollout to finish: 1 out of 3 new pods have been updated...
+	Waiting for rollout to finish: 1 out of 3 new pods have been updated...
+	Waiting for rollout to finish: 1 out of 3 new pods have been updated...
+	Waiting for rollout to finish: 2 out of 3 new pods have been updated...
+	Waiting for rollout to finish: 2 out of 3 new pods have been updated...
+	Waiting for rollout to finish: 2 out of 3 new pods have been updated...
+	Waiting for rollout to finish: 2 of 3 updated pods are available...
+	daemon set "fluentd-gcp-v2.0" successfully rolled out
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

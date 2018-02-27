@@ -1,0 +1,937 @@
+TensorFlow is an open source library for numerical computation, specializing in machine learning applications.
+
+Cloud Machine Learning Engine brings the power and flexibility of TensorFlow to the cloud, letting you perform large scale training on a managed cluster, and then scalably server your trained model for prediction.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform
+
+-----
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google226241_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-7f783d93d7340a0d
+	Your active configuration is: [cloudshell-9126]
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~$ gcloud config set project qwiklabs-gcp-7f783d93d7340a0d
+	Updated property [core/project].
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~$ cloudshell_open --repo_url "https://github.com/googlecloudplatform/cloudml-samples" --page "editor" --open_in_editor "census/estimator"
+	Cloning into 'cloudml-samples'...
+	remote: Counting objects: 1600, done.
+	remote: Compressing objects: 100% (19/19), done.
+	remote: Total 1600 (delta 13), reused 20 (delta 7), pack-reused 1572
+	Receiving objects: 100% (1600/1600), 543.52 KiB | 652.00 KiB/s, done.
+	Resolving deltas: 100% (873/873), done.
+	cd-ing into cloudml-samples
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples$ cd census/estimator
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ mkdir data
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gsutil -m cp gs://cloudml-public/census/data/* data/
+	Copying gs://cloudml-public/census/data/adult.data.csv...
+	Copying gs://cloudml-public/census/data/adult.test.csv...
+	- [2/2 files][  5.7 MiB/  5.7 MiB] 100% Done
+	Operation completed over 2 objects/5.7 MiB.
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ TRAIN_DATA=$(pwd)/data/adult.data.csv
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ EVAL_DATA=$(pwd)/data/adult.test.csv
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ head data/adult.data.csv
+	39, State-gov, 77516, Bachelors, 13, Never-married, Adm-clerical, Not-in-family, White, Male, 2174, 0, 40, United-States, <=50K
+	50, Self-emp-not-inc, 83311, Bachelors, 13, Married-civ-spouse, Exec-managerial, Husband, White, Male, 0, 0, 13, United-States, <=50K
+	38, Private, 215646, HS-grad, 9, Divorced, Handlers-cleaners, Not-in-family, White, Male, 0, 0, 40, United-States, <=50K
+	53, Private, 234721, 11th, 7, Married-civ-spouse, Handlers-cleaners, Husband, Black, Male, 0, 0, 40, United-States, <=50K
+	28, Private, 338409, Bachelors, 13, Married-civ-spouse, Prof-specialty, Wife, Black, Female, 0, 0, 40, Cuba, <=50K
+	37, Private, 284582, Masters, 14, Married-civ-spouse, Exec-managerial, Wife, White, Female, 0, 0, 40, United-States, <=50K
+	49, Private, 160187, 9th, 5, Married-spouse-absent, Other-service, Not-in-family, Black, Female, 0, 0, 16, Jamaica, <=50K
+	52, Self-emp-not-inc, 209642, HS-grad, 9, Married-civ-spouse, Exec-managerial, Husband, White, Male, 0, 0, 45, United-States, >50K
+	31, Private, 45781, Masters, 14, Never-married, Prof-specialty, Not-in-family, White, Female, 14084, 0, 50, United-States, >50K
+	42, Private, 159449, Bachelors, 13, Married-civ-spouse, Exec-managerial, Husband, White, Male, 5178, 0, 40, United-States, >50K
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ sudo pip install tensorflow==1.4.1
+	Collecting tensorflow==1.4.1
+	  Downloading tensorflow-1.4.1-cp27-cp27mu-manylinux1_x86_64.whl (40.7MB)
+		100% |████████████████████████████████| 40.8MB 26kB/s
+	Requirement already satisfied: mock>=2.0.0 in /usr/local/lib/python2.7/dist-packages (from tensorflow==1.4.1)
+	Collecting tensorflow-tensorboard<0.5.0,>=0.4.0rc1 (from tensorflow==1.4.1)
+	  Downloading tensorflow_tensorboard-0.4.0-py2-none-any.whl (1.7MB)
+		100% |████████████████████████████████| 1.7MB 523kB/s
+	Requirement already satisfied: numpy>=1.12.1 in /usr/local/lib/python2.7/dist-packages (from tensorflow==1.4.1)
+	Requirement already satisfied: backports.weakref>=1.0rc1 in /usr/local/lib/python2.7/dist-packages (from tensorflow==1.4.1)
+	Requirement already satisfied: wheel in /usr/local/lib/python2.7/dist-packages (from tensorflow==1.4.1)
+	Requirement already satisfied: six>=1.10.0 in /usr/local/lib/python2.7/dist-packages (from tensorflow==1.4.1)
+	Requirement already satisfied: protobuf>=3.3.0 in /usr/local/lib/python2.7/dist-packages (from tensorflow==1.4.1)
+	Requirement already satisfied: enum34>=1.1.6 in /usr/local/lib/python2.7/dist-packages (from tensorflow==1.4.1)
+	Requirement already satisfied: funcsigs>=1; python_version < "3.3" in /usr/local/lib/python2.7/dist-packages (from mock>=2.0.0->tensorflow==1.4.1)
+	Requirement already satisfied: pbr>=0.11 in /usr/local/lib/python2.7/dist-packages (from mock>=2.0.0->tensorflow==1.4.1)
+	Requirement already satisfied: bleach==1.5.0 in /usr/local/lib/python2.7/dist-packages (from tensorflow-tensorboard<0.5.0,>=0.4.0rc1->tensorflow==1.4.1)
+	Requirement already satisfied: html5lib==0.9999999 in /usr/local/lib/python2.7/dist-packages (from tensorflow-tensorboard<0.5.0,>=0.4.0rc1->tensorflow==1.4.1)
+	Requirement already satisfied: futures>=3.1.1; python_version < "3.2" in /usr/local/lib/python2.7/dist-packages (from tensorflow-tensorboard<0.5.0,>=0.4.0rc1->tensorflow==1.4.1)
+	Requirement already satisfied: markdown>=2.6.8 in /usr/local/lib/python2.7/dist-packages (from tensorflow-tensorboard<0.5.0,>=0.4.0rc1->tensorflow==1.4.1)
+	Requirement already satisfied: werkzeug>=0.11.10 in /usr/local/lib/python2.7/dist-packages (from tensorflow-tensorboard<0.5.0,>=0.4.0rc1->tensorflow==1.4.1)
+	Requirement already satisfied: setuptools in /usr/local/lib/python2.7/dist-packages (from protobuf>=3.3.0->tensorflow==1.4.1)
+	Installing collected packages: tensorflow-tensorboard, tensorflow
+	  Found existing installation: tensorflow-tensorboard 1.5.1
+		Uninstalling tensorflow-tensorboard-1.5.1:
+		  Successfully uninstalled tensorflow-tensorboard-1.5.1
+	  Found existing installation: tensorflow 1.5.0
+		Uninstalling tensorflow-1.5.0:
+		  Successfully uninstalled tensorflow-1.5.0
+	Successfully installed tensorflow-1.4.1 tensorflow-tensorboard-0.4.0
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ MODEL_DIR=output
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ rm -rf $MODEL_DIR/*
+
+gcloud ml-engine local train \
+    --module-name trainer.task \
+    --package-path trainer/ \
+    -- \
+    --train-files $TRAIN_DATA \
+    --eval-files $EVAL_DATA \
+    --train-steps 1000 \
+    --job-dir $MODEL_DIR \
+    --eval-steps 100
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gcloud ml-engine local train \
+>     --module-name trainer.task \
+>     --package-path trainer/ \
+>     -- \
+>     --train-files $TRAIN_DATA \
+>     --eval-files $EVAL_DATA \
+>     --train-steps 1000 \
+>     --job-dir $MODEL_DIR \
+>     --eval-steps 100
+	INFO:tensorflow:TF_CONFIG environment variable: {u'environment': u'cloud', u'cluster': {}, u'job': {u'args': [u'--train-files', u'/home/google226241_student/cloudml-samples/census/estimator/data
+	/adult.data.csv', u'--eval-files', u'/home/google226241_student/cloudml-samples/census/estimator/data/adult.test.csv', u'--train-steps', u'1000', u'--job-dir', u'output', u'--eval-steps', u'100'
+	], u'job_name': u'trainer.task'}, u'task': {}}
+	model dir output
+	INFO:tensorflow:Using config: {'_save_checkpoints_secs': 600, '_session_config': None, '_keep_checkpoint_max': 5, '_task_type': 'worker', '_is_chief': True, '_cluster_spec': <tensorflow.python.t
+	raining.server_lib.ClusterSpec object at 0x7f5742350ad0>, '_save_checkpoints_steps': None, '_keep_checkpoint_every_n_hours': 10000, '_service': None, '_num_ps_replicas': 0, '_tf_random_seed': No
+	ne, '_master': '', '_num_worker_replicas': 1, '_task_id': 0, '_log_step_count_steps': 100, '_model_dir': 'output', '_save_summary_steps': 100}
+	INFO:tensorflow:Running training and evaluation locally (non-distributed).
+	INFO:tensorflow:Start train and evaluate loop. The evaluate will happen after 600 secs (eval_spec.throttle_secs) or training is finished.
+	INFO:tensorflow:Create CheckpointSaverHook.
+	INFO:tensorflow:Saving checkpoints for 1 into output/model.ckpt.
+	INFO:tensorflow:loss = 309.29453, step = 1
+	INFO:tensorflow:global_step/sec: 75.113
+	INFO:tensorflow:loss = 29.337658, step = 101 (1.334 sec)
+	INFO:tensorflow:global_step/sec: 129.663
+	INFO:tensorflow:loss = 20.197647, step = 201 (0.770 sec)
+	INFO:tensorflow:global_step/sec: 127.945
+	INFO:tensorflow:loss = 19.331528, step = 301 (0.783 sec)
+	INFO:tensorflow:global_step/sec: 135.789
+	INFO:tensorflow:loss = 20.190334, step = 401 (0.735 sec)
+	INFO:tensorflow:global_step/sec: 134.786
+	INFO:tensorflow:loss = 14.306906, step = 501 (0.741 sec)
+	INFO:tensorflow:global_step/sec: 139.167
+	INFO:tensorflow:loss = 13.889631, step = 601 (0.719 sec)
+	INFO:tensorflow:global_step/sec: 140.099
+	INFO:tensorflow:loss = 19.350716, step = 701 (0.714 sec)
+	INFO:tensorflow:global_step/sec: 140.69
+	INFO:tensorflow:loss = 13.539301, step = 801 (0.712 sec)
+	INFO:tensorflow:global_step/sec: 106.34
+	INFO:tensorflow:loss = 17.966757, step = 901 (0.940 sec)
+	INFO:tensorflow:Saving checkpoints for 1000 into output/model.ckpt.
+	INFO:tensorflow:Loss for final step: 15.186939.
+	WARNING:tensorflow:Casting <dtype: 'float32'> labels to bool.
+	WARNING:tensorflow:Casting <dtype: 'float32'> labels to bool.
+	INFO:tensorflow:Starting evaluation at 2018-02-17-18:00:14
+	INFO:tensorflow:Restoring parameters from output/model.ckpt-1000
+	INFO:tensorflow:Evaluation [1/100]
+	INFO:tensorflow:Evaluation [2/100]
+	INFO:tensorflow:Evaluation [3/100]
+	INFO:tensorflow:Evaluation [4/100]
+	INFO:tensorflow:Evaluation [5/100]
+	INFO:tensorflow:Evaluation [6/100]
+	INFO:tensorflow:Evaluation [7/100]
+	INFO:tensorflow:Evaluation [8/100]
+	INFO:tensorflow:Evaluation [9/100]
+	INFO:tensorflow:Evaluation [10/100]
+	INFO:tensorflow:Evaluation [11/100]
+	INFO:tensorflow:Evaluation [12/100]
+	INFO:tensorflow:Evaluation [13/100]
+	INFO:tensorflow:Evaluation [14/100]
+	INFO:tensorflow:Evaluation [15/100]
+	INFO:tensorflow:Evaluation [16/100]
+	INFO:tensorflow:Evaluation [17/100]
+	INFO:tensorflow:Evaluation [18/100]
+	INFO:tensorflow:Evaluation [19/100]
+	INFO:tensorflow:Evaluation [20/100]
+	INFO:tensorflow:Evaluation [21/100]
+	INFO:tensorflow:Evaluation [22/100]
+	INFO:tensorflow:Evaluation [23/100]
+	INFO:tensorflow:Evaluation [24/100]
+	INFO:tensorflow:Evaluation [25/100]
+	INFO:tensorflow:Evaluation [26/100]
+	INFO:tensorflow:Evaluation [27/100]
+	INFO:tensorflow:Evaluation [28/100]
+	INFO:tensorflow:Evaluation [29/100]
+	INFO:tensorflow:Evaluation [30/100]
+	INFO:tensorflow:Evaluation [31/100]
+	INFO:tensorflow:Evaluation [32/100]
+	INFO:tensorflow:Evaluation [33/100]
+	INFO:tensorflow:Evaluation [34/100]
+	INFO:tensorflow:Evaluation [35/100]
+	INFO:tensorflow:Evaluation [36/100]
+	INFO:tensorflow:Evaluation [37/100]
+	INFO:tensorflow:Evaluation [38/100]
+	INFO:tensorflow:Evaluation [39/100]
+	INFO:tensorflow:Evaluation [40/100]
+	INFO:tensorflow:Evaluation [41/100]
+	INFO:tensorflow:Evaluation [42/100]
+	INFO:tensorflow:Evaluation [43/100]
+	INFO:tensorflow:Evaluation [44/100]
+	INFO:tensorflow:Evaluation [45/100]
+	INFO:tensorflow:Evaluation [46/100]
+	INFO:tensorflow:Evaluation [47/100]
+	INFO:tensorflow:Evaluation [48/100]
+	INFO:tensorflow:Evaluation [49/100]
+	INFO:tensorflow:Evaluation [50/100]
+	INFO:tensorflow:Evaluation [51/100]
+	INFO:tensorflow:Evaluation [52/100]
+	INFO:tensorflow:Evaluation [53/100]
+	INFO:tensorflow:Evaluation [54/100]
+	INFO:tensorflow:Evaluation [55/100]
+	INFO:tensorflow:Evaluation [56/100]
+	INFO:tensorflow:Evaluation [57/100]
+	INFO:tensorflow:Evaluation [58/100]
+	INFO:tensorflow:Evaluation [59/100]
+	INFO:tensorflow:Evaluation [60/100]
+	INFO:tensorflow:Evaluation [61/100]
+	INFO:tensorflow:Evaluation [62/100]
+	INFO:tensorflow:Evaluation [63/100]
+	INFO:tensorflow:Evaluation [64/100]
+	INFO:tensorflow:Evaluation [65/100]
+	INFO:tensorflow:Evaluation [66/100]
+	INFO:tensorflow:Evaluation [67/100]
+	INFO:tensorflow:Evaluation [68/100]
+	INFO:tensorflow:Evaluation [69/100]
+	INFO:tensorflow:Evaluation [70/100]
+	INFO:tensorflow:Evaluation [71/100]
+	INFO:tensorflow:Evaluation [72/100]
+	INFO:tensorflow:Evaluation [73/100]
+	INFO:tensorflow:Evaluation [74/100]
+	INFO:tensorflow:Evaluation [75/100]
+	INFO:tensorflow:Evaluation [76/100]
+	INFO:tensorflow:Evaluation [77/100]
+	INFO:tensorflow:Evaluation [78/100]
+	INFO:tensorflow:Evaluation [79/100]
+	INFO:tensorflow:Evaluation [80/100]
+	INFO:tensorflow:Evaluation [81/100]
+	INFO:tensorflow:Evaluation [82/100]
+	INFO:tensorflow:Evaluation [83/100]
+	INFO:tensorflow:Evaluation [84/100]
+	INFO:tensorflow:Evaluation [85/100]
+	INFO:tensorflow:Evaluation [86/100]
+	INFO:tensorflow:Evaluation [87/100]
+	INFO:tensorflow:Evaluation [88/100]
+	INFO:tensorflow:Evaluation [89/100]
+	INFO:tensorflow:Evaluation [90/100]
+	INFO:tensorflow:Evaluation [91/100]
+	INFO:tensorflow:Evaluation [92/100]
+	INFO:tensorflow:Evaluation [93/100]
+	INFO:tensorflow:Evaluation [94/100]
+	INFO:tensorflow:Evaluation [95/100]
+	INFO:tensorflow:Evaluation [96/100]
+	INFO:tensorflow:Evaluation [97/100]
+	INFO:tensorflow:Evaluation [98/100]
+	INFO:tensorflow:Evaluation [99/100]
+	INFO:tensorflow:Evaluation [100/100]
+	INFO:tensorflow:Finished evaluation at 2018-02-17-18:00:16
+	INFO:tensorflow:Saving dict for global step 1000: accuracy = 0.81875, accuracy_baseline = 0.76325, auc = 0.878425, auc_precision_recall = 0.71057594, average_loss = 0.38167363, global_step = 1000, label/mean = 0.23675, loss = 15.266946, prediction/mean = 0.23482059
+	INFO:tensorflow:Performing the final export in the end of training.
+	INFO:tensorflow:Restoring parameters from output/model.ckpt-1000
+	INFO:tensorflow:Assets added to graph.
+	INFO:tensorflow:No assets to write.
+	INFO:tensorflow:SavedModel written to: output/export/census/temp-1518890418/saved_model.pb
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ tensorboard --logdir=output --port=8080
+	TensorBoard 0.4.0 at http://cs-6000-devshell-vm-fe91fc15-88d1-4fde-bb58-788af61f3968:8080 (Press CTRL+C to quit)
+	W0217 19:02:28.601875 Reloader plugin_event_accumulator.py:303] Found more than one graph event per run, or there was a metagraph containing a graph_def, as well as one or more graph events.  Overwriting the graph with the newest event.
+	W0217 19:02:28.605329 Reloader plugin_event_accumulator.py:311] Found more than one metagraph event per run. Overwriting the metagraph with the newest event.
+
+ctrl+c
+
+^Cgoogle226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ ls output/export/census/
+	1518890418
+
+gcloud ml-engine local predict \
+--model-dir output/export/census/1518890418 \
+--json-instances ../test.json
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gcloud ml-engine local predict \
+> --model-dir output/export/census/1518890418 \
+> --json-instances ../test.json
+	WARNING: 2018-02-17 19:05:03.453731: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX
+
+	CLASS_IDS  CLASSES  LOGISTIC               LOGITS                PROBABILITIES
+	[0]        [u'0']   [0.06888119131326675]  [-2.604003667831421]  [0.9311188459396362, 0.06888119876384735]
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ PROJECT_ID=$(gcloud config list project --format "value(core.project)")
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ BUCKET_NAME=${PROJECT_ID}-mlengine
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ echo $BUCKET_NAME
+	qwiklabs-gcp-7f783d93d7340a0d-mlengine
+	
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ REGION=us-central1
+
+gsutil mb -l $REGION gs://$BUCKET_NAME
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gsutil mb -l $REGION gs://$BUCKET_NAME
+	Creating gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/...
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gsutil cp -r data gs://$BUCKET_NAME/data
+	Copying file://data/adult.data.csv [Content-Type=text/csv]...
+	Copying file://data/adult.test.csv [Content-Type=text/csv]...
+	\ [2 files][  5.7 MiB/  5.7 MiB]
+	Operation completed over 2 objects/5.7 MiB.
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ TRAIN_DATA=gs://$BUCKET_NAME/data/adult.data.csv
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ EVAL_DATA=gs://$BUCKET_NAME/data/adult.test.csv
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ JOB_NAME=census1
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ OUTPUT_PATH=gs://$BUCKET_NAME/$JOB_NAME
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ echo $OUTPUT_PATH
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gcloud ml-engine jobs submit training $JOB_NAME \
+> --job-dir $OUTPUT_PATH \
+> --runtime-version 1.4 \
+> --module-name trainer.task \
+> --package-path trainer/ \
+> --region $REGION \
+> -- \
+> --train-files $TRAIN_DATA \
+> --eval-files $EVAL_DATA \
+> --train-steps 5000 \
+> --verbosity DEBUG
+	/google/google-cloud-sdk/lib/googlecloudsdk/core/util/files.py:622: UnicodeWarning: Unicode equal comparison failed to convert both arguments to Unicode - interpreting them as being unequal
+	  for chunk in iter(lambda: fp.read(4096), ''):
+	Job [census1] submitted successfully.
+	Your job is still active. You may view the status of your job with the command
+	  $ gcloud ml-engine jobs describe census1
+	or continue streaming the logs with the command
+	  $ gcloud ml-engine jobs stream-logs census1
+	jobId: census1
+	state: QUEUED
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gcloud ml-engine jobs stream-logs $JOB_NAME
+	INFO    2018-02-17 19:10:23 +0100       service         Validating job requirements...
+	INFO    2018-02-17 19:10:24 +0100       service         Job creation request has been successfully validated.
+	INFO    2018-02-17 19:10:24 +0100       service         Job census1 is queued.
+	INFO    2018-02-17 19:10:24 +0100       service         Waiting for job to be provisioned.
+	INFO    2018-02-17 19:10:26 +0100       service         Waiting for TensorFlow to start.
+	INFO    2018-02-17 19:11:07 +0100       master-replica-0                Running task with arguments: --cluster={"master": ["127.0.0.1:2222"]} --task={"type": "master", "index": 0} --job={  "package_uris": ["gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/packages/34a87cda39d43a51f8ceb47b1b33282b57e25f5fc63d2807ead442194819663f/trainer-0.0.0.tar.gz"],  "python_module": "trainer.task",  "args": ["--train-files", "gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/data/adult.data.csv", "--eval-files", "gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/data/adult.test.csv", "--train-steps", "5000", "--verbosity", "DEBUG"],  "region": "us-central1",  "runtime_version": "1.4",  "job_dir": "gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1",  "run_on_raw_vm": true}
+	INFO    2018-02-17 19:11:11 +0100       master-replica-0                Running module trainer.task.
+	INFO    2018-02-17 19:11:11 +0100       master-replica-0                Downloading the package: gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/packages/34a87cda39d43a51f8ceb47b1b33282b57e25f5fc63d2807ead442194819663f/trainer-0.0.0.tar.gz
+	INFO    2018-02-17 19:11:11 +0100       master-replica-0                Running command: gsutil -q cp gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/packages/34a87cda39d43a51f8ceb47b1b33282b57e25f5fc63d2807ead442194819663f/trainer-0.0.0.tar.gz trainer-0.0.0.tar.gz
+	INFO    2018-02-17 19:11:13 +0100       master-replica-0                Installing the package: gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/packages/34a87cda39d43a51f8ceb47b1b33282b57e25f5fc63d2807ead442194819663f/trainer-0.0.0.tar.gz
+	INFO    2018-02-17 19:11:13 +0100       master-replica-0                Running command: pip install --user --upgrade --force-reinstall --no-deps trainer-0.0.0.tar.gz
+	INFO    2018-02-17 19:11:15 +0100       master-replica-0                Processing ./trainer-0.0.0.tar.gz
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                Building wheels for collected packages: trainer
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                  Running setup.py bdist_wheel for trainer: started
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                creating '/tmp/tmpR76JL1pip-wheel-/trainer-0.0.0-cp27-none-any.whl' and adding '.' to it
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                adding 'trainer/task.py'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                adding 'trainer/__init__.py'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                adding 'trainer/model.py'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/DESCRIPTION.rst'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/metadata.json'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/top_level.txt'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/WHEEL'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/METADATA'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/RECORD'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                  Running setup.py bdist_wheel for trainer: finished with status 'done'
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                  Stored in directory: /root/.cache/pip/wheels/0d/1b/db/f8e86b296734f0b137e17e5d34862f4ae4faf8388755c6272f
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                Successfully built trainer
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                Installing collected packages: trainer
+	INFO    2018-02-17 19:11:16 +0100       master-replica-0                Successfully installed trainer-0.0.0
+	INFO    2018-02-17 19:11:36 +0100       master-replica-0                Running command: pip install --user trainer-0.0.0.tar.gz
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                Processing ./trainer-0.0.0.tar.gz
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                  Requirement already satisfied (use --upgrade to upgrade): trainer==0.0.0 from file:///user_dir/trainer-0.0.0.tar.gz in /root/.local/lib/python2.7/site-packages
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                Building wheels for collected packages: trainer
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                  Running setup.py bdist_wheel for trainer: started
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                creating '/tmp/tmp7Y6y0xpip-wheel-/trainer-0.0.0-cp27-none-any.whl' and adding '.' to it
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                adding 'trainer/task.py'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                adding 'trainer/__init__.py'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                adding 'trainer/model.py'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/DESCRIPTION.rst'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/metadata.json'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/top_level.txt'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/WHEEL'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/METADATA'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                adding 'trainer-0.0.0.dist-info/RECORD'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                  Running setup.py bdist_wheel for trainer: finished with status 'done'
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                  Stored in directory: /root/.cache/pip/wheels/0d/1b/db/f8e86b296734f0b137e17e5d34862f4ae4faf8388755c6272f
+	INFO    2018-02-17 19:11:37 +0100       master-replica-0                Successfully built trainer
+	INFO    2018-02-17 19:11:38 +0100       master-replica-0                Running command: python -m trainer.task --train-files gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/data/adult.data.csv --eval-files gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/data/adult.test.csv --train-steps 5000 --verbosity DEBUG --job-dir gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1
+	INFO    2018-02-17 19:11:44 +0100       master-replica-0                TF_CONFIG environment variable: {u'environment': u'cloud', u'cluster': {u'master': [u'127.0.0.1:2222']}, u'job': {u'python_module': u'trainer.task', u'region': u'us-central1', u'args': [u'--train-files', u'gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/data/adult.data.csv', u'--eval-files', u'gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/data/adult.test.csv', u'--train-steps', u'5000', u'--verbosity', u'DEBUG', u'--job-dir', u'gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1'], u'job_dir': u'gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1', u'runtime_version': u'1.4', u'package_uris': [u'gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/packages/34a87cda39d43a51f8ceb47b1b33282b57e25f5fc63d2807ead442194819663f/trainer-0.0.0.tar.gz'], u'run_on_raw_vm': True}, u'task': {u'index': 0, u'type': u'master', u'cloud': u'gc3f44190267e9525-ml'}}
+	INFO    2018-02-17 19:11:44 +0100       master-replica-0                Using config: {'_save_checkpoints_secs': 600, '_session_config': None, '_keep_checkpoint_max': 5, '_task_type': u'master', '_is_chief': True, '_cluster_spec': <tensorflow.python.training.server_lib.ClusterSpec object at 0x7f21166c7fd0>, '_save_checkpoints_steps': None, '_keep_checkpoint_every_n_hours': 10000, '_service': None, '_num_ps_replicas': 0, '_tf_random_seed': None, '_master': '', '_num_worker_replicas': 1, '_task_id': 0, '_log_step_count_steps': 100, '_model_dir': 'gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1', '_save_summary_steps': 100}
+	INFO    2018-02-17 19:11:44 +0100       master-replica-0                Skip starting Tensorflow server as there is only one node in the cluster.
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='capital_gain', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='capital_loss', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='education_num', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='hours_per_week', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='native_country', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='occupation', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _BucketizedColumn(source_column=_NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None), boundaries=(18, 25, 30, 35, 40, 45, 50, 55, 60, 65)).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=(_BucketizedColumn(source_column=_NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None), boundaries=(18, 25, 30, 35, 40, 45, 50, 55, 60, 65)), _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0), 'occupation'), hash_bucket_size=1000000, hash_key=None).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=('education', 'occupation'), hash_bucket_size=10000, hash_key=None).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='native_country', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=('native_country', 'occupation'), hash_bucket_size=10000, hash_key=None).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='occupation', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:11:45 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:46 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	INFO    2018-02-17 19:11:46 +0100       master-replica-0                Create CheckpointSaverHook.
+	INFO    2018-02-17 19:11:51 +0100       master-replica-0                Saving checkpoints for 1 into gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt.
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='capital_gain', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='capital_loss', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='education_num', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='hours_per_week', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='native_country', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='occupation', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _BucketizedColumn(source_column=_NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None), boundaries=(18, 25, 30, 35, 40, 45, 50, 55, 60, 65)).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=(_BucketizedColumn(source_column=_NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None), boundaries=(18, 25, 30, 35, 40, 45, 50, 55, 60, 65)), _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0), 'occupation'), hash_bucket_size=1000000, hash_key=None).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=('education', 'occupation'), hash_bucket_size=10000, hash_key=None).
+	DEBUG   2018-02-17 19:11:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:57 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:57 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='native_country', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:11:57 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=('native_country', 'occupation'), hash_bucket_size=10000, hash_key=None).
+	DEBUG   2018-02-17 19:11:57 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='occupation', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:11:57 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:11:57 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	WARNING 2018-02-17 19:11:57 +0100       master-replica-0                Casting <dtype: 'float32'> labels to bool.
+	WARNING 2018-02-17 19:11:57 +0100       master-replica-0                Casting <dtype: 'float32'> labels to bool.
+	INFO    2018-02-17 19:11:57 +0100       master-replica-0                Starting evaluation at 2018-02-17-18:11:57
+	INFO    2018-02-17 19:11:58 +0100       master-replica-0                Restoring parameters from gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt-1
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [1/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [2/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [3/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [4/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [5/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [6/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [7/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [8/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [9/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [10/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [11/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [12/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [13/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [14/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [15/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [16/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [17/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [18/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [19/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [20/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [21/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [22/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [23/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [24/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [25/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [26/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [27/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [28/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [29/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [30/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [31/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [32/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [33/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [34/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [35/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [36/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [37/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [38/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [39/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [40/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [41/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [42/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [43/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [44/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [45/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [46/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [47/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [48/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [49/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [50/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [51/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [52/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [53/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [54/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [55/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [56/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [57/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [58/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [59/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [60/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [61/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [62/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [63/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [64/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [65/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [66/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [67/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [68/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [69/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [70/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [71/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [72/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [73/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [74/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [75/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [76/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [77/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [78/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [79/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [80/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [81/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [82/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [83/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [84/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [85/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [86/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [87/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [88/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [89/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [90/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [91/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [92/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [93/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [94/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [95/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [96/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [97/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [98/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [99/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Evaluation [100/100]
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Finished evaluation at 2018-02-17-18:12:00
+	INFO    2018-02-17 19:12:00 +0100       master-replica-0                Saving dict for global step 1: accuracy = 0.224, accuracy_baseline = 0.76325, auc = 0.466159, auc_precision_recall = 0.226457, average_loss = 7.78949, global_step = 1, label/mean = 0.23675, loss = 311.579, prediction/mean = 0.657123
+	INFO    2018-02-17 19:12:03 +0100       master-replica-0                loss = 593.629, step = 1
+	INFO    2018-02-17 19:12:04 +0100       master-replica-0                global_step/sec: 75.9498
+	INFO    2018-02-17 19:12:04 +0100       master-replica-0                loss = 19.5158, step = 101 (1.318 sec)
+	INFO    2018-02-17 19:12:05 +0100       master-replica-0                global_step/sec: 119.992
+	INFO    2018-02-17 19:12:05 +0100       master-replica-0                loss = 16.3171, step = 201 (0.833 sec)
+	INFO    2018-02-17 19:12:06 +0100       master-replica-0                global_step/sec: 115.453
+	INFO    2018-02-17 19:12:06 +0100       master-replica-0                loss = 16.0907, step = 301 (0.866 sec)
+	INFO    2018-02-17 19:12:07 +0100       master-replica-0                global_step/sec: 115.35
+	INFO    2018-02-17 19:12:07 +0100       master-replica-0                loss = 39.872, step = 401 (0.869 sec)
+	INFO    2018-02-17 19:12:07 +0100       master-replica-0                global_step/sec: 114.411
+	INFO    2018-02-17 19:12:07 +0100       master-replica-0                loss = 14.0677, step = 501 (0.872 sec)
+	INFO    2018-02-17 19:12:08 +0100       master-replica-0                global_step/sec: 125.47
+	INFO    2018-02-17 19:12:08 +0100       master-replica-0                loss = 18.7083, step = 601 (0.797 sec)
+	INFO    2018-02-17 19:12:09 +0100       master-replica-0                global_step/sec: 122.187
+	INFO    2018-02-17 19:12:09 +0100       master-replica-0                loss = 14.3048, step = 701 (0.819 sec)
+	INFO    2018-02-17 19:12:10 +0100       master-replica-0                global_step/sec: 119.799
+	INFO    2018-02-17 19:12:10 +0100       master-replica-0                loss = 11.6469, step = 801 (0.835 sec)
+	INFO    2018-02-17 19:12:11 +0100       master-replica-0                global_step/sec: 114.134
+	INFO    2018-02-17 19:12:11 +0100       master-replica-0                loss = 12.662, step = 901 (0.876 sec)
+	INFO    2018-02-17 19:12:12 +0100       master-replica-0                global_step/sec: 114.356
+	INFO    2018-02-17 19:12:12 +0100       master-replica-0                loss = 46.5514, step = 1001 (0.875 sec)
+	INFO    2018-02-17 19:12:12 +0100       master-replica-0                global_step/sec: 122.315
+	INFO    2018-02-17 19:12:12 +0100       master-replica-0                loss = 13.4691, step = 1101 (0.818 sec)
+	INFO    2018-02-17 19:12:13 +0100       master-replica-0                global_step/sec: 124.334
+	INFO    2018-02-17 19:12:13 +0100       master-replica-0                loss = 10.8235, step = 1201 (0.804 sec)
+	INFO    2018-02-17 19:12:14 +0100       master-replica-0                global_step/sec: 119.589
+	INFO    2018-02-17 19:12:14 +0100       master-replica-0                loss = 19.5562, step = 1301 (0.836 sec)
+	INFO    2018-02-17 19:12:15 +0100       master-replica-0                global_step/sec: 113.811
+	INFO    2018-02-17 19:12:15 +0100       master-replica-0                loss = 13.1152, step = 1401 (0.878 sec)
+	INFO    2018-02-17 19:12:16 +0100       master-replica-0                global_step/sec: 106.429
+	INFO    2018-02-17 19:12:16 +0100       master-replica-0                loss = 20.0822, step = 1501 (0.940 sec)
+	INFO    2018-02-17 19:12:17 +0100       master-replica-0                global_step/sec: 124.907
+	INFO    2018-02-17 19:12:17 +0100       master-replica-0                loss = 13.6071, step = 1601 (0.801 sec)
+	INFO    2018-02-17 19:12:17 +0100       master-replica-0                global_step/sec: 132.699
+	INFO    2018-02-17 19:12:17 +0100       master-replica-0                loss = 16.1294, step = 1701 (0.754 sec)
+	INFO    2018-02-17 19:12:18 +0100       master-replica-0                global_step/sec: 124.946
+	INFO    2018-02-17 19:12:18 +0100       master-replica-0                loss = 38.2778, step = 1801 (0.800 sec)
+	INFO    2018-02-17 19:12:19 +0100       master-replica-0                global_step/sec: 125.308
+	INFO    2018-02-17 19:12:19 +0100       master-replica-0                loss = 13.7171, step = 1901 (0.799 sec)
+	INFO    2018-02-17 19:12:20 +0100       master-replica-0                global_step/sec: 126.461
+	INFO    2018-02-17 19:12:20 +0100       master-replica-0                loss = 12.9795, step = 2001 (0.791 sec)
+	INFO    2018-02-17 19:12:21 +0100       master-replica-0                global_step/sec: 114.504
+	INFO    2018-02-17 19:12:21 +0100       master-replica-0                loss = 14.489, step = 2101 (0.874 sec)
+	INFO    2018-02-17 19:12:22 +0100       master-replica-0                global_step/sec: 130.195
+	INFO    2018-02-17 19:12:22 +0100       master-replica-0                loss = 12.1019, step = 2201 (0.767 sec)
+	INFO    2018-02-17 19:12:22 +0100       master-replica-0                global_step/sec: 127.083
+	INFO    2018-02-17 19:12:22 +0100       master-replica-0                loss = 11.3311, step = 2301 (0.786 sec)
+	INFO    2018-02-17 19:12:23 +0100       master-replica-0                global_step/sec: 116.675
+	INFO    2018-02-17 19:12:23 +0100       master-replica-0                loss = 11.417, step = 2401 (0.858 sec)
+	INFO    2018-02-17 19:12:24 +0100       master-replica-0                global_step/sec: 116.842
+	INFO    2018-02-17 19:12:24 +0100       master-replica-0                loss = 17.1294, step = 2501 (0.855 sec)
+	INFO    2018-02-17 19:12:25 +0100       master-replica-0                global_step/sec: 111.615
+	INFO    2018-02-17 19:12:25 +0100       master-replica-0                loss = 8.57322, step = 2601 (0.896 sec)
+	INFO    2018-02-17 19:12:26 +0100       master-replica-0                global_step/sec: 125.445
+	INFO    2018-02-17 19:12:26 +0100       master-replica-0                loss = 15.1602, step = 2701 (0.797 sec)
+	INFO    2018-02-17 19:12:26 +0100       master-replica-0                global_step/sec: 132.943
+	INFO    2018-02-17 19:12:26 +0100       master-replica-0                loss = 14.6594, step = 2801 (0.752 sec)
+	INFO    2018-02-17 19:12:27 +0100       master-replica-0                global_step/sec: 119.361
+	INFO    2018-02-17 19:12:27 +0100       master-replica-0                loss = 10.3856, step = 2901 (0.838 sec)
+	INFO    2018-02-17 19:12:28 +0100       master-replica-0                global_step/sec: 120.399
+	INFO    2018-02-17 19:12:28 +0100       master-replica-0                loss = 19.7078, step = 3001 (0.830 sec)
+	INFO    2018-02-17 19:12:29 +0100       master-replica-0                global_step/sec: 115.45
+	INFO    2018-02-17 19:12:29 +0100       master-replica-0                loss = 14.1237, step = 3101 (0.867 sec)
+	INFO    2018-02-17 19:12:30 +0100       master-replica-0                global_step/sec: 107.058
+	INFO    2018-02-17 19:12:30 +0100       master-replica-0                loss = 15.6979, step = 3201 (0.934 sec)
+	INFO    2018-02-17 19:12:31 +0100       master-replica-0                global_step/sec: 126.794
+	INFO    2018-02-17 19:12:31 +0100       master-replica-0                loss = 12.5082, step = 3301 (0.789 sec)
+	INFO    2018-02-17 19:12:32 +0100       master-replica-0                global_step/sec: 121.415
+	INFO    2018-02-17 19:12:32 +0100       master-replica-0                loss = 17.3531, step = 3401 (0.824 sec)
+	INFO    2018-02-17 19:12:32 +0100       master-replica-0                global_step/sec: 112.214
+	INFO    2018-02-17 19:12:32 +0100       master-replica-0                loss = 15.5968, step = 3501 (0.890 sec)
+	INFO    2018-02-17 19:12:33 +0100       master-replica-0                global_step/sec: 115.261
+	INFO    2018-02-17 19:12:33 +0100       master-replica-0                loss = 16.3307, step = 3601 (0.868 sec)
+	INFO    2018-02-17 19:12:34 +0100       master-replica-0                global_step/sec: 110.273
+	INFO    2018-02-17 19:12:34 +0100       master-replica-0                loss = 8.63377, step = 3701 (0.907 sec)
+	INFO    2018-02-17 19:12:35 +0100       master-replica-0                global_step/sec: 120.142
+	INFO    2018-02-17 19:12:35 +0100       master-replica-0                loss = 14.985, step = 3801 (0.833 sec)
+	INFO    2018-02-17 19:12:36 +0100       master-replica-0                global_step/sec: 123.682
+	INFO    2018-02-17 19:12:36 +0100       master-replica-0                loss = 15.7781, step = 3901 (0.808 sec)
+	INFO    2018-02-17 19:12:37 +0100       master-replica-0                global_step/sec: 122.726
+	INFO    2018-02-17 19:12:37 +0100       master-replica-0                loss = 11.4115, step = 4001 (0.815 sec)
+	INFO    2018-02-17 19:12:37 +0100       master-replica-0                global_step/sec: 120.636
+	INFO    2018-02-17 19:12:37 +0100       master-replica-0                loss = 20.3966, step = 4101 (0.828 sec)
+	INFO    2018-02-17 19:12:38 +0100       master-replica-0                global_step/sec: 109.728
+	INFO    2018-02-17 19:12:38 +0100       master-replica-0                loss = 12.1538, step = 4201 (0.912 sec)
+	INFO    2018-02-17 19:12:39 +0100       master-replica-0                global_step/sec: 126.483
+	INFO    2018-02-17 19:12:39 +0100       master-replica-0                loss = 15.4423, step = 4301 (0.791 sec)
+	INFO    2018-02-17 19:12:40 +0100       master-replica-0                global_step/sec: 132.707
+	INFO    2018-02-17 19:12:40 +0100       master-replica-0                loss = 18.1932, step = 4401 (0.754 sec)
+	INFO    2018-02-17 19:12:41 +0100       master-replica-0                global_step/sec: 125.148
+	INFO    2018-02-17 19:12:41 +0100       master-replica-0                loss = 16.0493, step = 4501 (0.799 sec)
+	INFO    2018-02-17 19:12:42 +0100       master-replica-0                global_step/sec: 118.784
+	INFO    2018-02-17 19:12:42 +0100       master-replica-0                loss = 13.3674, step = 4601 (0.842 sec)
+	INFO    2018-02-17 19:12:42 +0100       master-replica-0                global_step/sec: 118.063
+	INFO    2018-02-17 19:12:42 +0100       master-replica-0                loss = 16.169, step = 4701 (0.847 sec)
+	INFO    2018-02-17 19:12:43 +0100       master-replica-0                global_step/sec: 114.012
+	INFO    2018-02-17 19:12:43 +0100       master-replica-0                loss = 15.7483, step = 4801 (0.877 sec)
+	INFO    2018-02-17 19:12:44 +0100       master-replica-0                global_step/sec: 130.38
+	INFO    2018-02-17 19:12:44 +0100       master-replica-0                loss = 14.397, step = 4901 (0.767 sec)
+	INFO    2018-02-17 19:12:45 +0100       master-replica-0                Saving checkpoints for 5000 into gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt.
+	INFO    2018-02-17 19:12:49 +0100       master-replica-0                Skip the current checkpoint eval due to throttle secs (600 secs).
+	INFO    2018-02-17 19:12:50 +0100       master-replica-0                Loss for final step: 9.09665.
+	INFO    2018-02-17 19:12:50 +0100       master-replica-0                Training has already ended. But the last eval is skipped due to eval throttle_secs. Now evaluating the final checkpoint.
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='capital_gain', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='capital_loss', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='education_num', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='hours_per_week', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='native_country', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='occupation', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _BucketizedColumn(source_column=_NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None), boundaries=(18, 25, 30, 35, 40, 45, 50, 55, 60, 65)).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=(_BucketizedColumn(source_column=_NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None), boundaries=(18, 25, 30, 35, 40, 45, 50, 55, 60, 65)), _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0), 'occupation'), hash_bucket_size=1000000, hash_key=None).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:50 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:51 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=('education', 'occupation'), hash_bucket_size=10000, hash_key=None).
+	DEBUG   2018-02-17 19:12:51 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:51 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:51 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='native_country', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:12:51 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=('native_country', 'occupation'), hash_bucket_size=10000, hash_key=None).
+	DEBUG   2018-02-17 19:12:51 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='occupation', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:12:51 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:51 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	WARNING 2018-02-17 19:12:51 +0100       master-replica-0                Casting <dtype: 'float32'> labels to bool.
+	WARNING 2018-02-17 19:12:51 +0100       master-replica-0                Casting <dtype: 'float32'> labels to bool.
+	INFO    2018-02-17 19:12:51 +0100       master-replica-0                Starting evaluation at 2018-02-17-18:12:51
+	INFO    2018-02-17 19:12:52 +0100       master-replica-0                Restoring parameters from gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt-5000
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [1/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [2/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [3/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [4/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [5/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [6/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [7/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [8/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [9/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [10/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [11/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [12/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [13/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [14/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [15/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [16/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [17/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [18/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [19/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [20/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [21/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [22/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [23/100]
+	INFO    2018-02-17 19:12:53 +0100       master-replica-0                Evaluation [24/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [25/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [26/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [27/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [28/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [29/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [30/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [31/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [32/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [33/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [34/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [35/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [36/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [37/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [38/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [39/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [40/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [41/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [42/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [43/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [44/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [45/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [46/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [47/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [48/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [49/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [50/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [51/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [52/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [53/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [54/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [55/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [56/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [57/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [58/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [59/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [60/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [61/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [62/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [63/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [64/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [65/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [66/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [67/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [68/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [69/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [70/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [71/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [72/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [73/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [74/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [75/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [76/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [77/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [78/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [79/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [80/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [81/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [82/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [83/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [84/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [85/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [86/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [87/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [88/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [89/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [90/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [91/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [92/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [93/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [94/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [95/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [96/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [97/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [98/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [99/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Evaluation [100/100]
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Finished evaluation at 2018-02-17-18:12:54
+	INFO    2018-02-17 19:12:54 +0100       master-replica-0                Saving dict for global step 5000: accuracy = 0.84225, accuracy_baseline = 0.76325, auc = 0.895682, auc_precision_recall = 0.747089, average_loss = 0.341984, global_step = 5000, label/mean = 0.23675, loss = 13.6793, prediction/mean = 0.240483
+	INFO    2018-02-17 19:12:55 +0100       master-replica-0                Performing the final export in the end of training.
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='capital_gain', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='capital_loss', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='education_num', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='hours_per_week', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='native_country', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='occupation', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='relationship', vocabulary_list=(' Husband', ' Not-in-family', ' Wife', ' Own-child', ' Unmarried', ' Other-relative'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _IndicatorColumn(categorical_column=_VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0)).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _BucketizedColumn(source_column=_NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None), boundaries=(18, 25, 30, 35, 40, 45, 50, 55, 60, 65)).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _NumericColumn(key='age', shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=None).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='race', vocabulary_list=(' Amer-Indian-Eskimo', ' Asian-Pac-Islander', ' Black', ' Other', ' White'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='education', vocabulary_list=(' Bachelors', ' HS-grad', ' 11th', ' Masters', ' 9th', ' Some-college', ' Assoc-acdm', ' Assoc-voc', ' 7th-8th', ' Doctorate', ' Prof-school', ' 5th-6th', ' 10th', ' 1st-4th', ' Preschool', ' 12th'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=('education', 'occupation'), hash_bucket_size=10000, hash_key=None).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='gender', vocabulary_list=(' Female', ' Male'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='marital_status', vocabulary_list=(' Married-civ-spouse', ' Divorced', ' Married-spouse-absent', ' Never-married', ' Separated', ' Married-AF-spouse', ' Widowed'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='native_country', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:12:55 +0100       master-replica-0                Transforming feature_column _CrossedColumn(keys=('native_country', 'occupation'), hash_bucket_size=10000, hash_key=None).
+	DEBUG   2018-02-17 19:12:56 +0100       master-replica-0                Transforming feature_column _HashedCategoricalColumn(key='occupation', hash_bucket_size=100, dtype=tf.string).
+	DEBUG   2018-02-17 19:12:56 +0100       master-replica-0                Transforming feature_column _VocabularyListCategoricalColumn(key='workclass', vocabulary_list=(' Self-emp-not-inc', ' Private', ' State-gov', ' Federal-gov', ' Local-gov', ' ?', ' Self-emp-inc', ' Without-pay', ' Never-worked'), dtype=tf.string, default_value=-1, num_oov_buckets=0).
+	INFO    2018-02-17 19:12:56 +0100       master-replica-0                Restoring parameters from gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt-5000
+	INFO    2018-02-17 19:12:58 +0100       master-replica-0                Assets added to graph.
+	INFO    2018-02-17 19:12:58 +0100       master-replica-0                No assets to write.
+	INFO    2018-02-17 19:13:02 +0100       master-replica-0                SavedModel written to: gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/temp-1518891176/saved_model.pb
+	DEBUG   2018-02-17 19:13:03 +0100       master-replica-0                Calling exporter with the `is_the_final_export=True`.
+	INFO    2018-02-17 19:13:03 +0100       master-replica-0                model dir gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1
+	INFO    2018-02-17 19:13:03 +0100       master-replica-0                Module completed; cleaning up.
+	INFO    2018-02-17 19:13:03 +0100       master-replica-0                Clean up finished.
+	INFO    2018-02-17 19:13:03 +0100       master-replica-0                Task completed successfully.
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gsutil ls -r $OUTPUT_PATH
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/checkpoint
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/events.out.tfevents.1518891107.cmle-training-18138773327576986420
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/graph.pbtxt
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt-1.data-00000-of-00001
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt-1.index
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt-1.meta
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt-5000.data-00000-of-00001
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt-5000.index
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/model.ckpt-5000.meta
+
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/eval_census-eval/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/eval_census-eval/
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/eval_census-eval/events.out.tfevents.1518891121.cmle-training-18138773327576986420
+
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/
+
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/
+
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/saved_model.pb
+
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/variables/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/variables/
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/variables/variables.data-00000-of-00001
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/variables/variables.index
+
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/packages/:
+
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/packages/34a87cda39d43a51f8ceb47b1b33282b57e25f5fc63d2807ead442194819663f/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/packages/34a87cda39d43a51f8ceb47b1b33282b57e25f5fc63d2807ead442194819663f/trainer-0.0.0.tar.gz
+
+ctrl+c
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ MODEL_NAME=census
+
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gcloud ml-engine models create $MODEL_NAME --regions=$REGION
+	Created ml engine model [projects/qwiklabs-gcp-7f783d93d7340a0d/models/census].
+
+Created ml engine model [projects/qwiklabs-gcp-7f783d93d7340a0d/models/census].
+	google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ gsutil ls -r $OUTPUT_PATH/export
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/saved_model.pb
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/variables/:
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/variables/
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/variables/variables.data-00000-of-00001
+	gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/variables/variables.index
+
+gs://qwiklabs-gcp-7f783d93d7340a0d-mlengine/census1/export/census/1518891176/
+MODEL_BINARIES=$OUTPUT_PATH/export/census/1518891176/
+google226241_student@qwiklabs-gcp-7f783d93d7340a0d:~/cloudml-samples/census/estimator$ MODEL_BINARIES=$OUTPUT_PATH/export/census/1518891176/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

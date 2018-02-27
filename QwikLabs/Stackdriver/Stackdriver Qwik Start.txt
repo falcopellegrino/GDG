@@ -1,0 +1,533 @@
+Stackdriver Monitoring provides visibility into the performance, uptime, and overall health of cloud-powered applications.
+Stackdriver collects metrics, events, and metadata from Google Cloud Platform, Amazon Web Services, hosted uptime probes, application instrumentation,
+	and a variety of common application components including Cassandra, Nginx, Apache Web Server, Elasticsearch, and many others.
+Stackdriver ingests that data and generates insights via dashboards, charts, and alerts.
+Stackdriver alerting helps you collaborate by integrating with Slack, PagerDuty, HipChat, Campfire, and more.
+
+-----
+
+google227039_student@lamp-1-vm:~$ sudo apt-get update
+	Ign:1 http://deb.debian.org/debian stretch InRelease
+	Get:2 http://deb.debian.org/debian stretch-updates InRelease [91.0 kB]
+	Get:3 http://security.debian.org stretch/updates InRelease [63.0 kB]       
+	Get:4 http://packages.cloud.google.com/apt cloud-sdk-stretch InRelease [6,377 B]            
+	Get:5 http://deb.debian.org/debian stretch-backports InRelease [91.8 kB]                                   
+	Hit:6 http://deb.debian.org/debian stretch Release                                                                
+	Get:7 http://packages.cloud.google.com/apt google-compute-engine-stretch-stable InRelease [3,843 B]        
+	Hit:8 http://packages.cloud.google.com/apt google-cloud-packages-archive-keyring-stretch InRelease
+	Get:9 http://packages.cloud.google.com/apt cloud-sdk-stretch/main amd64 Packages [25.8 kB]
+	Get:10 http://deb.debian.org/debian stretch-updates/main Sources.diff/Index [2,704 B]
+	Get:11 http://deb.debian.org/debian stretch-updates/main amd64 Packages.diff/Index [2,704 B]
+	Get:12 http://deb.debian.org/debian stretch-updates/main Sources 2018-02-11-2045.46.pdiff [623 B]
+	Get:12 http://deb.debian.org/debian stretch-updates/main Sources 2018-02-11-2045.46.pdiff [623 B]
+	Get:13 http://deb.debian.org/debian stretch-updates/main amd64 Packages 2018-02-11-2045.46.pdiff [332 B]
+	Get:13 http://deb.debian.org/debian stretch-updates/main amd64 Packages 2018-02-11-2045.46.pdiff [332 B]
+	Get:14 http://deb.debian.org/debian stretch-backports/main Sources.diff/Index [27.8 kB]
+	Get:15 http://deb.debian.org/debian stretch-backports/main amd64 Packages.diff/Index [27.8 kB]
+	Get:16 http://deb.debian.org/debian stretch-backports/main Translation-en.diff/Index [27.8 kB]
+	Get:17 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-06-2026.31.pdiff [8,346 B]
+	Get:18 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-07-2028.51.pdiff [655 B]
+	Get:19 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-08-0244.34.pdiff [33 B]
+	Get:20 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-08-1427.47.pdiff [61 B]
+	Get:21 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-08-2039.02.pdiff [1,363 B]
+	Get:22 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-09-0244.28.pdiff [1,609 B]
+	Get:23 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-10-2034.21.pdiff [286 B]
+	Get:24 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-11-0226.00.pdiff [721 B]
+	Get:25 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-11-0827.03.pdiff [27 B]
+	Get:26 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-11-1425.25.pdiff [5,918 B]
+	Get:27 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-11-2045.46.pdiff [973 B]
+	Get:28 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-12-0231.30.pdiff [33 B]
+	Get:29 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-12-1428.48.pdiff [995 B]
+	Get:30 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-12-2025.41.pdiff [878 B]
+	Get:31 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-13-0230.14.pdiff [29 B]
+	Get:32 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-13-1426.03.pdiff [419 B]
+	Get:33 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-13-2022.45.pdiff [767 B]
+	Get:34 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-14-0824.15.pdiff [33 B]
+	Get:35 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-14-1428.31.pdiff [1,836 B]
+	Get:36 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-14-2030.21.pdiff [519 B]
+	Get:37 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-15-0223.10.pdiff [803 B]
+	Get:38 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-15-0822.27.pdiff [33 B]
+	Get:39 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-15-2031.34.pdiff [33 B]
+	Get:40 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-16-0824.37.pdiff [1,788 B]
+	Get:41 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-17-0236.33.pdiff [312 B]
+	Get:42 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-17-1423.24.pdiff [1,513 B]
+	Get:43 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-17-2037.06.pdiff [44 B]
+	Get:44 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-18-0842.46.pdiff [469 B]
+	Get:45 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-06-2026.31.pdiff [13.6 kB]
+	Get:44 http://deb.debian.org/debian stretch-backports/main Sources 2018-02-18-0842.46.pdiff [469 B]
+	Get:46 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-08-0244.34.pdiff [232 B]
+	Get:47 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-09-0244.28.pdiff [1,537 B]
+	Get:48 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-09-1007.33.pdiff [1,005 B]
+	Get:49 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-11-0226.00.pdiff [320 B]
+	Get:50 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-11-0827.03.pdiff [219 B]
+	Get:51 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-11-1425.25.pdiff [23.6 kB]
+	Get:52 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-12-0231.30.pdiff [622 B]
+	Get:53 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-12-2025.41.pdiff [1,434 B]
+	Get:54 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-13-0230.14.pdiff [220 B]
+	Get:55 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-13-1426.03.pdiff [486 B]
+	Get:56 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-13-2022.45.pdiff [888 B]
+	Get:57 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-14-1428.31.pdiff [605 B]
+	Get:58 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-14-2030.21.pdiff [4,558 B]
+	Get:59 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-15-0822.27.pdiff [260 B]
+	Get:60 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-16-0824.37.pdiff [1,750 B]
+	Get:61 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-17-0236.33.pdiff [338 B]
+	Get:62 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-17-2037.06.pdiff [1,164 B]
+	Get:63 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-18-0842.46.pdiff [251 B]
+	Get:64 http://deb.debian.org/debian stretch-backports/main Translation-en 2018-02-06-2026.31.pdiff [7,494 B]
+	Get:65 http://deb.debian.org/debian stretch-backports/main Translation-en 2018-02-07-0231.38.pdiff [371 B]
+	Get:66 http://deb.debian.org/debian stretch-backports/main Translation-en 2018-02-07-1427.34.pdiff [364 B]
+	Get:63 http://deb.debian.org/debian stretch-backports/main amd64 Packages 2018-02-18-0842.46.pdiff [251 B]
+	Get:67 http://deb.debian.org/debian stretch-backports/main Translation-en 2018-02-08-1427.47.pdiff [351 B]
+	Get:68 http://deb.debian.org/debian stretch-backports/main Translation-en 2018-02-11-1425.25.pdiff [1,495 B]
+	Get:69 http://deb.debian.org/debian stretch-backports/main Translation-en 2018-02-13-2022.45.pdiff [418 B]
+	Get:70 http://deb.debian.org/debian stretch-backports/main Translation-en 2018-02-15-0223.10.pdiff [54 B]
+	Get:71 http://deb.debian.org/debian stretch-backports/main Translation-en 2018-02-16-0824.37.pdiff [744 B]
+	Get:71 http://deb.debian.org/debian stretch-backports/main Translation-en 2018-02-16-0824.37.pdiff [744 B]
+	Get:73 http://packages.cloud.google.com/apt google-compute-engine-stretch-stable/main amd64 Packages [1,107 B]
+	Get:74 http://security.debian.org stretch/updates/main Sources [116 kB]
+	Get:75 http://security.debian.org stretch/updates/main amd64 Packages [302 kB]
+	Get:76 http://security.debian.org stretch/updates/main Translation-en [132 kB]
+	Fetched 1,018 kB in 1s (887 kB/s)                            
+	Reading package lists... Done
+
+google227039_student@lamp-1-vm:~$ sudo apt-get install apache2 php7.0
+	Reading package lists... Done
+	Building dependency tree       
+	Reading state information... Done
+	The following additional packages will be installed:
+	  apache2-bin apache2-data apache2-utils libapache2-mod-php7.0 libapr1 libaprutil1 libaprutil1-dbd-sqlite3
+	  libaprutil1-ldap libicu57 liblua5.2-0 libperl5.24 libxml2 perl perl-modules-5.24 php-common php7.0-cli
+	  php7.0-common php7.0-json php7.0-opcache php7.0-readline psmisc rename sgml-base ssl-cert xml-core
+	Suggested packages:
+	  www-browser apache2-doc apache2-suexec-pristine | apache2-suexec-custom php-pear perl-doc
+	  libterm-readline-gnu-perl | libterm-readline-perl-perl make sgml-base-doc openssl-blacklist debhelper
+	The following NEW packages will be installed:
+	  apache2 apache2-bin apache2-data apache2-utils libapache2-mod-php7.0 libapr1 libaprutil1
+	  libaprutil1-dbd-sqlite3 libaprutil1-ldap libicu57 liblua5.2-0 libperl5.24 libxml2 perl perl-modules-5.24
+	  php-common php7.0 php7.0-cli php7.0-common php7.0-json php7.0-opcache php7.0-readline psmisc rename sgml-base
+	  ssl-cert xml-core
+	0 upgraded, 27 newly installed, 0 to remove and 3 not upgraded.
+	Need to get 21.0 MB of archives.
+	After this operation, 95.1 MB of additional disk space will be used.
+	Do you want to continue? [Y/n] y
+	Get:1 http://deb.debian.org/debian stretch/main amd64 perl-modules-5.24 all 5.24.1-3+deb9u2 [2,724 kB]
+	Get:2 http://security.debian.org stretch/updates/main amd64 libxml2 amd64 2.9.4+dfsg1-2.2+deb9u2 [920 kB]
+	Get:3 http://security.debian.org stretch/updates/main amd64 php7.0-common amd64 7.0.27-0+deb9u1 [877 kB]
+	Get:4 http://deb.debian.org/debian stretch/main amd64 libperl5.24 amd64 5.24.1-3+deb9u2 [3,538 kB]
+	Get:5 http://security.debian.org stretch/updates/main amd64 php7.0-json amd64 7.0.27-0+deb9u1 [17.0 kB]
+	Get:6 http://security.debian.org stretch/updates/main amd64 php7.0-opcache amd64 7.0.27-0+deb9u1 [77.5 kB]
+	Get:7 http://security.debian.org stretch/updates/main amd64 php7.0-readline amd64 7.0.27-0+deb9u1 [12.2 kB]
+	Get:8 http://security.debian.org stretch/updates/main amd64 php7.0-cli amd64 7.0.27-0+deb9u1 [1,284 kB]
+	Get:9 http://security.debian.org stretch/updates/main amd64 libapache2-mod-php7.0 amd64 7.0.27-0+deb9u1 [1,224 kB]
+	Get:10 http://security.debian.org stretch/updates/main amd64 php7.0 all 7.0.27-0+deb9u1 [52.9 kB]
+	Get:11 http://deb.debian.org/debian stretch/main amd64 perl amd64 5.24.1-3+deb9u2 [218 kB]
+	Get:12 http://deb.debian.org/debian stretch/main amd64 libapr1 amd64 1.5.2-5 [96.6 kB]
+	Get:13 http://deb.debian.org/debian stretch/main amd64 libaprutil1 amd64 1.5.4-3 [85.8 kB]
+	Get:14 http://deb.debian.org/debian stretch/main amd64 libaprutil1-dbd-sqlite3 amd64 1.5.4-3 [19.3 kB]
+	Get:15 http://deb.debian.org/debian stretch/main amd64 libaprutil1-ldap amd64 1.5.4-3 [17.4 kB]
+	Get:16 http://deb.debian.org/debian stretch/main amd64 liblua5.2-0 amd64 5.2.4-1.1+b2 [110 kB]
+	Get:17 http://deb.debian.org/debian stretch/main amd64 libicu57 amd64 57.1-6+deb9u1 [7,697 kB]
+	Get:18 http://deb.debian.org/debian stretch/main amd64 apache2-bin amd64 2.4.25-3+deb9u3 [1,181 kB]
+	Get:19 http://deb.debian.org/debian stretch/main amd64 apache2-utils amd64 2.4.25-3+deb9u3 [217 kB]
+	Get:20 http://deb.debian.org/debian stretch/main amd64 apache2-data all 2.4.25-3+deb9u3 [162 kB]
+	Get:21 http://deb.debian.org/debian stretch/main amd64 apache2 amd64 2.4.25-3+deb9u3 [235 kB]
+	Get:22 http://deb.debian.org/debian stretch/main amd64 sgml-base all 1.29 [14.8 kB]
+	Get:23 http://deb.debian.org/debian stretch/main amd64 psmisc amd64 22.21-2.1+b2 [123 kB]
+	Get:24 http://deb.debian.org/debian stretch/main amd64 php-common all 1:49 [14.1 kB]
+	Get:25 http://deb.debian.org/debian stretch/main amd64 rename all 0.20-4 [12.5 kB]
+	Get:26 http://deb.debian.org/debian stretch/main amd64 ssl-cert all 1.0.39 [20.8 kB]
+	Get:27 http://deb.debian.org/debian stretch/main amd64 xml-core all 0.17 [23.2 kB]
+	Fetched 21.0 MB in 0s (36.4 MB/s)
+	Preconfiguring packages ...
+	Selecting previously unselected package perl-modules-5.24.
+	(Reading database ... 31435 files and directories currently installed.)
+	Preparing to unpack .../00-perl-modules-5.24_5.24.1-3+deb9u2_all.deb ...
+	Unpacking perl-modules-5.24 (5.24.1-3+deb9u2) ...
+	Selecting previously unselected package libperl5.24:amd64.
+	Preparing to unpack .../01-libperl5.24_5.24.1-3+deb9u2_amd64.deb ...
+	Unpacking libperl5.24:amd64 (5.24.1-3+deb9u2) ...
+	Selecting previously unselected package perl.
+	Preparing to unpack .../02-perl_5.24.1-3+deb9u2_amd64.deb ...
+	Unpacking perl (5.24.1-3+deb9u2) ...
+	Selecting previously unselected package libapr1:amd64.
+	Preparing to unpack .../03-libapr1_1.5.2-5_amd64.deb ...
+	Unpacking libapr1:amd64 (1.5.2-5) ...
+	Selecting previously unselected package libaprutil1:amd64.
+	Preparing to unpack .../04-libaprutil1_1.5.4-3_amd64.deb ...
+	Unpacking libaprutil1:amd64 (1.5.4-3) ...
+	Selecting previously unselected package libaprutil1-dbd-sqlite3:amd64.
+	Preparing to unpack .../05-libaprutil1-dbd-sqlite3_1.5.4-3_amd64.deb ...
+	Unpacking libaprutil1-dbd-sqlite3:amd64 (1.5.4-3) ...
+	Selecting previously unselected package libaprutil1-ldap:amd64.
+	Preparing to unpack .../06-libaprutil1-ldap_1.5.4-3_amd64.deb ...
+	Unpacking libaprutil1-ldap:amd64 (1.5.4-3) ...
+	Selecting previously unselected package liblua5.2-0:amd64.
+	Preparing to unpack .../07-liblua5.2-0_5.2.4-1.1+b2_amd64.deb ...
+	Unpacking liblua5.2-0:amd64 (5.2.4-1.1+b2) ...
+	Selecting previously unselected package libicu57:amd64.
+	Preparing to unpack .../08-libicu57_57.1-6+deb9u1_amd64.deb ...
+	Unpacking libicu57:amd64 (57.1-6+deb9u1) ...
+	Selecting previously unselected package libxml2:amd64.
+	Preparing to unpack .../09-libxml2_2.9.4+dfsg1-2.2+deb9u2_amd64.deb ...
+	Unpacking libxml2:amd64 (2.9.4+dfsg1-2.2+deb9u2) ...
+	Selecting previously unselected package apache2-bin.
+	Preparing to unpack .../10-apache2-bin_2.4.25-3+deb9u3_amd64.deb ...
+	Unpacking apache2-bin (2.4.25-3+deb9u3) ...
+	Selecting previously unselected package apache2-utils.
+	Preparing to unpack .../11-apache2-utils_2.4.25-3+deb9u3_amd64.deb ...
+	Unpacking apache2-utils (2.4.25-3+deb9u3) ...
+	Selecting previously unselected package apache2-data.
+	Preparing to unpack .../12-apache2-data_2.4.25-3+deb9u3_all.deb ...
+	Unpacking apache2-data (2.4.25-3+deb9u3) ...
+	Selecting previously unselected package apache2.
+	Preparing to unpack .../13-apache2_2.4.25-3+deb9u3_amd64.deb ...
+	Unpacking apache2 (2.4.25-3+deb9u3) ...
+	Selecting previously unselected package sgml-base.
+	Preparing to unpack .../14-sgml-base_1.29_all.deb ...
+	Unpacking sgml-base (1.29) ...
+	Selecting previously unselected package psmisc.
+	Preparing to unpack .../15-psmisc_22.21-2.1+b2_amd64.deb ...
+	Unpacking psmisc (22.21-2.1+b2) ...
+	Selecting previously unselected package php-common.
+	Preparing to unpack .../16-php-common_1%3a49_all.deb ...
+	Unpacking php-common (1:49) ...
+	Selecting previously unselected package php7.0-common.
+	Preparing to unpack .../17-php7.0-common_7.0.27-0+deb9u1_amd64.deb ...
+	Unpacking php7.0-common (7.0.27-0+deb9u1) ...
+	Selecting previously unselected package php7.0-json.
+	Preparing to unpack .../18-php7.0-json_7.0.27-0+deb9u1_amd64.deb ...
+	Unpacking php7.0-json (7.0.27-0+deb9u1) ...
+	Selecting previously unselected package php7.0-opcache.
+	Preparing to unpack .../19-php7.0-opcache_7.0.27-0+deb9u1_amd64.deb ...
+	Unpacking php7.0-opcache (7.0.27-0+deb9u1) ...
+	Selecting previously unselected package php7.0-readline.
+	Preparing to unpack .../20-php7.0-readline_7.0.27-0+deb9u1_amd64.deb ...
+	Unpacking php7.0-readline (7.0.27-0+deb9u1) ...
+	Selecting previously unselected package php7.0-cli.
+	Preparing to unpack .../21-php7.0-cli_7.0.27-0+deb9u1_amd64.deb ...
+	Unpacking php7.0-cli (7.0.27-0+deb9u1) ...
+	Selecting previously unselected package libapache2-mod-php7.0.
+	Preparing to unpack .../22-libapache2-mod-php7.0_7.0.27-0+deb9u1_amd64.deb ...
+	Unpacking libapache2-mod-php7.0 (7.0.27-0+deb9u1) ...
+	Selecting previously unselected package php7.0.
+	Preparing to unpack .../23-php7.0_7.0.27-0+deb9u1_all.deb ...
+	Unpacking php7.0 (7.0.27-0+deb9u1) ...
+	Selecting previously unselected package rename.
+	Preparing to unpack .../24-rename_0.20-4_all.deb ...
+	Unpacking rename (0.20-4) ...
+	Selecting previously unselected package ssl-cert.
+	Preparing to unpack .../25-ssl-cert_1.0.39_all.deb ...
+	Unpacking ssl-cert (1.0.39) ...
+	Selecting previously unselected package xml-core.
+	Preparing to unpack .../26-xml-core_0.17_all.deb ...
+	Unpacking xml-core (0.17) ...
+	Setting up libapr1:amd64 (1.5.2-5) ...
+	Setting up perl-modules-5.24 (5.24.1-3+deb9u2) ...
+	Setting up libperl5.24:amd64 (5.24.1-3+deb9u2) ...
+	Setting up psmisc (22.21-2.1+b2) ...
+	Setting up apache2-data (2.4.25-3+deb9u3) ...
+	Setting up ssl-cert (1.0.39) ...
+	Setting up sgml-base (1.29) ...
+	Setting up libicu57:amd64 (57.1-6+deb9u1) ...
+	Setting up libxml2:amd64 (2.9.4+dfsg1-2.2+deb9u2) ...
+	Setting up perl (5.24.1-3+deb9u2) ...
+	update-alternatives: using /usr/bin/prename to provide /usr/bin/rename (rename) in auto mode
+	Processing triggers for libc-bin (2.24-11+deb9u1) ...
+	Setting up libaprutil1:amd64 (1.5.4-3) ...
+	Setting up php-common (1:49) ...
+	Created symlink /etc/systemd/system/timers.target.wants/phpsessionclean.timer → /lib/systemd/system/phpsessionclean.timer.
+	Processing triggers for systemd (232-25+deb9u1) ...
+	Processing triggers for man-db (2.7.6.1-2) ...
+	Setting up liblua5.2-0:amd64 (5.2.4-1.1+b2) ...
+	Setting up xml-core (0.17) ...
+	Setting up php7.0-common (7.0.27-0+deb9u1) ...
+
+	Creating config file /etc/php/7.0/mods-available/calendar.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/ctype.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/exif.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/fileinfo.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/ftp.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/gettext.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/iconv.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/pdo.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/phar.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/posix.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/shmop.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/sockets.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/sysvmsg.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/sysvsem.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/sysvshm.ini with new version
+
+	Creating config file /etc/php/7.0/mods-available/tokenizer.ini with new version
+	Setting up libaprutil1-ldap:amd64 (1.5.4-3) ...
+	Setting up php7.0-readline (7.0.27-0+deb9u1) ...
+
+	Creating config file /etc/php/7.0/mods-available/readline.ini with new version
+	Setting up php7.0-opcache (7.0.27-0+deb9u1) ...
+
+	Creating config file /etc/php/7.0/mods-available/opcache.ini with new version
+	Setting up libaprutil1-dbd-sqlite3:amd64 (1.5.4-3) ...
+	Setting up rename (0.20-4) ...
+	update-alternatives: using /usr/bin/file-rename to provide /usr/bin/rename (rename) in auto mode
+	Setting up apache2-utils (2.4.25-3+deb9u3) ...
+	Setting up apache2-bin (2.4.25-3+deb9u3) ...
+	Setting up php7.0-json (7.0.27-0+deb9u1) ...
+
+	Creating config file /etc/php/7.0/mods-available/json.ini with new version
+	Setting up apache2 (2.4.25-3+deb9u3) ...
+	Enabling module mpm_event.
+	Enabling module authz_core.
+	Enabling module authz_host.
+	Enabling module authn_core.
+	Enabling module auth_basic.
+	Enabling module access_compat.
+	Enabling module authn_file.
+	Enabling module authz_user.
+	Enabling module alias.
+	Enabling module dir.
+	Enabling module autoindex.
+	Enabling module env.
+	Enabling module mime.
+	Enabling module negotiation.
+	Enabling module setenvif.
+	Enabling module filter.
+	Enabling module deflate.
+	Enabling module status.
+	Enabling module reqtimeout.
+	Enabling conf charset.
+	Enabling conf localized-error-pages.
+	Enabling conf other-vhosts-access-log.
+	Enabling conf security.
+	Enabling conf serve-cgi-bin.
+	Enabling site 000-default.
+	Created symlink /etc/systemd/system/multi-user.target.wants/apache2.service → /lib/systemd/system/apache2.service.
+	Created symlink /etc/systemd/system/multi-user.target.wants/apache-htcacheclean.service → /lib/systemd/system/apache-htcacheclean.service.
+	Setting up php7.0-cli (7.0.27-0+deb9u1) ...
+	update-alternatives: using /usr/bin/php7.0 to provide /usr/bin/php (php) in auto mode
+	update-alternatives: using /usr/bin/phar7.0 to provide /usr/bin/phar (phar) in auto mode
+	update-alternatives: using /usr/bin/phar.phar7.0 to provide /usr/bin/phar.phar (phar.phar) in auto mode
+
+	Creating config file /etc/php/7.0/cli/php.ini with new version
+	Setting up libapache2-mod-php7.0 (7.0.27-0+deb9u1) ...
+
+	Creating config file /etc/php/7.0/apache2/php.ini with new version
+	Module mpm_event disabled.
+	Enabling module mpm_prefork.
+	apache2_switch_mpm Switch to prefork
+	apache2_invoke: Enable module php7.0
+	Setting up php7.0 (7.0.27-0+deb9u1) ...
+	Processing triggers for libc-bin (2.24-11+deb9u1) ...
+	Processing triggers for sgml-base (1.29) ...
+	Processing triggers for systemd (232-25+deb9u1) ...
+
+google227039_student@lamp-1-vm:~$ sudo service apache2 restart
+
+google227039_student@lamp-1-vm:~$ sudo service apache2 restart
+
+google227039_student@lamp-1-vm:~$ curl -sSO https://repo.stackdriver.com/stack-install.sh
+
+google227039_student@lamp-1-vm:~$ sudo bash stack-install.sh --write-gcm
+	Installing agents for Debian or Ubuntu.
+	OK
+	W: GPG error: http://repo.stackdriver.com/apt stretch InRelease: The following signatures were invalid: B10FDCDCEC088467D0069F423C6E15887B190BD2
+	W: The repository 'http://repo.stackdriver.com/apt stretch InRelease' is not signed.
+	Reading package lists...
+	Building dependency tree...
+	Reading state information...
+	The following additional packages will be installed:
+	  libltdl7 libyajl2 python-netifaces python-psutil stackdriver-extractor
+	Suggested packages:
+	  python-psutil-doc libmariadbclient18 libpq5 libhiredis0.13 default-jre
+	The following NEW packages will be installed:
+	  libltdl7 libyajl2 python-netifaces python-psutil stackdriver-agent stackdriver-extractor
+	0 upgraded, 6 newly installed, 0 to remove and 3 not upgraded.
+	Need to get 2,140 kB of archives.
+	After this operation, 9,314 kB of additional disk space will be used.
+	WARNING: The following packages cannot be authenticated!
+	  stackdriver-agent stackdriver-extractor
+	Authentication warning overridden.
+	Get:1 http://deb.debian.org/debian stretch/main amd64 libltdl7 amd64 2.4.6-2 [389 kB]
+	Get:2 http://repo.stackdriver.com/apt stretch/main amd64 stackdriver-agent amd64 5.5.2-379.sdl.stretch [1,568 kB]
+	Get:3 http://deb.debian.org/debian stretch/main amd64 libyajl2 amd64 2.1.0-2+b3 [23.2 kB]
+	Get:4 http://deb.debian.org/debian stretch/main amd64 python-netifaces amd64 0.10.4-0.1+b2 [16.9 kB]
+	Get:5 http://deb.debian.org/debian stretch/main amd64 python-psutil amd64 5.0.1-1 [127 kB]
+	Get:6 http://repo.stackdriver.com/apt stretch/main amd64 stackdriver-extractor all 94-1.stretch [15.6 kB]
+	Fetched 2,140 kB in 0s (12.3 MB/s)
+	Preconfiguring packages ...
+	Selecting previously unselected package libltdl7:amd64.
+	(Reading database ... 34258 files and directories currently installed.)
+	Preparing to unpack .../libltdl7_2.4.6-2_amd64.deb ...
+	Unpacking libltdl7:amd64 (2.4.6-2) ...
+	Selecting previously unselected package libyajl2:amd64.
+	Preparing to unpack .../libyajl2_2.1.0-2+b3_amd64.deb ...
+	Unpacking libyajl2:amd64 (2.1.0-2+b3) ...
+	Selecting previously unselected package stackdriver-agent.
+	Preparing to unpack .../stackdriver-agent_5.5.2-379.sdl.stretch_amd64.deb ...
+	Unpacking stackdriver-agent (5.5.2-379.sdl.stretch) ...
+	Selecting previously unselected package python-netifaces.
+	Preparing to unpack .../python-netifaces_0.10.4-0.1+b2_amd64.deb ...
+	Unpacking python-netifaces (0.10.4-0.1+b2) ...
+	Selecting previously unselected package python-psutil.
+	Preparing to unpack .../python-psutil_5.0.1-1_amd64.deb ...
+	Unpacking python-psutil (5.0.1-1) ...
+	Setting up libltdl7:amd64 (2.4.6-2) ...
+	Setting up libyajl2:amd64 (2.1.0-2+b3) ...
+	Setting up stackdriver-agent (5.5.2-379.sdl.stretch) ...
+	Selecting previously unselected package stackdriver-extractor.
+	(Reading database ... 34678 files and directories currently installed.)
+	Preparing to unpack .../stackdriver-extractor_94-1.stretch_all.deb ...
+	Unpacking stackdriver-extractor (94-1.stretch) ...
+	Setting up python-netifaces (0.10.4-0.1+b2) ...
+	Processing triggers for libc-bin (2.24-11+deb9u1) ...
+	Setting up python-psutil (5.0.1-1) ...
+	Processing triggers for systemd (232-25+deb9u1) ...
+	Setting up stackdriver-extractor (94-1.stretch) ...
+	Processing triggers for systemd (232-25+deb9u1) ...
+	Checking platform...
+	Using Cloud Monitoring API
+	Restarting services
+	[ ok ] Restarting stackdriver-agent (via systemctl): stackdriver-agent.service.
+	
+google227039_student@lamp-1-vm:~$ curl -sSO https://dl.google.com/cloudagents/install-logging-agent.sh
+
+google227039_student@lamp-1-vm:~$ sudo bash install-logging-agent.sh
+	==============================================================================
+	Starting installation of google-fluentd
+	==============================================================================
+
+	Installing agents for Debian or Ubuntu.
+	OK
+	Selecting previously unselected package google-fluentd.
+	(Reading database ... 34694 files and directories currently installed.)
+	Preparing to unpack .../google-fluentd_1.5.27-1_amd64.deb ...
+	Unpacking google-fluentd (1.5.27-1) ...
+	Selecting previously unselected package google-fluentd-catch-all-config.
+	Preparing to unpack .../google-fluentd-catch-all-config_0.6_all.deb ...
+	Unpacking google-fluentd-catch-all-config (0.6) ...
+	Setting up google-fluentd (1.5.27-1) ...
+	Adding system user `google-fluentd' (UID 108) ...
+	Adding new group `google-fluentd' (GID 113) ...
+	Adding new user `google-fluentd' (UID 108) with group `google-fluentd' ...
+	Not creating home directory `/home/google-fluentd'.
+	Installing default conffile /etc/google-fluentd/google-fluentd.conf ...
+	Setting up google-fluentd-catch-all-config (0.6) ...
+	==============================================================================
+	Installation of google-fluentd complete.
+	Logs from this machine should be visible in the log viewer at:
+	  https://console.cloud.google.com/logs/viewer?project=qwiklabs-gcp-382e9ace500f0a11&resource=gce_instance/instance_id/5072756403456979109
+	A test message has been sent to syslog to help verify proper operation.
+	Please consult the documentation for troubleshooting advice:
+	  https://cloud.google.com/logging/docs/agent
+	You can monitor the logging agent's logfile at:
+	  /var/log/google-fluentd/google-fluentd.log
+	==============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

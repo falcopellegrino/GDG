@@ -1,0 +1,66 @@
+<!--<script src="cache-polyfill-master/index.js"></script>-->
+<script src="sw.js"></script>
+
+<script type="text/javascript">
+
+
+// (function(open) {
+//     XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
+        
+//         console.log("testtesttest");
+
+//         this.addEventListener("readystatechange", function() {
+// 			if (this.readyState == 4) 
+//             { 
+// 				console.log(this.status);
+// 			}
+//         }, false);
+//         open.call(this, method, url, async, user, pass);
+// 		// this.setRequestHeader("Authorization", "Token 123")
+//     };
+// })(XMLHttpRequest.prototype.open);
+
+
+
+// function logURL(requestDetails) {
+//   console.log("Loading: " + requestDetails.url);
+// }
+
+// browser.webRequest.onBeforeRequest.addListener(
+//   logURL,
+//   {urls: ["<all_urls>"]}
+// );
+
+
+
+
+
+
+
+    // console.log(navigator.serviceWorker);
+    if (navigator.serviceWorker) {
+        navigator.serviceWorker.register('sw.js', {scope: '/'})
+            .then(
+                function (registration) {
+                    console.log('Service worker registered!');
+                },
+                function (err) {
+                    console.error('Installation failed!', err);
+                }
+            );
+    }
+
+    // if ('serviceWorker' in navigator) {
+    
+    //     navigator.serviceWorker.register('sw.js', {scope: '/'})
+    //     .then(function(reg) {
+    //         // registration worked
+    //         console.log('Registration succeeded. Scope is ' + reg.scope);
+    //     }).catch(function(error) {
+    //         // registration failed
+    //         console.log('Registration failed with ' + error);
+    //     });
+    // }
+</script>
+<img src="http://www.somedomain.it/(46465464654545645654645645664dfsdfsd5645456465)/flowers.jpg" />
+<script src="http://www.somedomain.it/(464654646545456456546456456dfsdfsdf645645456465)/some_script.js"></script>

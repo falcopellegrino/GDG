@@ -1,0 +1,105 @@
+Stackdriver Monitoring provides dashboards and alerts so you can review performance metrics for cloud services, virtual machines,
+	and common open source servers such as MongoDB, Apache, Nginx, Elasticsearch, and more.
+You configure Stackdriver Monitoring using the Stackdriver Monitoring Console.
+
+Stackdriver lets you define and monitor groups of resources, such as VM instances, databases, and load balancers.
+Groups can be based on names, tags, regions, applications, and other criteria.
+You can also create subgroups, up to six levels deep, within groups.
+
+-----
+
+GCP Project ID 1
+qwiklabs-gcp-580557768deb8062
+GCP Project ID 2
+qwiklabs-gcp-e9d5b2c6612819b4
+
+
+
+
+"Wait a minute or 2. You're waiting for the instance to be in violation of the uptime check. " ... but in "Edit Uptime Check Health Condition" there at least "IS DOWN FOR 5 MINUTES" so you have to wait more than 2 minutes, the problem is that you don't know if you didn't see the condition
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

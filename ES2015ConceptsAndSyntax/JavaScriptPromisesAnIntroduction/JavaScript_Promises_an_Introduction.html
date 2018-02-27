@@ -1,0 +1,576 @@
+<script type="text/javascript">
+    function get(url) {
+        // Return a new promise.
+        return new Promise(function(resolve, reject) {
+            // Do the usual XHR stuff
+            var req = new XMLHttpRequest();
+            req.open('GET', url);
+            req.onload = function() {
+                // This is called even on 404 etc
+                // so check the status
+                if (req.status == 200) {
+                    // Resolve the promise with the response text
+                    resolve(req.response);
+                }
+                else {
+                    // Otherwise reject with the status text
+                    // which will hopefully be a meaningful error
+                    reject(Error(req.statusText));
+                }
+            };
+            // Handle network errors
+            req.onerror = function() {
+                reject(Error("Network Error"));
+            };
+            // Make the request
+            req.send();
+        });
+    }
+
+    // get('story.json').then(
+    //     function(response) {
+    //         console.log("Success!", response);
+    //     },
+    //     function(error) {
+    //         console.error("Failed!", error);
+    //     }
+    // );
+
+    // get('story.json').then(
+    //     function(response) {
+    //         return JSON.parse(response);
+    //     },
+    //     function(error) {
+    //         console.error("Failed!", error);
+    //     }
+    // ).then(function(response) {
+    //     console.log("Yey JSON!", response);
+    // });
+
+    // get('story.json')
+    //     .then(JSON.parse)
+    //     .then(function(response) {
+    //         console.log("Yey JSON!", response);
+    //     }
+    // );
+
+    function getJSON(url) {
+        return get(url).then(JSON.parse);
+    }
+    // getJSON('story.json')
+    //     .then(
+    //         function(story) {
+    //             return getJSON(story.chapterUrls[0]);
+    //         }
+    //     )
+    //     .then(
+    //         function(chapter1) {
+    //             console.log("Got chapter 1!", chapter1);
+    //         }
+    //     );
+
+    var storyPromise;
+    function getChapter(i) {
+        storyPromise = storyPromise || getJSON('story.json');
+        return storyPromise.then(
+            function(story) {
+                return getJSON(story.chapterUrls[i]);
+            }
+        );
+    }
+
+    // and using it is simple:
+    getChapter(0)
+        .then(
+            function(chapter) {
+                console.log(chapter);
+                return getChapter(1);
+            }
+        )
+        .then(
+            function(chapter) {
+                console.log(chapter);
+                return getChapter(2);
+            }
+        )
+        .then(
+            function(chapter) {
+                console.log(chapter);
+            }
+        )
+
+    get('story.json')
+        .then(
+            function(response) {
+                console.log("Success!", response);
+            }, 
+            function(error) {
+                console.log("Failed!", error);
+            }
+        );
+
+    get('story.json')
+        .then(
+            function(response) {
+                console.log("Success!", response);
+            }
+        )
+        .catch(
+            function(error) {
+                console.log("Failed!", error);
+            }
+        );
+
+    get('story.json')
+        .then(
+            function(response) {
+                console.log("Success!", response);
+            }
+        )
+        .then(
+            undefined, 
+            function(error) {
+                console.log("Failed!", error);
+            }
+        );
+
+        // asyncThing1()
+        //     .then(
+        //         function() {
+        //             return asyncThing2();
+        //         }
+        //     )
+        //     .then(
+        //         function() {
+        //             return asyncThing3();
+        //         }
+        //     )
+        //     .catch(
+        //         function(err) {
+        //             return asyncRecovery1();
+        //         }
+        //     )
+        //     .then(
+        //         function() {
+        //             return asyncThing4();
+        //         }
+        //         , function(err) {
+        //             return asyncRecovery2();
+        //         }
+        //     )
+        //     .catch(
+        //         function(err) {
+        //             console.log("Don't worry about it");    
+        //         }
+        //     )
+        //     .then(
+        //         function() {
+        //             console.log("All done!");
+        //         }
+        //     );
+
+    var jsonPromise = new Promise(
+        function(resolve, reject) {
+            // JSON.parse throws an error if you feed it some
+            // invalid JSON, so this implicitly rejects:
+        resolve(JSON.parse("This ain't JSON"));
+        }
+    );
+
+    jsonPromise
+        .then(
+            function(data) {
+                // This never happens:
+                console.log("It worked!", data);
+            }
+        )
+        .catch(
+            function(err) {
+                // Instead, this happens:
+                //console.log("It failed!", err);
+                console.log("It failed!");
+                // console.log(err);
+            }
+        );
+
+    get('/')
+        .then(JSON.parse)
+        .then(
+            function() {
+                // This never happens, '/' is an HTML page, not JSON
+                // so JSON.parse throws
+                console.log("It worked!", data);
+            }
+        )
+        .catch(
+            function(err) {
+                // Instead, this happens:
+                // console.log("It failed!", err);
+                console.log("It failed!");
+            }
+        );
+
+
+
+    getJSON('story.json')
+        .then(
+            function(story) {
+                return getJSON(story.chapterUrls[0]);
+        })
+        .then(
+            function(chapter1) {
+                addHtmlToPage(chapter1.html);
+        })
+        .catch(
+            function() {
+                // addTextToPage("Failed to show chapter");
+            })
+            .then(
+                function() {
+                    //document.querySelector('.spinner').style.display = 'none';
+            });
+
+    // try {
+    //     var story = getJSONSync('story.json');
+    //     var chapter1 = getJSONSync(story.chapterUrls[0]);
+    //     addHtmlToPage(chapter1.html);
+    // }
+    // catch (e) {
+    //     addTextToPage("Failed to show chapter");
+    // }
+    // document.querySelector('.spinner').style.display = 'none'
+
+
+
+    function getJSON(url) {
+        return get(url)
+            .then(JSON.parse)
+            .catch(function(err) {
+                console.log("getJSON failed for", url, err);
+                throw err;
+            });
+    }
+
+
+
+    // try {
+    //     var story = getJSONSync('story.json');
+    //     addHtmlToPage(story.heading);
+    //     story.chapterUrls
+    //         .forEach(
+    //         function(chapterUrl) {
+    //             var chapter = getJSONSync(chapterUrl);
+    //             addHtmlToPage(chapter.html);
+    //         });
+    //     addTextToPage("All done");
+    // }
+    // catch (err) {
+    //     addTextToPage("Argh, broken: " + err.message);
+    // }
+    // document.querySelector('.spinner').style.display = 'none'
+
+    getJSON('story.json')
+        .then(
+            function(story) {
+                addHtmlToPage(story.heading);
+                // TODO: for each url in story.chapterUrls, fetch &amp; display
+        })
+        .then(
+            function() {
+                // And we're all done!
+                // addTextToPage("All done");
+        })
+        .catch(
+            function(err) {
+                // Catch any error that happened along the way
+                // addTextToPage("Argh, broken: " + err.message);
+        })
+        .then(
+            function() {
+                // Always hide the spinner
+                // document.querySelector('.spinner').style.display = 'none';
+        });
+
+    getJSON('story.json')
+        .then(
+            function(story) {
+                addHtmlToPage(story.heading);
+                story.chapterUrls
+                    .forEach(
+                        function(chapterUrl) {
+                            // Fetch chapter
+                                getJSON(chapterUrl)
+                                    .then(
+                                        function(chapter) {
+                                            // and add it to the page
+                                            addHtmlToPage(chapter.html);
+                                    });
+                });
+        })
+        .then(
+            function() {
+                // And we're all done!
+                // addTextToPage("All done");
+        })
+        .catch(
+            function(err) {
+                // Catch any error that happened along the way
+                // addTextToPage("Argh, broken: " + err.message);
+        })
+        .then(
+            function() {
+                // Always hide the spinner
+                // document.querySelector('.spinner').style.display = 'none';
+        });
+
+
+
+
+    getJSON('story.json')
+        .then(
+            function(story) {
+                addHtmlToPage(story.heading);
+                
+                // Start off with a promise that always resolves
+                var sequence = Promise.resolve();
+                // Loop through our chapter urls
+                story.chapterUrls.forEach(
+                    function(chapterUrl) {
+                        // Add these actions to the end of the sequence
+                        sequence = sequence.then(
+                            function() {
+                                return getJSON(chapterUrl);
+                            })
+                            .then(function(chapter) {
+                                addHtmlToPage(chapter.html);
+                            });
+                });
+        })
+        .then(
+            function() {
+                // And we're all done!
+                // addTextToPage("All done");
+        })
+        .catch(
+            function(err) {
+                // Catch any error that happened along the way
+                // addTextToPage("Argh, broken: " + err.message);
+        })
+        .then(
+            function() {
+                // Always hide the spinner
+                // document.querySelector('.spinner').style.display = 'none';
+        });
+
+    getJSON('story.json')
+        .then(
+            function(story) {
+                addHtmlToPage(story.heading);
+                // Loop through our chapter urls
+                story.chapterUrls.reduce(
+                    function(sequence, chapterUrl) {
+                        // Add these actions to the end of the sequence
+                        return sequence
+                            .then(
+                                function() {
+                                    return getJSON(chapterUrl);
+                            })
+                            .then(
+                                function(chapter) {
+                                    // addHtmlToPage(chapter.html);
+                            });
+                            }, Promise.resolve());
+        })
+        .then(
+            function() {
+                // And we're all done!
+                // addTextToPage("All done");
+        })
+        .catch(
+            function(err) {
+                // Catch any error that happened along the way
+                // addTextToPage("Argh, broken: " + err.message);
+        })
+        .then(
+            function() {
+                // Always hide the spinner
+                // document.querySelector('.spinner').style.display = 'none';
+        });
+
+        getJSON('story.json')
+            .then(
+                function(story) {
+                    // addHtmlToPage(story.heading);
+                    return story.chapterUrls.reduce(
+                        function(sequence, chapterUrl) {
+                            // Once the last chapter's promise is done…
+                            return sequence
+                                .then(
+                                    function() {
+                                        // …fetch the next chapter
+                                        return getJSON(chapterUrl);
+                                })
+                                .then(
+                                    function(chapter) {
+                                        // and add it to the page
+                                        addHtmlToPage(chapter.html);
+                                });
+                        }
+                        , Promise.resolve());
+                })
+                .then(
+                    function() {
+                        // And we're all done!
+                        // addTextToPage("All done");
+                })
+                .catch(
+                    function(err) {
+                        // Catch any error that happened along the way
+                        // addTextToPage("Argh, broken: " + err.message);
+                })
+                .then(
+                    function() {
+                        // Always hide the spinner
+                        // document.querySelector('.spinner').style.display = 'none';
+            });
+
+
+
+        getJSON('story.json')
+            .then(
+                function(story) {
+                    // addHtmlToPage(story.heading);
+                    // Take an array of promises and wait on them all
+                    return Promise.all(
+                        // Map our array of chapter urls to
+                        // an array of chapter json promises
+                        story.chapterUrls.map(getJSON)
+                    );
+            })
+            .then(
+                function(chapters) {
+                    // Now we have the chapters jsons in order! Loop through…
+                    chapters.forEach(
+                        function(chapter) {
+                            // …and add to the page
+                            // addHtmlToPage(chapter.html);
+                    });
+                    // addTextToPage("All done");
+            })
+            .catch(
+                function(err) {
+                    // catch any error that happened so far
+                    // addTextToPage("Argh, broken: " + err.message);
+            })
+            .then(
+                function() {
+                    // document.querySelector('.spinner').style.display = 'none';
+            });
+
+
+
+        getJSON('story.json')
+            .then(
+                function(story) {
+                    addHtmlToPage(story.heading);
+                    // Map our array of chapter urls to
+                    // an array of chapter json promises.
+                    // This makes sure they all download in parallel.
+                    return story.chapterUrls.map(getJSON)
+                        .reduce(
+                            function(sequence, chapterPromise) {
+                                // Use reduce to chain the promises together,
+                                // adding content to the page for each chapter
+                                return sequence
+                                    .then(
+                                        function() {
+                                            // Wait for everything in the sequence so far,
+                                            // then wait for this chapter to arrive.
+                                            return chapterPromise;
+                                    })
+                                    .then(
+                                        function(chapter) {
+                                            // addHtmlToPage(chapter.html);
+                                    });
+                            }, Promise.resolve());
+                })
+                .then(
+                    function() {
+                        // addTextToPage("All done");
+                })
+                .catch(
+                    function(err) {
+                        // catch any error that happened along the way
+                        // addTextToPage("Argh, broken: " + err.message);
+                })
+                .then(
+                    function() {
+                        // document.querySelector('.spinner').style.display = 'none';
+                });
+
+
+
+        function *addGenerator() {
+            var i = 0;
+            while (true) {
+                i += yield i;
+            }
+        }
+        var adder = addGenerator();
+        adder.next().value; // 0
+        adder.next(5).value; // 5
+        adder.next(5).value; // 10
+        adder.next(5).value; // 15
+        adder.next(50).value; // 65
+        //alert(adder.next(0).value);
+
+        function spawn(generatorFunc) {
+            function continuer(verb, arg) {
+                var result;
+                try {
+                    result = generator[verb](arg);
+                } 
+                catch (err) {
+                    return Promise.reject(err);
+                }
+                if (result.done) {
+                    return result.value;
+                } 
+                else {
+                    return Promise.resolve(result.value).then(onFulfilled, onRejected);
+                }
+            }
+            var generator = generatorFunc();
+            var onFulfilled = continuer.bind(continuer, "next");
+            var onRejected = continuer.bind(continuer, "throw");
+           return onFulfilled();
+        }
+        spawn(
+            function *() {
+                try {
+                    // 'yield' effectively does an async wait,
+                    // returning the result of the promise
+                    let story = yield getJSON('story.json');
+                    // addHtmlToPage(story.heading);
+                    // Map our array of chapter urls to
+                    // an array of chapter json promises.
+                    // This makes sure they all download in parallel.
+                    let chapterPromises = story.chapterUrls.map(getJSON);
+                    for (let chapterPromise of chapterPromises) {
+                        // Wait for each chapter to be ready, then add it to the page
+                        let chapter = yield chapterPromise;
+                        // addHtmlToPage(chapter.html);
+                    }
+                    // addTextToPage("All done");
+                }
+                catch (err) {
+                    // try/catch just works, rejected promises are thrown here
+                    addTextToPage("Argh, broken: " + err.message);
+                }
+                // document.querySelector('.spinner').style.display = 'none';
+        });
+
+
+
+
+</script>

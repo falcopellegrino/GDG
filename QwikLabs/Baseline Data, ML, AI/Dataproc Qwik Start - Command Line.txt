@@ -1,0 +1,224 @@
+Cloud Dataproc is a fast, easy-to-use, fully-managed cloud service for running Apache Spark and Apache Hadoop clusters in a simpler, more cost-efficient way.
+Operations that used to take hours or days take seconds or minutes instead.
+Create Cloud Dataproc clusters quickly and resize them at any time, so you don't have to worry about your data pipelines outgrowing your clusters.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform.
+
+-----
+
+google224910_student@qwiklabs-gcp-f6f6342484997c70:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google224910_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google224910_student@qwiklabs-gcp-f6f6342484997c70:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-f6f6342484997c70
+	Your active configuration is: [cloudshell-27399]
+
+google224910_student@qwiklabs-gcp-f6f6342484997c70:~$ gcloud config set project qwiklabs-gcp-f6f6342484997c70
+	Updated property [core/project].
+
+google224910_student@qwiklabs-gcp-f6f6342484997c70:~$ gcloud dataproc clusters create example-cluster
+	For the following cluster:
+	 - [example-cluster]
+	choose a zone:
+	 [1] asia-east1-a
+	 [2] asia-east1-b
+	 [3] asia-east1-c
+	 [4] asia-northeast1-a
+	 [5] asia-northeast1-b
+	 [6] asia-northeast1-c
+	 [7] asia-south1-a
+	 [8] asia-south1-b
+	 [9] asia-south1-c
+	 [10] asia-southeast1-a
+	 [11] asia-southeast1-b
+	 [12] australia-southeast1-a
+	 [13] australia-southeast1-b
+	 [14] australia-southeast1-c
+	 [15] europe-west1-b
+	 [16] europe-west1-c
+	 [17] europe-west1-d
+	 [18] europe-west2-a
+	 [19] europe-west2-b
+	 [20] europe-west2-c
+	 [21] europe-west3-a
+	 [22] europe-west3-b
+	 [23] europe-west3-c
+	 [24] europe-west4-b
+	 [25] europe-west4-c
+	 [26] northamerica-northeast1-a
+	 [27] northamerica-northeast1-b
+	 [28] northamerica-northeast1-c
+	 [29] southamerica-east1-a
+	 [30] southamerica-east1-b
+	 [31] southamerica-east1-c
+	 [32] us-central1-a
+	 [33] us-central1-b
+	 [34] us-central1-c
+	 [35] us-central1-f
+	 [36] us-east1-b
+	 [37] us-east1-c
+	 [38] us-east1-d
+	 [39] us-east4-a
+	 [40] us-east4-b
+	 [41] us-east4-c
+	 [42] us-west1-a
+	 [43] us-west1-b
+	 [44] us-west1-c
+	Please enter your numeric choice:  32
+
+	Waiting on operation [projects/qwiklabs-gcp-f6f6342484997c70/regions/global/operations/0d97f54d-7814-4dae-8384-5deab7f02cff].
+	Waiting for cluster creation operation...done.
+	Created [https://dataproc.googleapis.com/v1/projects/qwiklabs-gcp-f6f6342484997c70/regions/global/clusters/example-cluster] Cluster placed in zone [us-central1-a].
+
+gcloud dataproc jobs submit spark --cluster example-cluster --class org.apache.spark.examples.SparkPi --jars file:///usr/lib/spark/examples/jars/spark-examples.jar -- 1000
+google224910_student@qwiklabs-gcp-f6f6342484997c70:~$ gcloud dataproc jobs submit spark --cluster example-cluster --class org.apache.spark.examples.SparkPi --jars file:///usr/lib/spark/examples/jars/spark-examples.jar -- 1000
+Job [efbf0b77-9ed9-4c36-ac1b-b1b0a11f2395] submitted.
+Waiting for job output...
+18/02/16 19:03:40 INFO org.spark_project.jetty.util.log: Logging initialized @2616ms
+18/02/16 19:03:40 INFO org.spark_project.jetty.server.Server: jetty-9.3.z-SNAPSHOT
+18/02/16 19:03:40 INFO org.spark_project.jetty.server.Server: Started @2711ms
+18/02/16 19:03:40 INFO org.spark_project.jetty.server.AbstractConnector: Started ServerConnector@4287d447{HTTP/1.1,[http/1.1]}{0.0.0.0:4040}
+18/02/16 19:03:40 INFO com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystemBase: GHFS version: 1.6.3-hadoop2
+18/02/16 19:03:41 INFO org.apache.hadoop.yarn.client.RMProxy: Connecting to ResourceManager at example-cluster-m/10.128.0.3:8032
+18/02/16 19:03:45 INFO org.apache.hadoop.yarn.client.api.impl.YarnClientImpl: Submitted application application_1518807758019_0001
+Pi is roughly 3.1414633514146337                                                
+18/02/16 19:04:07 INFO org.spark_project.jetty.server.AbstractConnector: Stopped Spark@4287d447{HTTP/1.1,[http/1.1]}{0.0.0.0:4040}
+Job [efbf0b77-9ed9-4c36-ac1b-b1b0a11f2395] finished successfully.
+driverControlFilesUri: gs://dataproc-0cdd4841-1b1f-4ff4-860c-c3dfd6374a9c-us/google-cloud-dataproc-metainfo/0fe163ed-3267-460e-b9ef-e15c02ba5885/jobs/efbf0b77-9ed9-4c36-ac1b-b1b0a11f2395/
+driverOutputResourceUri: gs://dataproc-0cdd4841-1b1f-4ff4-860c-c3dfd6374a9c-us/google-cloud-dataproc-metainfo/0fe163ed-3267-460e-b9ef-e15c02ba5885/jobs/efbf0b77-9ed9-4c36-ac1b-b1b0a11f2395/driveroutput
+placement:
+  clusterName: example-cluster
+  clusterUuid: 0fe163ed-3267-460e-b9ef-e15c02ba5885
+reference:
+  jobId: efbf0b77-9ed9-4c36-ac1b-b1b0a11f2395
+  projectId: qwiklabs-gcp-f6f6342484997c70
+sparkJob:
+  args:
+  - '1000'
+  jarFileUris:
+  - file:///usr/lib/spark/examples/jars/spark-examples.jar
+  loggingConfig: {}
+  mainClass: org.apache.spark.examples.SparkPi
+status:
+  state: DONE
+  stateStartTime: '2018-02-16T19:04:08.440Z'
+statusHistory:
+- state: PENDING
+  stateStartTime: '2018-02-16T19:03:35.193Z'
+- state: SETUP_DONE
+  stateStartTime: '2018-02-16T19:03:36.435Z'
+- details: Agent reported job success
+  state: RUNNING
+  stateStartTime: '2018-02-16T19:03:36.657Z'
+yarnApplications:
+- name: Spark Pi
+  progress: 1.0
+  state: FINISHED
+  trackingUrl: http://example-cluster-m:8088/proxy/application_1518807758019_0001/
+
+google224910_student@qwiklabs-gcp-f6f6342484997c70:~$ gcloud dataproc clusters update example-cluster --num-workers 4
+	Waiting on operation [projects/qwiklabs-gcp-f6f6342484997c70/regions/global/operations/69e716a1-779c-4d97-907c-32c508c19dde].
+	Waiting for cluster update operation...done.
+	Updated [https://dataproc.googleapis.com/v1/projects/qwiklabs-gcp-f6f6342484997c70/regions/global/clusters/example-cluster].
+
+google224910_student@qwiklabs-gcp-f6f6342484997c70:~$ gcloud dataproc clusters update example-cluster --num-workers 2
+	Waiting on operation [projects/qwiklabs-gcp-f6f6342484997c70/regions/global/operations/7036ef06-8c23-4bd7-9689-aa63550a5dd7].
+	Waiting for cluster update operation...done.
+	Updated [https://dataproc.googleapis.com/v1/projects/qwiklabs-gcp-f6f6342484997c70/regions/global/clusters/example-cluster].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,208 @@
+Internet of Things: Qwik Start
+
+Cloud IoT Core is a fully managed service that allows you to easily and securely connect, manage, and ingest data from millions of globally dispersed devices.
+Cloud IoT Core, in combination with other services on Google Cloud IoT platform, provides a complete solution for collecting, processing, analyzing, and visualizing
+	IoT data in real time to support improved operational efficiency.
+
+Key concepts
+To understand Cloud IoT Core, you should be familiar with the following concepts:
+
+ - Internet of Things (IoT)
+	A collective term for the physical objects that are connected to the internet and can exchange data without user involvement.
+
+ - Device
+	A "Thing" in the "Internet of Things"; a processing unit that is capable of connecting to the internet and exchanging data with the cloud.
+	Devices are often called "smart devices" or "connected devices."
+	They communicate two types of data: telemetry and state.
+
+ - Telemetry
+	All event data (for example, measurements about the environment) sent from devices to the cloud.
+	Telemetry data sent from a device to the cloud is called "device telemetry event" data.
+	You can use Google Cloud Big Data Solutions to analyze telemetry data.
+
+ - Device state
+	An arbitrary, user-defined blob of data that describes the current status of the device.
+	Device state data can be structured or unstructured, and flows only in the device-to-cloud direction.
+
+ - Device configuration
+	An arbitrary, user-defined blob of data used to control or change a device's state.
+	Configuration data can be structured or unstructured, and flows only in the cloud-to-device direction.
+
+ - Device registry
+	A container of devices with shared properties.
+	You "register" a device with a service (like Cloud IoT Core) so that you can manage it (see the next item in this list).
+
+ - Device manager
+	The service you use to monitor device health and activity, update device configurations, and manage credentials and authentication.
+
+ - MQTT
+	An industry-standard IoT protocol (Message Queue Telemetry Transport).
+	MQTT is a publish/subscribe (pub/sub) messaging protocol.
+
+Components
+The main components of Cloud IoT Core are the device manager and the protocol bridges:
+ - A device manager for registering devices with the service, so you can then monitor and configure them
+ - Two protocol bridges (MQTT and HTTP) that devices can use to connect to Google Cloud Platform
+Device telemetry data is forwarded to a Cloud Pub/Sub topic, which can then be used to trigger Cloud Functions.
+You can also perform streaming analysis with Cloud Dataflow or custom analysis with your own subscribers.
+
+The following diagram summarizes the service components and the flow of data:
+https://run-qwiklab-website-prod.s3.amazonaws.com/instructions/documents/41072/original/img/2b51c11919b21ede.png
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform
+
+-----
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google244983_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-3bff885f7cd408da
+	Your active configuration is: [cloudshell-30103]
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~$ gcloud config set project qwiklabs-gcp-3bff885f7cd408da
+	Updated property [core/project].
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~$ openssl req -x509 -newkey rsa:2048 -keyout rsa_private.pem -nodes -out rsa_cert.pem -subj "/CN=unused"
+	Generating a 2048 bit RSA private key
+	................+++
+	...........................................................................+++
+	writing new private key to 'rsa_private.pem'
+	-----
+
+-----BEGIN CERTIFICATE-----
+MIIC+DCCAeCgAwIBAgIJAJM8+6DU4pDOMA0GCSqGSIb3DQEBCwUAMBExDzANBgNV
+BAMMBnVudXNlZDAeFw0xODAyMjcxMzU2NDlaFw0xODAzMjkxMzU2NDlaMBExDzAN
+BgNVBAMMBnVudXNlZDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJy/
+98xswXnFcvxY84Zg7lsMRJNhnUn2XznVn/ALY8bb5k0pyLcVdOz9+nHIssiaPh66
+qGJTlO+S4sqTOcN4bvtDwANPxfKgU9VtR0yKNapVhBYk0OKSthC+SsbEN+mPqhnC
+j+/YjYsETwh5RZJZURHrcZrNRpXxVridzIg+yWid3sd6PcgDez7NOI0lXvIrJf6z
+kjM+99A5P3KiRZxPwqJUc7iRMTfWk/hJuqmaWwFxfY6edHA87QhzFbTiwlFoiX2D
+lTnj/Wp5Ucf70kjrU89djzk/y4Dxh8b9xIfZ9YgljieqJC/6BsNpbPacdbTFNQKI
+ZbnGrySTgt9mP4YtSjMCAwEAAaNTMFEwHQYDVR0OBBYEFBHHeA8noo7WwloOpvnU
+buLhDTbSMB8GA1UdIwQYMBaAFBHHeA8noo7WwloOpvnUbuLhDTbSMA8GA1UdEwEB
+/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAD9q2PdreUDAn8Tdvkcp6s04Dyns
+1dWJWBzyZptrsS6vTGVm9/OGdz0mNVc6mFuS4JkiX4KE1d6+iaThQ3n9Sobw0tDp
+LEEKXgHpDlwCJLza7PpVcXWj9DF1qWhaiIgU73vLPllMPsMAZsHl2viR00y8bFrU
+SjFLW2rOfoaNgezSh5+SepLD/psiQOcxkdR+55iY4V6lrYfoEaoDst9DLJ0LQXJl
+nzFNxj4UZYBUiA9RxiVAj47EEcu0rTOdd0dSLkyZ+PtH2pqqKk22MnZa2S2wc+ke
+ujUBDfmScHgrhv7YcE4i4GFbr2cPSrlJnk03k1t2pPNZM9DUlKEXpvmsywc=
+-----END CERTIFICATE-----
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~$ git clone https://github.com/GoogleCloudPlatform/nodejs-docs-samples.git
+	Cloning into 'nodejs-docs-samples'...
+	remote: Counting objects: 9047, done.
+	remote: Compressing objects: 100% (28/28), done.
+	remote: Total 9047 (delta 11), reused 17 (delta 8), pack-reused 9011
+	Receiving objects: 100% (9047/9047), 13.33 MiB | 8.77 MiB/s, done.
+	Resolving deltas: 100% (5674/5674), done.
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~$ cd nodejs-docs-samples/iot/mqtt_example
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~/nodejs-docs-samples/iot/mqtt_example$ cp ~/rsa_private.pem .
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~/nodejs-docs-samples/iot/mqtt_example$ npm install
+	npm WARN deprecated formatio@1.2.0: This package is unmaintained. Use @sinonjs/formatio instead
+
+	> grpc@1.9.1 install /home/google244983_student/nodejs-docs-samples/iot/mqtt_example/node_modules/grpc
+	> node-pre-gyp install --fallback-to-build --library=static_library
+
+	[grpc] Success: "/home/google244983_student/nodejs-docs-samples/iot/mqtt_example/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-glibc/grpc_node.node" is installed via remote
+
+	> protobufjs@6.8.6 postinstall /home/google244983_student/nodejs-docs-samples/iot/mqtt_example/node_modules/google-gax/node_modules/protobufjs
+	> node scripts/postinstall
+
+	npm notice created a lockfile as package-lock.json. You should commit this file.
+	npm WARN nodejs-docs-samples-iot-mqtt-example@0.0.1 No repository field.
+	npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.1.3 (node_modules/fsevents):
+	npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.1.3: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+
+	added 871 packages in 33.171s
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~/nodejs-docs-samples/iot/mqtt_example$ gcloud pubsub subscriptions create projects/qwiklabs-gcp-3bff885f7cd408da/subscriptions/my-subscription --topic=projects/qwiklabs-gcp-3bff885f7cd408da/topics/my-device-events
+	Created subscription [projects/qwiklabs-gcp-3bff885f7cd408da/subscriptions/my-subscription].
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~/nodejs-docs-samples/iot/mqtt_example$ node cloudiot_mqtt_example_nodejs.js \
+	>     --projectId=qwiklabs-gcp-3bff885f7cd408da \
+	>     --registryId=my-registry \
+	>     --deviceId=my-device \
+	>     --privateKeyFile=rsa_private.pem \
+	>     --numMessages=25 \
+	>     --algorithm=RS256
+	Google Cloud IoT Core MQTT example.
+	connect
+	Publishing message: my-registry/my-device-payload-1
+	Publishing message: my-registry/my-device-payload-2
+	Publishing message: my-registry/my-device-payload-3
+	Publishing message: my-registry/my-device-payload-4
+	Publishing message: my-registry/my-device-payload-5
+	Publishing message: my-registry/my-device-payload-6
+	Publishing message: my-registry/my-device-payload-7
+	Publishing message: my-registry/my-device-payload-8
+	message received:
+	Publishing message: my-registry/my-device-payload-9
+	Publishing message: my-registry/my-device-payload-10
+	Publishing message: my-registry/my-device-payload-11
+	Publishing message: my-registry/my-device-payload-12
+	Publishing message: my-registry/my-device-payload-13
+	Publishing message: my-registry/my-device-payload-14
+	Publishing message: my-registry/my-device-payload-15
+	Publishing message: my-registry/my-device-payload-16
+	Publishing message: my-registry/my-device-payload-17
+	Publishing message: my-registry/my-device-payload-18
+	Publishing message: my-registry/my-device-payload-19
+	Publishing message: my-registry/my-device-payload-20
+	Publishing message: my-registry/my-device-payload-21
+	Publishing message: my-registry/my-device-payload-22
+	Publishing message: my-registry/my-device-payload-23
+	Publishing message: my-registry/my-device-payload-24
+	Publishing message: my-registry/my-device-payload-25
+	Closing connection to MQTT. Goodbye!
+	close
+
+gcloud pubsub subscriptions pull --auto-ack projects/qwiklabs-gcp-3bff885f7cd408da/subscriptions/my-subscription
+
+google244983_student@qwiklabs-gcp-3bff885f7cd408da:~/nodejs-docs-samples/iot/mqtt_example$ gcloud pubsub subscriptions pull --auto-ack projects/qwiklabs-gcp-3bff885f7cd408da/subscriptions/my-subscription
+	Listed 0 items.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

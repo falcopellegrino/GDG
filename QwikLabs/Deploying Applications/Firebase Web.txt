@@ -1,0 +1,321 @@
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google217787_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-332c39dc320797ae
+	Your active configuration is: [cloudshell-17637]
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~$ gcloud config set project qwiklabs-gcp-332c39dc320797ae
+	Updated property [core/project].
+
+git clone https://github.com/firebase/friendlychat-web
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~$ git clone https://github.com/firebase/friendlychat-web
+	Cloning into 'friendlychat-web'...
+	remote: Counting objects: 2855, done.
+	remote: Total 2855 (delta 0), reused 0 (delta 0), pack-reused 2855
+	Receiving objects: 100% (2855/2855), 1.41 MiB | 277.00 KiB/s, done.
+	Resolving deltas: 100% (1411/1411), done.
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~$ cd friendlychat-web/web-start
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase --version
+	3.17.4
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase login --no-localhost
+? Allow Firebase to collect anonymous CLI usage and error reporting information? 
+
+Y
+	Yes
+
+Visit this URL on any device to log in:
+https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=967403475&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob
+
+? Paste authorization code here: 
+
+4/AAA3-25CEJkH7EdmK4m-pij_lBxcEoSi736jJF8ysBcVzpsI8SzAb9o
+	✔  Success! Logged in as google217787_student@qwiklabs.net
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ cd ~/friendlychat-web/web-start/
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase use --add
+	? Which project do you want to add? qwiklabs-gcp-332c39dc320797ae
+	? What alias do you want to use for this project? (e.g. staging)
+
+staging
+	Created alias staging for qwiklabs-gcp-332c39dc320797ae.
+	Now using alias staging (qwiklabs-gcp-332c39dc320797ae)
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase deploy
+	=== Deploying to 'qwiklabs-gcp-332c39dc320797ae'...
+
+	i  deploying functions, hosting
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+	i  hosting: preparing ./ directory for upload...
+	✔  hosting: 11 files uploaded successfully
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/overview
+	Hosting URL: https://qwiklabs-gcp-332c39dc320797ae.firebaseapp.com
+
+https://qwiklabs-gcp-332c39dc320797ae.firebaseapp.com
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase deploy
+	=== Deploying to 'qwiklabs-gcp-332c39dc320797ae'...
+
+	i  deploying functions, hosting
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+	i  hosting: preparing ./ directory for upload...
+	✔  hosting: 11 files uploaded successfully
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/overview
+	Hosting URL: https://qwiklabs-gcp-332c39dc320797ae.firebaseapp.com
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase database:set / ../initial_messages.json
+	? You are about to overwrite all data at https://qwiklabs-gcp-332c39dc320797ae.firebaseio.com/. Are you sure? Yes
+	✔  Data persisted successfully
+	View data at: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/database/data/
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase deploy
+	=== Deploying to 'qwiklabs-gcp-332c39dc320797ae'...
+
+	i  deploying functions, hosting
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+	i  hosting: preparing ./ directory for upload...
+	✔  hosting: 11 files uploaded successfully
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/overview
+	Hosting URL: https://qwiklabs-gcp-332c39dc320797ae.firebaseapp.com
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase deploy
+	=== Deploying to 'qwiklabs-gcp-332c39dc320797ae'...
+
+	i  deploying functions, hosting
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+	i  hosting: preparing ./ directory for upload...
+	✔  hosting: 11 files uploaded successfully
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/overview
+	Hosting URL: https://qwiklabs-gcp-332c39dc320797ae.firebaseapp.com
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase deploy
+	=== Deploying to 'qwiklabs-gcp-332c39dc320797ae'...
+
+	i  deploying functions, hosting
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+	i  hosting: preparing ./ directory for upload...
+	✔  hosting: 11 files uploaded successfully
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/overview
+	Hosting URL: https://qwiklabs-gcp-332c39dc320797ae.firebaseapp.com
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase deploy
+	=== Deploying to 'qwiklabs-gcp-332c39dc320797ae'...
+
+	i  deploying functions, hosting
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  functions: preparing functions directory for uploading...
+	i  hosting: preparing ./ directory for upload...
+	✔  hosting: 12 files uploaded successfully
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/overview
+	Hosting URL: https://qwiklabs-gcp-332c39dc320797ae.firebaseapp.com
+
+Got FCM device token: fEcKjjfZ4ew:APA91bEk50eBYGjGFRiZwF2LvdxbIQoQyYtEpKL_ZL9iI1kPCSAkNpFyMEvUs1TZLd5naur3UExdZ_MhB6Wkl6FZ9iOyI9JcBuHK9-W_hbO8HP9CkGqNapddIOQBqIMysPcO-EwCGt9I
+
+Firebase Server Key
+AAAAzf-Z_Ro:APA91bEzNUiyPizNzZH-XlpV79atuEzefKJ4QXmkuev5DBnM3nfO8s2C44Jqsm0DsXGP2_O0k1EiIFDMHM0Y9rU94nF2OUr_EumnxTO0PxR1lBj4aylYJii9FDFVlt0GOuZSsWsWKgrm
+
+curl -H "Content-Type: application/json" \
+     -H "Authorization: key=AAAAzf-Z_Ro:APA91bEzNUiyPizNzZH-XlpV79atuEzefKJ4QXmkuev5DBnM3nfO8s2C44Jqsm0DsXGP2_O0k1EiIFDMHM0Y9rU94nF2OUr_EumnxTO0PxR1lBj4aylYJii9FDFVlt0GOuZSsWsWKgrm" \
+     -d '{
+           "notification": {
+             "title": "New chat message!",
+             "body": "There is a new message in FriendlyChat",
+             "icon": "/images/profile_placeholder.png",
+             "click_action": "http://localhost:5000"
+           },
+           "to": "fEcKjjfZ4ew:APA91bEk50eBYGjGFRiZwF2LvdxbIQoQyYtEpKL_ZL9iI1kPCSAkNpFyMEvUs1TZLd5naur3UExdZ_MhB6Wkl6FZ9iOyI9JcBuHK9-W_hbO8HP9CkGqNapddIOQBqIMysPcO-EwCGt9I"
+         }' \
+     https://fcm.googleapis.com/fcm/send
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase deploy --only database
+	=== Deploying to 'qwiklabs-gcp-332c39dc320797ae'...
+
+	i  deploying database
+	i  database: checking rules syntax...
+	✔  database: rules syntax for database qwiklabs-gcp-332c39dc320797ae is valid
+	i  database: releasing rules...
+	✔  database: rules for database qwiklabs-gcp-332c39dc320797ae released successfully
+
+	✔  Deploy complete!
+	
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/overview
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase deploy --only storage
+	=== Deploying to 'qwiklabs-gcp-332c39dc320797ae'...
+
+	i  deploying storage
+	i  storage: checking storage.rules for compilation errors...
+	✔  storage: rules file storage.rules compiled successfully
+	i  storage: uploading rules storage.rules...
+	✔  storage: released rules storage.rules to firebase.storage/qwiklabs-gcp-332c39dc320797ae.appspot.com
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/overview
+
+google217787_student@qwiklabs-gcp-332c39dc320797ae:~/friendlychat-web/web-start$ firebase deploy
+	=== Deploying to 'qwiklabs-gcp-332c39dc320797ae'...
+
+	i  deploying database, storage, functions, hosting
+	i  database: checking rules syntax...
+	✔  database: rules syntax for database qwiklabs-gcp-332c39dc320797ae is valid
+	i  storage: checking storage.rules for compilation errors...
+	✔  storage: rules file storage.rules compiled successfully
+	i  functions: ensuring necessary APIs are enabled...
+	✔  functions: all necessary APIs are enabled
+	i  storage: uploading rules storage.rules...
+	i  functions: preparing functions directory for uploading...
+	i  hosting: preparing ./ directory for upload...
+	✔  hosting: 12 files uploaded successfully
+	i  database: releasing rules...
+	✔  database: rules for database qwiklabs-gcp-332c39dc320797ae released successfully
+	✔  storage: released rules storage.rules to firebase.storage/qwiklabs-gcp-332c39dc320797ae.appspot.com
+
+	✔  Deploy complete!
+
+	Project Console: https://console.firebase.google.com/project/qwiklabs-gcp-332c39dc320797ae/overview
+	Hosting URL: https://qwiklabs-gcp-332c39dc320797ae.firebaseapp.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

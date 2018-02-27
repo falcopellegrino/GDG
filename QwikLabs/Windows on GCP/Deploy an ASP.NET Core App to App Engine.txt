@@ -1,0 +1,374 @@
+ASP.NET Core is an open-source and cross-platform framework for building modern cloud-based and internet-connected applications using the C# programming language.
+
+App Engine
+Google App Engine applications are easy to create, maintain, and scale as your traffic and data storage needs change.
+With App Engine, there are no servers to manage.
+You simply upload your application and it's ready to go.
+App Engine applications automatically scale based on incoming traffic.
+App Engine natively supports load balancing, microservices, authorization, SQL and NoSQL databases,
+Memcache, traffic splitting, logging, search, versioning, roll out and roll backs, and security scanning,
+all of which are highly customizable.
+App Engine's environments, the standard environment and the flexible environment, support a host of programming languages, including C#, Java, Python, PHP, Node.js, Go, and more.
+The two environments give users maximum flexibility in how their application behaves, since each environment has certain strengths.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform.
+
+app.yaml file describes how to deploy the app to App Engine
+
+gcloud auth list
+Lists accounts whose credentials have been obtained using gcloud init, gcloud auth login and gcloud auth activate-service-account,
+and shows which account is active. The active account is used by gcloud and other Cloud SDK tools to access Google Cloud Platform.
+While there is no limit on the number of accounts with stored credentials, there is only one active account.
+
+app.yaml Reference
+Important: The app.yaml file must be located in your application's root directory.
+You can configure your App Engine application's settings in the app.yaml file. This file specifies how URL paths correspond to request handlers and static files. The app.yaml file also contains information about the application code, such as the application ID and the latest version identifier.
+
+-----
+
+gcloud auth list
+	Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google213135_student@qwiklabs.net
+	To set the active account, run:
+	$ gcloud config set account `ACCOUNT`
+
+gcloud config list project
+	[core]
+	project = qwiklabs-gcp-2a38e6ebc14099ca
+	Your active configuration is: [cloudshell-1543]
+
+gcloud config set project qwiklabs-gcp-2a38e6ebc14099ca
+	Updated property [core/project].
+
+sudo -s
+root@cs-6000-devshell-vm-5a20f082-6fe5-4a10-9fee-2b4526ffdfff:/home/google213135_student#
+
+dotnet --version
+	2.1.4
+
+mkdir HelloWorldAspNetCore
+	Welcome to .NET Core!
+	---------------------
+	Learn more about .NET Core @ https://aka.ms/dotnet-docs. Use dotnet --help to see available commands or go to https://aka.ms/dotnet-cli-docs.
+	Telemetry
+	--------------
+	The .NET Core tools collect usage data in order to improve your experience. The data is anonymous and does not include command-line arguments. The data is collected by Microsoft and shared with 
+	the community.
+	You can opt out of telemetry by setting a DOTNET_CLI_TELEMETRY_OPTOUT environment variable to 1 using your favorite shell.
+	You can read more about .NET Core tools telemetry @ https://aka.ms/dotnet-cli-telemetry.
+	Getting ready...
+	The template "ASP.NET Core Empty" was created successfully.
+	This template contains technologies from parties other than Microsoft, see https://aka.ms/template-3pn for details.
+	Processing post-creation actions...
+	Running 'dotnet restore' on /home/google213135_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj...
+	Segmentation fault
+
+vi Program.cs
+
+i
+
+.UseStartup<Startup>()
+-->.UseUrls("http://*:8080")
+.Build();
+
+ESC
+:wq
+
+dotnet run
+	segmentation fault
+
+!!!MANCAVA
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+dotnet run
+	Hosting environment: Production
+	Content root path: /home/google213135_student/HelloWorldAspNetCore
+	Now listening on: http://[::]:8080
+	Application started. Press Ctrl+C to shut down.
+
+!!!MANCAVA ctrl+c per terminare il server
+
+dotnet publish -c Release
+	Microsoft (R) Build Engine version 15.5.180.51428 for .NET Core
+	Copyright (C) Microsoft Corporation. All rights reserved.
+	Restore completed in 39.08 ms for /home/google213135_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj.
+	HelloWorldAspNetCore -> /home/google213135_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/HelloWorldAspNetCore.dll
+	HelloWorldAspNetCore -> /home/google213135_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish/
+
+cd bin/Release/netcoreapp2.0/publish/
+
+touch Dockerfile
+
+MANCAVA 
+vi Dockerfile
+
+FROM gcr.io/google-appengine/aspnetcore:2.0
+ADD ./ /app                                                                                                                                                                                           
+ENV ASPNETCORE_URLS=http://*:${PORT}                                                                                                                                                                 
+WORKDIR /app                                                                                                                                                                                           
+ENTRYPOINT [ "dotnet", "HelloWorldAspNetCore.dll" ]
+
+gcloud beta app gen-config
+	Writing [app.yaml] to [/home/google213135_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish].
+	Writing [app.yaml] to [/home/google216923_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish].
+
+MANCAVA 
+vi app.yaml
+	env: flex
+	runtime: custom
+
+gcloud auth login
+	You are running on a Google Compute Engine virtual machine.
+	It is recommended that you use service accounts for authentication.
+	You can run:
+	$ gcloud config set account `ACCOUNT`
+	to switch accounts if necessary.
+	Your credentials may be visible to others with access to this
+	virtual machine. Are you sure you want to authenticate with
+	your personal account?
+	Do you want to continue (Y/n)?
+
+Y
+Enter verification code:
+	
+https://accounts.google.com/o/oauth2/approval/v2/approvalnativeapp?auto=false&response=code%3D4%2Fty-xgc8NElysg0GYpx8oPrVwVFHR2bNhH5gfjkF63QY&approvalCode=4%2Fty-xgc8NElysg0GYpx8oPrVwVFHR2bNhH5gfjkF63QY
+	4/ty-xgc8NElysg0GYpx8oPrVwVFHR2bNhH5gfjkF63QY
+
+4/ty-xgc8NElysg0GYpx8oPrVwVFHR2bNhH5gfjkF63QY
+	WARNING: `gcloud auth login` no longer writes application default credentials.
+	If you need to use ADC, see:
+	gcloud auth application-default --help
+	You are now logged in as [google213135_student@qwiklabs.net].
+	Your current project is [None].  You can change this setting by running:
+	$ gcloud config set project PROJECT_ID
+
+gcloud config set project qwiklabs-gcp-2a38e6ebc14099ca
+gcloud config set project qwiklabs-gcp-f4dad6a71c54bd95
+	Updated property [core/project].
+
+gcloud beta app deploy --version v0
+	You are creating an app for project [qwiklabs-gcp-2a38e6ebc14099ca].
+	WARNING: Creating an App Engine application for a project is irreversible and the region
+	cannot be changed. More information about regions is at
+	<https://cloud.google.com/appengine/docs/locations>.
+	Please choose the region where you want your App Engine application
+	located:
+	[1] us-central    (supports standard and flexible)
+	[2] europe-west3  (supports standard and flexible)
+	[3] europe-west   (supports standard and flexible)
+	[4] europe-west2  (supports standard and flexible)
+	[5] us-east1      (supports standard and flexible)
+	[6] us-east4      (supports standard and flexible)
+	[7] asia-northeast1 (supports standard and flexible)
+	[8] asia-south1   (supports standard and flexible)
+	[9] australia-southeast1 (supports standard and flexible)
+	[10] southamerica-east1 (supports standard and flexible)
+	[11] northamerica-northeast1 (supports standard and flexible)
+	[12] cancel
+	Please enter your numeric choice:
+
+3
+	Creating App Engine application in project [qwiklabs-gcp-2a38e6ebc14099ca] and region [europe-west]....done.
+	Services to deploy:
+	descriptor:      [/home/google213135_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish/app.yaml]
+	source:          [/home/google213135_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish]
+	target project:  [qwiklabs-gcp-2a38e6ebc14099ca]
+	target service:  [default]
+	target version:  [v0]
+	target url:      [https://qwiklabs-gcp-2a38e6ebc14099ca.appspot.com]
+	Do you want to continue (Y/n)?
+
+Y
+	Beginning deployment of service [default]...
+	Building and pushing image for service [default]
+	Started cloud build [262c58fe-c874-4a90-b1ac-d0e29971b36e].
+	To see logs in the Cloud Console: https://console.cloud.google.com/gcr/builds/262c58fe-c874-4a90-b1ac-d0e29971b36e?project=qwiklabs-gcp-2a38e6ebc14099ca
+	-------------------------------------------------------------------------------------- REMOTE BUILD OUTPUT ---------------------------------------------------------------------------------------
+	starting build "262c58fe-c874-4a90-b1ac-d0e29971b36e"
+	FETCHSOURCE
+	Fetching storage object: gs://staging.qwiklabs-gcp-2a38e6ebc14099ca.appspot.com/eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v0:latest#1517951632543316
+	Copying gs://staging.qwiklabs-gcp-2a38e6ebc14099ca.appspot.com/eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v0:latest#1517951632543316...
+	- [1 files][ 42.1 KiB/ 42.1 KiB]
+	Operation completed over 1 objects/42.1 KiB.
+	BUILD
+	Already have image (with digest): gcr.io/cloud-builders/docker
+	Sending build context to Docker daemon  299.5kB
+	Step 1/5 : FROM gcr.io/google-appengine/aspnetcore:2.0
+	2.0: Pulling from google-appengine/aspnetcore
+	a21f4015913a: Already exists
+	be94f306167d: Pulling fs layer
+	21a01f3fd74f: Pulling fs layer
+	be94f306167d: Verifying Checksum
+	be94f306167d: Download complete
+	be94f306167d: Pull complete
+	21a01f3fd74f: Verifying Checksum
+	21a01f3fd74f: Download complete
+	21a01f3fd74f: Pull complete
+	Digest: sha256:e5e626b0e4fd7f850b4b24f7e627786e39df4514ebf2dbc936a62c525eb77502
+	Status: Downloaded newer image for gcr.io/google-appengine/aspnetcore:2.0
+	---> 050a433a1891
+	Step 2/5 : ADD ./ /app
+	---> 7d14b0c25696
+	Removing intermediate container 847137d54184
+	Step 3/5 : ENV ASPNETCORE_URLS http://*:${PORT}
+	---> Running in ef23158a37d9
+	---> 8af428bbd8dd
+	Removing intermediate container ef23158a37d9
+	Step 4/5 : WORKDIR /app
+	---> bf7640e46c4e
+	Removing intermediate container 9527141217c1
+	Step 5/5 : ENTRYPOINT dotnet HelloWorldAspNetCore.dll
+	---> Running in 0c86c234282d
+	---> 87bce89f7a95
+	Removing intermediate container 0c86c234282d
+	Successfully built 87bce89f7a95
+	Successfully tagged eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v0:latest
+	PUSH
+	Pushing eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v0:latest
+	The push refers to a repository [eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v0]
+	fb210dc07dda: Preparing
+	2ad957114694: Preparing
+	2b416a1a2ba1: Preparing
+	21df82f90a72: Preparing
+	2ad957114694: Layer already exists
+	21df82f90a72: Layer already exists
+	2b416a1a2ba1: Layer already exists
+	fb210dc07dda: Pushed
+	2b416a1a2ba1: Layer already exists
+	fb210dc07dda: Pushed
+	latest: digest: sha256:01a9e18534ab2fd8775b5a57bc529c6122a33695889452175cf7179c780aeda6 size: 1163
+	DONE
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	Updating service [default] (this may take several minutes)...done.
+	Waiting for operation [apps/qwiklabs-gcp-2a38e6ebc14099ca/operations/fc1e0376-e418-4a82-ae69-852bd3f10e1e] to complete...done.
+	Updating service [default]...done.
+	Deployed service [default] to [https://qwiklabs-gcp-2a38e6ebc14099ca.appspot.com]
+	You can stream logs from the command line by running:
+	$ gcloud app logs tail -s default
+	To view your application in the web browser run:
+	$ gcloud app browse
+
+https://qwiklabs-gcp-f4dad6a71c54bd95.appspot.com
+	
+MANCAVA
+cd /
+cd directory...
+
+MANCAVA
+vi Startup.cs
+
+await context.Response.WriteAsync("Hello World from App Engine!");
+
+MANCAVA
+ESC
+:wq
+
+dotnet publish -c Release
+	Microsoft (R) Build Engine version 15.5.180.51428 for .NET Core
+	Copyright (C) Microsoft Corporation. All rights reserved.
+	Restore completed in 38.62 ms for /home/google213135_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj.
+	HelloWorldAspNetCore -> /home/google213135_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/HelloWorldAspNetCore.dll
+	HelloWorldAspNetCore -> /home/google213135_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish/
+
+cd bin/Release/netcoreapp2.0/publish/
+
+gcloud beta app deploy --version v2
+	Services to deploy:
+	descriptor:      [/home/google213135_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish/app.yaml]
+	source:          [/home/google213135_student/HelloWorldAspNetCore/bin/Release/netcoreapp2.0/publish]
+	target project:  [qwiklabs-gcp-2a38e6ebc14099ca]
+	target service:  [default]
+	target version:  [v2]
+	target url:      [https://qwiklabs-gcp-2a38e6ebc14099ca.appspot.com]
+	Do you want to continue (Y/n)?
+
+Y
+	Beginning deployment of service [default]...
+	Building and pushing image for service [default]
+	Started cloud build [9010aa04-9ff0-4a45-bcfa-8a43c13e0568].
+	To see logs in the Cloud Console: https://console.cloud.google.com/gcr/builds/9010aa04-9ff0-4a45-bcfa-8a43c13e0568?project=qwiklabs-gcp-2a38e6ebc14099ca
+	-------------------------------------------------------------------------------------- REMOTE BUILD OUTPUT ---------------------------------------------------------------------------------------
+	starting build "9010aa04-9ff0-4a45-bcfa-8a43c13e0568"
+	FETCHSOURCE
+	Fetching storage object: gs://staging.qwiklabs-gcp-2a38e6ebc14099ca.appspot.com/eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v2:latest#1517952485604825
+	Copying gs://staging.qwiklabs-gcp-2a38e6ebc14099ca.appspot.com/eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v2:latest#1517952485604825...
+	- [1 files][ 42.1 KiB/ 42.1 KiB]
+	Operation completed over 1 objects/42.1 KiB.
+	BUILD
+	Already have image (with digest): gcr.io/cloud-builders/docker
+	Sending build context to Docker daemon  299.5kB
+	Step 1/5 : FROM gcr.io/google-appengine/aspnetcore:2.0
+	2.0: Pulling from google-appengine/aspnetcore
+	a21f4015913a: Already exists
+	be94f306167d: Pulling fs layer
+	21a01f3fd74f: Pulling fs layer
+	be94f306167d: Verifying Checksum
+	be94f306167d: Download complete
+	be94f306167d: Pull complete
+	21a01f3fd74f: Verifying Checksum
+	21a01f3fd74f: Download complete
+	21a01f3fd74f: Pull complete
+	Digest: sha256:e5e626b0e4fd7f850b4b24f7e627786e39df4514ebf2dbc936a62c525eb77502
+	Status: Downloaded newer image for gcr.io/google-appengine/aspnetcore:2.0
+	---> 050a433a1891
+	Step 2/5 : ADD ./ /app
+	---> bcfbed6b6ffc
+	Removing intermediate container 167a3f3946e9
+	Step 3/5 : ENV ASPNETCORE_URLS http://*:${PORT}
+	---> Running in 05382cf5495d
+	---> 11eb8a135fff
+	Removing intermediate container 05382cf5495d
+	Step 4/5 : WORKDIR /app
+	---> b8e7beb40a15
+	Removing intermediate container 7edae159c18f
+	Step 5/5 : ENTRYPOINT dotnet HelloWorldAspNetCore.dll
+	---> Running in 56c4d113ab0e
+	---> d365be655388
+	Removing intermediate container 56c4d113ab0e
+	Successfully built d365be655388
+	Successfully tagged eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v2:latest
+	PUSH
+	Pushing eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v2:latest
+	The push refers to a repository [eu.gcr.io/qwiklabs-gcp-2a38e6ebc14099ca/appengine/default.v2]
+	f5e621caf430: Preparing
+	2ad957114694: Preparing
+	2b416a1a2ba1: Preparing
+	21df82f90a72: Preparing
+	2ad957114694: Layer already exists
+	2b416a1a2ba1: Layer already exists
+	21df82f90a72: Layer already exists
+	f5e621caf430: Pushed
+	latest: digest: sha256:4275f3c76a7ad9d21f7d02808b9cbdb04d0b98acb176171f848f9b37704a5b9e size: 1163
+	DONE
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	Updating service [default] (this may take several minutes).../
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

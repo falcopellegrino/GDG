@@ -1,0 +1,94 @@
+ASP.NET Core is a new open-source and cross-platform framework for building modern cloud-based and internet-connected applications using the C# programming language.
+ASP.NET Core is a significant redesign of the traditional Windows-only ASP.NET framework.
+You can develop and run your ASP.NET Core apps cross-platform on Windows, Mac and Linux.
+ASP.NET Core comes with the .NET Core command-line interface (CLI), a new foundational cross-platform toolchain for developing .NET Core applications.
+This toolchain is already installed in Google Cloud Shell.
+
+Google Cloud Shell is a browser-based command line tool to access Google Cloud Platform resources.
+Cloud Shell makes it really easy to manage your Cloud Platform Console projects and resources without having to install the Google Cloud SDK and other tools on your system.
+With Cloud Shell, the Cloud SDK gcloud command and other utilities such as .NET Core command line interface tools are always available when you need them.
+
+Vim, EMACs or Nano: standard Linux text editors
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform. It comes pre-installed on CloudShell.
+
+-----
+
+gcloud auth list
+	Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google213076_student@qwiklabs.net
+
+	To set the active account, run:
+	$ gcloud config set account `ACCOUNT`
+
+gcloud config list project
+	[core]
+	project = qwiklabs-gcp-9d4d080fc48d05d1
+	Your active configuration is: [cloudshell-14800]
+
+gcloud config set project qwiklabs-gcp-9d4d080fc48d05d1
+	Updated property [core/project].
+
+sudo -s
+	root@cs-6000-devshell-vm-3aadd684-4688-4aec-86d0-06e73702f115:/home/google213076_student#
+
+dotnet --version
+	2.1.4
+
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+mkdir HelloWorldAspNetCore
+
+cd HelloWorldAspNetCore
+
+dotnet new web
+	Welcome to .NET Core!
+	---------------------
+	Learn more about .NET Core @ https://aka.ms/dotnet-docs. Use dotnet --help to see available commands or go to https://aka.ms/dotnet-cli-docs.
+	Telemetry
+	--------------
+	The .NET Core tools collect usage data in order to improve your experience. The data is anonymous and does not include command-line arguments. The data is collected by Microsoft and shared with the community.
+	You can opt out of telemetry by setting a DOTNET_CLI_TELEMETRY_OPTOUT environment variable to 1 using your favorite shell.
+	You can read more about .NET Core tools telemetry @ https://aka.ms/dotnet-cli-telemetry.
+	Getting ready...
+	The template "ASP.NET Core Empty" was created successfully.
+	This template contains technologies from parties other than Microsoft, see https://aka.ms/template-3pn for details.
+	Processing post-creation actions...
+	Running 'dotnet restore' on /home/google213076_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj...
+	Restoring packages for /home/google213076_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj...
+	Generating MSBuild file /home/google213076_student/HelloWorldAspNetCore/obj/HelloWorldAspNetCore.csproj.nuget.g.props.
+	Generating MSBuild file /home/google213076_student/HelloWorldAspNetCore/obj/HelloWorldAspNetCore.csproj.nuget.g.targets.
+	Restore completed in 14.97 sec for /home/google213076_student/HelloWorldAspNetCore/HelloWorldAspNetCore.csproj.
+	Restore succeeded.
+
+vi Program.cs
+
+i
+.UseStartup<Startup>()
+-->.UseUrls("http://*:8080")
+.Build();
+
+
+
+ESC
+:wq
+
+dotnet run
+	Hosting environment: Production
+	Content root path: /home/google213076_student/HelloWorldAspNetCore
+	Now listening on: http://[::]:8080
+	Application started. Press Ctrl+C to shut down.
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,155 @@
+The Google Cloud Speech API enables easy integration of Google speech recognition technologies into developer applications.
+The Speech API allows you to send audio and receive a text transcription from the service.
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform
+
+-----
+
+google224844_student@qwiklabs-gcp-e0d2bb049a17d745:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google224844_student@qwiklabs.net
+
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google224844_student@qwiklabs-gcp-e0d2bb049a17d745:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-e0d2bb049a17d745
+	Your active configuration is: [cloudshell-5144]
+
+google224844_student@qwiklabs-gcp-e0d2bb049a17d745:~$ gcloud config set project qwiklabs-gcp-e0d2bb049a17d745
+	Updated property [core/project].
+
+API KEY
+AIzaSyAH12YsHUaej11PvU5GS2rSaIE8_H4UK20
+
+export API_KEY=AIzaSyAH12YsHUaej11PvU5GS2rSaIE8_H4UK20
+google224844_student@qwiklabs-gcp-e0d2bb049a17d745:~$ export API_KEY=AIzaSyAH12YsHUaej11PvU5GS2rSaIE8_H4UK20
+
+google224844_student@qwiklabs-gcp-e0d2bb049a17d745:~$ touch request.json
+
+google224844_student@qwiklabs-gcp-e0d2bb049a17d745:~$ vi request.json
+
+i
+
+{
+  "config": {
+      "encoding":"FLAC",
+      "sample_rate": 16000,
+      "language_code": "en-US"
+  },
+  "audio": {
+      "uri":"gs://cloud-samples-tests/speech/brooklyn.flac"
+  }
+}
+
+ESC
+:wq
+
+curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json "https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=${API_KEY}"
+google224844_student@qwiklabs-gcp-e0d2bb049a17d745:~$ curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json "https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=${API_KEY}"
+	{
+	  "results": [
+		{
+		  "alternatives": [
+			{
+			  "transcript": "how old is the Brooklyn Bridge",
+			  "confidence": 0.9840146
+			}
+		  ]
+		}
+	  ]
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

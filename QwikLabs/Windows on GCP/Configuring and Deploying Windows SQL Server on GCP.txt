@@ -1,0 +1,92 @@
+Google Compute Engine lets you use SQL Server images to start instances that have Windows Server with SQL Server preinstalled.
+Because of per-minute billing, you pay for both Windows Server and SQL Server licenses only when you use them.
+
+Always On Availability Groups (AGs) can make sense in the cloud for a few reasons:
+ - Automatic failover of multiple databases.​
+	This is a common high-availability requirement, and on premises, DBAs usually solve this with failover-cluster instances (FCIs).
+	Unfortunately, that requires shared storage, which isn't usually available in today's infrastructure-as-a-service (IaaS) cloud.
+	There are some workarounds involving third-party software or UNC paths, but neither of those are great options in IaaS.
+	Always On Availability Groups can pull this off without shared storage.
+ - Automatic repair of corrupt data pages.​
+	Each replica has its own copy of the database's data pages.
+	Only logged transactions are sent from one replica to another, not data pages.
+	When a replica encounters a corrupt data page, it can request a clean copy of the page from another replica, and heal itself live.
+	It doesn't protect from every kind of corruption, but it can be a real lifesaver in many situations.
+ - Potentially lower downtime for patching.​
+	For minimal downtime, patch the secondary replica, make sure it patched successfully, then take a brief outage to fail over from the primary replica to the newly patched secondary.
+	After that, you can patch the former primary instance.
+	If something goes wrong when patching either replica, simply build a new one to replace it and join it into the AG.
+ - Possibly easier scalability with lower downtime​.
+	When you want to switch to a bigger instance type, you can provision a new one, add it into the AG, fail over to it, and then remove the previous instance.
+	You can scale up and down to handle load with this approach, although this isn't commonly used on a scripted basis to handle daily peaks and valleys.
+	It's more of a seasonal approach.
+
+-----
+
+
+Name		Zone				Recommendation		Internal IP		External 			IP	Connect	
+dc			us-central1-a							10.0.0.100		104.197.154.213  	
+
+VM Instance Details
+Custom metadata
+domain-dns-name	
+gcpnext.com
+service-account-name	
+bootcampadmin
+service-account-password	
+LT.bykLhejb4To
+sql-sa-password	
+jyuw3vnb.6Gj9a
+status-config-url	
+https://runtimeconfig.googleapis.com/v1beta1/projects/qwiklabs-gcp-e777e45c671633c2/configs/qldm-2145807-1934befdc403a190-config
+status-variable-path	
+mssql1
+status-uptime-deadline	
+1080
+sql-nodes	
+qldm-2145-sql-1|qldm-2145-sql-2|
+windows-startup-script-ps1	
+Set-StrictMode -Version Latest
+
+domain-dns-name				gcpnext.com
+service-account-name		bootcampadmin
+service-account-password	LT.bykLhejb4To
+
+$node1 = "cluster-sql1"
+$node2 = "cluster-sql2"
+$nameWSFC = "cluster-dbclus" #Name of cluster
+$ipWSFC1 = "10.1.1.4" #IP address of cluster in subnet 1
+$ipWSFC2 = "10.2.1.4" #IP address of cluster in subnet 2
+
+New-Cluster -Name $nameWSFC -Node $node1, $node2 -NoStorage -StaticAddress $ipWSFC1, $ipWSFC2
+
+Enable-SqlAlwaysOn -ServerInstance $node1 -Force
+Enable-SqlAlwaysOn -ServerInstance $node2 -Force
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,3 @@
+Stackdriver Monitoring provides dashboards and alerts so you can review performance metrics for cloud services, virtual machines, and common open source servers
+such as MongoDB, Apache, Nginx, Elasticsearch, and more. You configure Stackdriver Monitoring using the Stackdriver Monitoring Console.
+

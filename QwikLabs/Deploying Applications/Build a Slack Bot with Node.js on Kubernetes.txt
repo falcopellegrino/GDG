@@ -1,0 +1,342 @@
+RIPETERE EVENTUALMENTE, NON HA FUNZIONATO LA PARTE EXTRA
+
+Slack bot
+
+Botkit toolkit
+
+Google Cloud Platform
+
+Slack channel
+
+Node.js image
+
+Docker
+
+Docker image
+
+Google Container Registry
+
+Kubernetes Engine
+
+Kubernetes service
+
+GCP Console
+
+Cloud Shell
+
+gcloud is the powerful and unified command-line tool for Google Cloud Platform
+
+-----
+
+gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google217637_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+gcloud config list project
+	[core]
+	project = qwiklabs-gcp-3fd2f7fc7b297399
+	Your active configuration is: [cloudshell-4304]
+
+gcloud config set project qwiklabs-gcp-3fd2f7fc7b297399
+	Updated property [core/project].
+
+Slack Bot new Workgroup
+franco.pellegrino@aruba.it
+Falco
+77PF13
+slackbottestergroup
+slackbottestergroup.slack.com
+
+git clone https://github.com/googlecodelabs/cloud-slack-bot.git
+	Cloning into 'cloud-slack-bot'...
+	remote: Counting objects: 69, done.
+	remote: Total 69 (delta 0), reused 0 (delta 0), pack-reused 69
+	Unpacking objects: 100% (69/69), done.
+
+cd cloud-slack-bot/start
+
+npm install
+	npm WARN deprecated node-uuid@1.4.8: Use uuid module instead
+	npm notice created a lockfile as package-lock.json. You should commit this file.
+	added 232 packages in 9.81s
+
+[INSTALL BOT USER OAUTH]
+OAuth Access Token
+xoxp-313299000004-313437544757-312768649937-8636c6ef3c7286b3d6804bd0e16bab87
+Bot User OAuth Access Token
+xoxb-312666823168-V3ituqXkazN5GOIOWYR0bhd8
+
+var Botkit = require('botkit')
+
+var controller = Botkit.slackbot({debug: false})
+controller
+  .spawn({
+-->    token: 'your-slack-token' // Edit this line!
+  })
+  .startRTM(function (err) {
+    if (err) {
+      throw new Error(err)
+    }
+  })
+controller.hears(
+  ['hello', 'hi'], ['direct_message', 'direct_mention', 'mention'],
+  function (bot, message) { bot.reply(message, 'Meow. :smile_cat:') })
+
+NEW FILE
+slack-token
+COPY TOKEN
+
+var Botkit = require('botkit')
+-->	var fs = require('fs') // NEW: Add this require (for loading from files).
+
+var controller = Botkit.slackbot({debug: false})
+
+// START: Load Slack token from file.
+if (!process.env.slack_token_path) {
+  console.log('Error: Specify slack_token_path in environment')
+  process.exit(1)
+}
+
+-->	fs.readFile(process.env.slack_token_path, function (err, data) {
+	  if (err) {
+		console.log('Error: Specify token in slack_token_path file')
+		process.exit(1)
+	  }
+	  data = String(data)
+	  data = data.replace(/\s/g, '')
+	  controller
+		.spawn({token: data})
+		.startRTM(function (err) {
+		  if (err) {
+			throw new Error(err)
+		  }
+		})
+	})
+	// END: Load Slack token from file.
+/*controller
+  .spawn({
+    token: 'xoxb-312666823168-V3ituqXkazN5GOIOWYR0bhd8' // Edit this line!
+  })
+  .startRTM(function (err) {
+    if (err) {
+      throw new Error(err)
+    }
+  })*/
+controller.hears(
+  ['hello', 'hi'], ['direct_message', 'direct_mention', 'mention'],
+  function (bot, message) { bot.reply(message, 'Meow. :smile_cat:') })
+  
+slack_token_path=./slack-token node kittenbot.js
+
+ctrl+c
+
+vi Dockerfile
+
+FROM node:5.4
+COPY package.json /src/package.json
+WORKDIR /src
+RUN npm install
+COPY kittenbot.js /src
+CMD ["node", "/src/kittenbot.js"]
+
+ESC
+:wq
+
+export PROJECT_ID=$(gcloud config list --format 'value(core.project)')
+
+docker build -t gcr.io/${PROJECT_ID}/slack-codelab:v1 .
+	...
+
+
+
+NON FATTO! DICE CHE NON CI SONO Custom Integrations 
+		Extra Credit: Create an incoming webhook to Slack
+		An incoming webhook is an easy way to send Slack notifications from another service or app without having to worry about a persistent connection for two-way communication like with a bot user. Create one now:
+		Go to the Slack Custom Integrations management console.
+		Click Incoming WebHooks, then the Add configuration button.
+		Select a Slack channel for messages to post to (or have them go privately to your Slack user).
+		Click the Add incoming webhooks integration button.
+		Copy the webhook URL and save it to your computer. You'll come back to this in a later step.
+
+
+
+docker run -d \
+    -v $(pwd)/:/config \
+    -e slack_token_path=/config/slack-token \
+    gcr.io/${PROJECT_ID}/slack-codelab:v1
+407dc8f1d6ee044deb1406e19727700693407eb029ea4117114b32211a54722b
+
+docker ps
+	CONTAINER ID        IMAGE                                                   COMMAND                  CREATED             STATUS              PORTS               NAMES
+	407dc8f1d6ee        gcr.io/qwiklabs-gcp-3fd2f7fc7b297399/slack-codelab:v1   "node /src/kittenb..."   58 seconds ago      Up 57 seconds                           serene_shirley
+
+docker stop 407dc8f1d6ee
+	407dc8f1d6ee
+
+gcloud docker -- push gcr.io/${PROJECT_ID}/slack-codelab:v1
+	...
+
+
+NON FATTO! VEDI SOPRA: DICE CHE NON CI SONO Custom Integrations 
+Extra Credit: Testing an incoming webhook
+While waiting for the image to upload, use the incoming webhook to send a notification to Slack.
+In Cloud Shell, click the + button tab to add a new Cloud Shell session:
+Go back to the incoming webhook you created. (If you closed that browser tab you can get back to there from the Slack Custom Integrations management console) and copy the webhook URL from the configuration page.
+In the new Cloud Shell session, run curl to send an HTTP request with your message to Slack. Replace the URL with your webhook URL:
+curl -X POST --data-urlencode \
+    'payload={"text": "Hello from Cloud Shell."}' \
+    https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+This demonstrates that anywhere that you can send an HTTP request, you can send a message to Slack. This is a really easy way to integrate your own apps and services with Slack notifications.
+For more complicated messages, test out the JSON request first in the Slack message builder.
+
+gcloud container clusters create my-cluster --num-nodes=2 --zone=us-central1-f --machine-type n1-standard-1
+	...
+
+gcloud compute instances list
+	NAME                                       ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP    STATUS
+	gke-my-cluster-default-pool-00b54856-8g94  us-central1-f  n1-standard-1               10.128.0.3   35.202.23.220  RUNNING
+	gke-my-cluster-default-pool-00b54856-s94f  us-central1-f  n1-standard-1               10.128.0.2   35.192.95.139  RUNNING
+
+kubectl create secret generic slack-token --from-file=./slack-token
+	secret "slack-token" created
+
+slack-codelab-deployment.yaml
+
+apiVersion: extensions/v1beta1 
+kind: Deployment 
+metadata:
+  name: slack-codelab
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: slack-codelab
+    spec:
+      containers:
+      - name: master
+        image: gcr.io/qwiklabs-gcp-3fd2f7fc7b297399/slack-codelab:v1  	# Replace PROJECT_ID
+                                                   						# with your project ID.
+        volumeMounts:
+        - name: slack-token
+          mountPath: /etc/slack-token
+        env:
+        - name: slack_token_path
+          value: /etc/slack-token/slack-token
+      volumes:
+      - name: slack-token
+        secret:
+          secretName: slack-token
+		  
+kubectl create -f slack-codelab-deployment.yaml --record
+	deployment "slack-codelab" created
+
+kubectl rollout history deployment/slack-codelab
+	deployments "slack-codelab"
+	REVISION  CHANGE-CAUSE
+	1         kubectl create --filename=slack-codelab-deployment.yaml --record=true
+
+kubectl get pods
+	NAME                            READY     STATUS    RESTARTS   AGE
+	slack-codelab-760516576-17bkl   1/1       Running   0          48s
+
+docker build -t gcr.io/${PROJECT_ID}/slack-codelab:v2 .
+	Sending build context to Docker daemon  27.19MB
+	Step 1/6 : FROM node:5.4
+	 ---> ac11a07e79b5
+	Step 2/6 : COPY package.json /src/package.json
+	 ---> Using cache
+	 ---> c31ebe7deec5
+	Step 3/6 : WORKDIR /src
+	 ---> Using cache
+	 ---> 033f515c488e
+	Step 4/6 : RUN npm install
+	 ---> Using cache
+	 ---> 3fcb0cf87ecf
+	Step 5/6 : COPY kittenbot.js /src
+	 ---> 7bbe2cb6d1f1
+	Removing intermediate container 74cae2064e89
+	Step 6/6 : CMD node /src/kittenbot.js
+	 ---> Running in 6e580f618581
+	 ---> bbbc8629b3af
+	Removing intermediate container 6e580f618581
+	Successfully built bbbc8629b3af
+	Successfully tagged gcr.io/qwiklabs-gcp-3fd2f7fc7b297399/slack-codelab:v2
+
+gcloud docker -- push gcr.io/${PROJECT_ID}/slack-codelab:v2
+	The push refers to a repository [gcr.io/qwiklabs-gcp-3fd2f7fc7b297399/slack-codelab]
+	18eb1b619d03: Pushed
+	f4c483f2e1f3: Layer already exists
+	9a0fa598deb5: Layer already exists
+	5f70bf18a086: Layer already exists
+	9370cb79aa9b: Layer already exists
+	343e3ce1a593: Layer already exists
+	d73f8409aa50: Layer already exists
+	5c5b99a3d7e9: Layer already exists
+	ed18fe2d435e: Layer already exists
+	628a915caf0d: Layer already exists
+	v2: digest: sha256:cc17b7d3bf8d5a046349f8498545d3b9b682c8ae5f4ce1c6f1db736f6478cf3a size: 3038
+
+kubectl apply -f slack-codelab-deployment.yaml
+	Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+	deployment "slack-codelab" configured
+
+kubectl get pods
+	NAME                            READY     STATUS        RESTARTS   AGE
+	slack-codelab-760516576-17bkl   1/1       Terminating   0          5m
+
+kubectl rollout history deployment/slack-codelab
+	deployments "slack-codelab"
+	REVISION  CHANGE-CAUSE
+	1         kubectl create --filename=slack-codelab-deployment.yaml --record=true
+	2         kubectl create --filename=slack-codelab-deployment.yaml --record=true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

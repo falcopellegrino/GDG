@@ -1,0 +1,168 @@
+google236009_student@qwiklabs-gcp-0235a1a1a01d304f:~$ gcloud auth list
+			  Credentialed Accounts
+	ACTIVE  ACCOUNT
+	*       google236009_student@qwiklabs.net
+	To set the active account, run:
+		$ gcloud config set account `ACCOUNT`
+
+google236009_student@qwiklabs-gcp-0235a1a1a01d304f:~$ gcloud config list project
+	[core]
+	project = qwiklabs-gcp-0235a1a1a01d304f
+	Your active configuration is: [cloudshell-20674]
+
+google236009_student@qwiklabs-gcp-0235a1a1a01d304f:~$ gcloud config set project qwiklabs-gcp-0235a1a1a01d304f
+	Updated property [core/project].
+
+google236009_student@qwiklabs-gcp-0235a1a1a01d304f:~$ git clone https://github.com/mtwo/microservices-demo
+	Cloning into 'microservices-demo'...
+	remote: Counting objects: 9595, done.
+	remote: Compressing objects: 100% (6/6), done.
+	remote: Total 9595 (delta 1), reused 1 (delta 1), pack-reused 9588
+	Receiving objects: 100% (9595/9595), 52.83 MiB | 6.73 MiB/s, done.
+	Resolving deltas: 100% (5766/5766), done.
+
+google236009_student@qwiklabs-gcp-0235a1a1a01d304f:~$ gcloud container clusters create "sockshop" --scopes  "https://www.googleapis.com/auth/cloud-platform" --num-nodes "3" --network "default"  --enable-cloud-logging --enable-cloud-monitoring --subnetwork "default" --enable-legacy-authorization --zone us-central1-a
+	WARNING: The behavior of --scopes will change in a future gcloud release: service-control and service-management scopes will no longer be added to what is specified in --scopes. To use these scopes, add them explicitly to --scopes. To use the new behavior, set container/new_scopes_behavior property (gcloud config set container/new_scopes_behavior true).
+	WARNING: Starting in Kubernetes v1.10, new clusters will no longer get compute-rw and storage-ro scopes added to what is specified in --scopes (though the latter will remain included in the default --scopes). To use these scopes, add them explicitly to --scopes. To use the new behavior, set container/new_scopes_behavior property (gcloud config set container/new_scopes_behavior true).
+	Creating cluster sockshop...done.
+	Created [https://container.googleapis.com/v1/projects/qwiklabs-gcp-0235a1a1a01d304f/zones/us-central1-a/clusters/sockshop].
+	To inspect the contents of your cluster, go to: https://console.cloud.google.com/kubernetes/workload_/gcloud/us-central1-a/sockshop?project=qwiklabs-gcp-0235a1a1a01d304f
+	kubeconfig entry generated for sockshop.
+	NAME      LOCATION       MASTER_VERSION  MASTER_IP      MACHINE_TYPE   NODE_VERSION  NUM_NODES  STATUS
+	sockshop  us-central1-a  1.8.7-gke.1     35.202.53.157  n1-standard-1  1.8.7-gke.1   3          RUNNING
+
+google236009_student@qwiklabs-gcp-0235a1a1a01d304f:~$ kubectl create namespace sock-shop
+	namespace "sock-shop" created
+
+google236009_student@qwiklabs-gcp-0235a1a1a01d304f:~$ cd microservices-demo
+
+google236009_student@qwiklabs-gcp-0235a1a1a01d304f:~/microservices-demo$ kubectl apply -f deploy/kubernetes/complete-demo.yaml
+	deployment "carts-db" created
+	service "carts-db" created
+	deployment "carts" created
+	service "carts" created
+	deployment "catalogue-db" created
+	service "catalogue-db" created
+	deployment "catalogue" created
+	service "catalogue" created
+	deployment "front-end" created
+	service "front-end" created
+	deployment "orders-db" created
+	service "orders-db" created
+	deployment "orders" created
+	service "orders" created
+	deployment "payment" created
+	service "payment" created
+	deployment "queue-master" created
+	service "queue-master" created
+	deployment "rabbitmq" created
+	service "rabbitmq" created
+	deployment "shipping" created
+	service "shipping" created
+	deployment "user-db" created
+	service "user-db" created
+	deployment "user" created
+	service "user" created
+
+google236009_student@qwiklabs-gcp-0235a1a1a01d304f:~/microservices-demo$ kubectl apply -f deploy/kubernetes/manifests-zipkin/zipkin-ns.yaml -f deploy/kubernetes/manifests-zipkin
+	namespace "zipkin" created
+	deployment "catalogue" configured
+	service "catalogue" unchanged
+	deployment "payment" configured
+	service "payment" unchanged
+	deployment "user" configured
+	service "user" unchanged
+	deployment "zipkin" created
+	namespace "zipkin" configured
+	service "zipkin" created
+
+(/usr/src/app/api/cart/index.js:165)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
