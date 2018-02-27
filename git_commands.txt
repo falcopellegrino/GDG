@@ -20,3 +20,17 @@ git commit -m "mandatory comment"
 
 git clone https://my.url.com
 // clone and initialize repository from url
+
+PULL
+git pull
+git pull <remote> <branch>
+git pull https://github.com/falcopellegrino/GDG.git master --allow-unrelated-histories
+
+SET UP IDENTITY
+git config --global user.email "franco.pellegrino@aruba.it"
+git config --global user.name "falcopellegrino"
+
+RE-CONNECT ON NEW DEVICE
+git init
+git remote add origin https://github.com/falcopellegrino/GDG.git
+git remote set-url origin https://github.com/falcopellegrino/GDG.git
